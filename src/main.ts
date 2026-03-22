@@ -8,6 +8,7 @@ import { CurrencyNBROutput } from "./output.ts";
 import { DEFAULT_DISPLAY_PRECISION, INTERNAL_SCALE_FACTOR } from "./constants.ts";
 import type { CurrencyNBROutputOptions } from "./output_helpers/options.ts";
 import { VERBAL_TOKENS } from "./output_helpers/i18n.ts";
+import { CurrencyNBRError } from "./errors.ts";
 
 /**
  * Representa qualquer valor que possa ser convertido em um montante auditável.
@@ -49,6 +50,25 @@ export class CurrencyNBR {
 
     public static from(value: CurrencyNBRAllowedValue): CurrencyNBR {
         if (value instanceof CurrencyNBR) { return value; }
+
+        // Validação rigorosa em runtime para tipos não suportados
+        const isValidType = value !== null
+            && value !== undefined
+            && (typeof value === "string" || typeof value === "number" || typeof value === "bigint");
+
+        const isActuallyNaN = typeof value === "number" && isNaN(value);
+
+        if (!isValidType || isActuallyNaN) {
+            throw new CurrencyNBRError({
+                type: "invalid-currency-format",
+                title: "Tipo de Dado Inválido",
+                detail: `O valor '${
+                    String(value)
+                }' do tipo '${typeof value}' não é um formato de moeda válido para inicialização.`,
+                operation: "from",
+            });
+        }
+
         const rawValue = typeof value === "bigint" ? value * INTERNAL_SCALE_FACTOR : parseStringValue(value.toString());
         const initialExpression = value.toString();
         // Não substituímos mais o ponto por vírgula aqui. Deixamos para o gerador final.
@@ -126,7 +146,16 @@ export class CurrencyNBR {
     public div(value: CurrencyNBRAllowedValue): CurrencyNBR {
         const other = CurrencyNBR.from(value);
         const otherValue = other.accumulatedValue + other.activeTermValue;
-        if (otherValue === 0n) { throw new Error("Division by zero"); }
+        if (otherValue === 0n) {
+            throw new CurrencyNBRError({
+                type: "division-by-zero",
+                title: "Operação Matemática Inválida",
+                detail: "Tentativa de divisão por um montante acumulado igual a zero.",
+                operation: "division",
+                latex: `\\frac{${this.activeTermExpression}}{0}`,
+                unicode: `${this.activeTermUnicode} ÷ 0`,
+            });
+        }
         const nextActiveValue = (this.activeTermValue * INTERNAL_SCALE_FACTOR) / otherValue;
 
         const nextActiveExpr = `\\frac{${this.activeTermExpression}}{${other.getFullLaTeXExpression()}}`;

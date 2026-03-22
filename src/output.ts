@@ -3,9 +3,10 @@ import { formatBigIntToString, formatMonetary } from "./output_helpers/formattin
 import { generateHTML } from "./output_helpers/html_generator.ts";
 import { translateVerbal } from "./output_helpers/verbal_translator.ts";
 import { generateImageBuffer } from "./output_helpers/image_generator.ts";
-import { type CurrencyNBROutputOptions, DEFAULT_OPTIONS } from "./output_helpers/options.ts";
+import { type CurrencyNBROutputOptions, DEFAULT_OPTIONS, VALID_ROUNDING_METHODS } from "./output_helpers/options.ts";
 import { applyRounding } from "./output_helpers/rounding_manager.ts";
 import { LOCALE_CURRENCY_MAP } from "./output_helpers/locales.ts";
+import { CurrencyNBRError } from "./errors.ts";
 
 /**
  * Métodos de saída disponíveis para a classe CurrencyNBROutput.
@@ -51,6 +52,27 @@ export class CurrencyNBROutput {
         this.latexExpression = latexExpression;
         this.verbalExpression = verbalExpression;
         this.unicodeExpression = unicodeExpression;
+
+        if (
+            options?.roundingMethod && !(VALID_ROUNDING_METHODS as readonly string[]).includes(options.roundingMethod)
+        ) {
+            throw new CurrencyNBRError({
+                type: "invalid-currency-format",
+                title: "Opção de Arredondamento Inválida",
+                detail: `O método de arredondamento '${options.roundingMethod}' não é suportado pela biblioteca.`,
+                operation: "output-options",
+            });
+        }
+
+        if (options?.locale && !Object.keys(LOCALE_CURRENCY_MAP).includes(options.locale)) {
+            throw new CurrencyNBRError({
+                type: "invalid-currency-format",
+                title: "Locale não Suportado",
+                detail: `O locale '${options.locale}' não está disponível para formatação nesta biblioteca.`,
+                operation: "output-options",
+            });
+        }
+
         this.options = { ...DEFAULT_OPTIONS, ...options };
     }
 

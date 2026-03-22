@@ -1,3 +1,5 @@
+import { CurrencyNBRError } from "../errors.ts";
+
 /**
  * Utilitários matemáticos de alta precisão otimizados para o tipo BigInt.
  */
@@ -11,7 +13,12 @@
  */
 export function calculateBigIntPower(base: bigint, exponent: bigint): bigint {
     if (exponent < 0n) {
-        throw new Error("Negative exponents are not supported for BigInt power operations.");
+        throw new CurrencyNBRError({
+            type: "negative-exponent",
+            title: "Operação de Potência Inválida",
+            detail: "Expoentes negativos não são suportados para operações de potência com BigInt nesta biblioteca.",
+            operation: "power",
+        });
     }
     if (exponent === 0n) { return 1n; }
     if (exponent === 1n) { return base; }
@@ -38,9 +45,21 @@ export function calculateBigIntPower(base: bigint, exponent: bigint): bigint {
  * @returns A parte inteira da raiz calculada.
  */
 export function calculateNthRoot(value: bigint, rootIndex: bigint): bigint {
-    if (rootIndex <= 0n) { throw new Error("Root index must be a positive integer."); }
+    if (rootIndex <= 0n) {
+        throw new CurrencyNBRError({
+            type: "invalid-root-index",
+            title: "Operação de Raiz Inválida",
+            detail: "O índice da raiz deve ser um número inteiro positivo.",
+            operation: "root",
+        });
+    }
     if (value < 0n && rootIndex % 2n === 0n) {
-        throw new Error("Cannot calculate even root of a negative number.");
+        throw new CurrencyNBRError({
+            type: "even-root-of-negative",
+            title: "Operação de Raiz Inválida",
+            detail: "Não é possível calcular a raiz par de um número negativo (resultado complexo não suportado).",
+            operation: "root",
+        });
     }
     if (value === 0n) { return 0n; }
 

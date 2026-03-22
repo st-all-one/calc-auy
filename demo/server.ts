@@ -1,5 +1,6 @@
 import { CurrencyNBR, CurrencyNBROutput } from "../mod.ts";
 import { dirname, fromFileUrl, join } from "@std/path";
+import { CurrencyNBRError } from "../src/errors.ts";
 
 const __dirname = dirname(fromFileUrl(import.meta.url));
 const ROOT = dirname(__dirname);
@@ -285,6 +286,12 @@ Deno.serve({ port: 8000 }, async (req) => {
                 { headers: { "content-type": "application/json", "cache-control": "no-store" } },
             );
         } catch (err) {
+            if (err instanceof CurrencyNBRError) {
+                return new Response(JSON.stringify(err.toJSON()), {
+                    status: err.status,
+                    headers: { "content-type": "application/problem+json" },
+                });
+            }
             return new Response(JSON.stringify({ error: err.message }), {
                 status: 400,
                 headers: { "content-type": "application/json" },

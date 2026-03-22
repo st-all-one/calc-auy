@@ -3,7 +3,12 @@ import type { LOCALE_CURRENCY_MAP } from "./locales.ts";
 /**
  * Métodos de arredondamento disponíveis.
  */
-export type RoundingMethod = "NBR-5891" | "HALF-EVEN" | "HALF-UP" | "TRUNCATE" | "CEIL";
+export const VALID_ROUNDING_METHODS = ["NBR-5891", "HALF-EVEN", "HALF-UP", "TRUNCATE", "CEIL"] as const;
+
+/**
+ * Tipo representando os métodos de arredondamento válidos.
+ */
+export type RoundingMethod = typeof VALID_ROUNDING_METHODS[number];
 
 /**
  * Locales suportados, inferidos do mapa de moedas com tipagem literal.
