@@ -14,7 +14,7 @@ A biblioteca rejeita o uso de tipos `number` (IEEE 754) para cálculos internos 
 - **Vantagem:** Operações aritméticas sobre inteiros são exatas. A precisão de 12 casas garante que, mesmo após múltiplas divisões e raízes, a precisão final de 2 a 6 casas decimais (padrão financeiro) permaneça íntegra.
 
 ### 1.2 Imutabilidade e Estados
-A classe `AuditableAmount` é estritamente imutável. Cada operação retorna uma nova instância, preservando o histórico de cálculo.
+A classe `CurrencyNBR` é estritamente imutável. Cada operação retorna uma nova instância, preservando o histórico de cálculo.
 - **Estado Interno:** Cada instância carrega o valor numérico e os fragmentos de expressão (LaTeX e Verbal) necessários para reconstruir sua própria história.
 
 ---
@@ -95,7 +95,7 @@ Para ambientes onde a renderização KaTeX não é possível (Terminais), a bibl
 - `src/constants.ts`: Definição de escalas e precisões.
 - `src/math_utils.ts`: Utilitários de baixo nível para BigInt (pow, root).
 - `src/rounding.ts`: Motor de conformidade NBR 5891.
-- `src/amount.ts`: Classe mestre `AuditableAmount`.
+- `src/amount.ts`: Classe mestre `CurrencyNBR`.
 
 ---
 

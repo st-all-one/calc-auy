@@ -3,8 +3,9 @@
  * Exporta a classe principal e tipos para cálculos financeiros precisos e auditáveis.
  */
 
-export { AuditableAmount } from "./src/amount.ts";
-export type { NumericValue } from "./src/amount.ts";
+export { CurrencyNBR } from "./src/main.ts";
+export { CurrencyNBROutput } from "./src/output.ts";
+export type { CurrencyNBRAllowedValue } from "./src/main.ts";
 
 /**
  * Re-exporta configurações de precisão para uso externo, se necessário.

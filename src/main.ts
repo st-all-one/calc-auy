@@ -1,17 +1,19 @@
-import { roundToPrecisionNBR5891 } from "./rounding.ts";
-import { DEFAULT_DISPLAY_PRECISION, INTERNAL_CALCULATION_PRECISION, INTERNAL_SCALE_FACTOR, KATEX_CSS_MINIFIED } from "./constants.ts";
-import { calculateBigIntPower, calculateNthRoot } from "./math_utils.ts";
-import katex from "@katex";
+import { calculateBigIntPower, calculateNthRoot } from "./internal/math_utils.ts";
+import { parseStringValue } from "./internal/parser.ts";
+import { toSuperscript } from "./internal/superscript.ts";
+import { wrapLaTeX, wrapUnicode } from "./internal/wrappers.ts";
+import { CurrencyNBROutput } from "./output.ts";
+import { DEFAULT_DISPLAY_PRECISION, INTERNAL_SCALE_FACTOR } from "./constants.ts";
 
 /**
  * Representa qualquer valor que possa ser convertido em um montante auditável.
  */
-export type NumericValue = string | number | bigint | AuditableAmount;
+export type CurrencyNBRAllowedValue = string | number | bigint | CurrencyNBR;
 
 /**
  * Classe principal para cálculos financeiros precisos, auditáveis e acessíveis.
  */
-export class AuditableAmount {
+export class CurrencyNBR {
     private readonly accumulatedValue: bigint;
     private readonly activeTermValue: bigint;
     private readonly accumulatedExpression: string;
@@ -20,9 +22,6 @@ export class AuditableAmount {
     private readonly activeTermVerbal: string;
     private readonly accumulatedUnicode: string;
     private readonly activeTermUnicode: string;
-
-    // Cache estático para o CSS do KaTeX para evitar múltiplas leituras de disco
-    private static cachedKaTeXCSS: string | null = null;
 
     private constructor(
         accumulatedValue: bigint,
@@ -44,15 +43,13 @@ export class AuditableAmount {
         this.activeTermUnicode = activeTermUnicode;
     }
 
-    static from(value: NumericValue): AuditableAmount {
-        if (value instanceof AuditableAmount) { return value; }
-        const rawValue = typeof value === "bigint"
-            ? value * INTERNAL_SCALE_FACTOR
-            : this.parseStringValue(value.toString());
+    public static from(value: CurrencyNBRAllowedValue): CurrencyNBR {
+        if (value instanceof CurrencyNBR) { return value; }
+        const rawValue = typeof value === "bigint" ? value * INTERNAL_SCALE_FACTOR : parseStringValue(value.toString());
         const initialExpression = value.toString();
         const initialVerbal = initialExpression.replace(".", ",");
         const initialUnicode = initialExpression;
-        return new AuditableAmount(
+        return new CurrencyNBR(
             0n,
             rawValue,
             "",
@@ -64,30 +61,10 @@ export class AuditableAmount {
         );
     }
 
-    private static parseStringValue(value: string): bigint {
-        const numericPattern = /^(-?\d+)(?:\.(\d+))?$/;
-        const match = value.match(numericPattern);
-        if (!match) { throw new Error(`Invalid numeric format: ${value}`); }
-        const [_, integerPart, decimalPart = ""] = match;
-        const isNegative = integerPart.startsWith("-");
-        const absoluteInteger = BigInt(integerPart.replace("-", "")) * INTERNAL_SCALE_FACTOR;
-        let absoluteDecimal = 0n;
-        if (decimalPart) {
-            const normalizedDecimal = decimalPart.slice(0, INTERNAL_CALCULATION_PRECISION + 1).padEnd(
-                INTERNAL_CALCULATION_PRECISION + 1,
-                "0",
-            );
-            absoluteDecimal = BigInt(normalizedDecimal.slice(0, INTERNAL_CALCULATION_PRECISION));
-            if (Number(normalizedDecimal[INTERNAL_CALCULATION_PRECISION]) >= 5) { absoluteDecimal += 1n; }
-        }
-        const totalAbsoluteValue = absoluteInteger + absoluteDecimal;
-        return isNegative ? -totalAbsoluteValue : totalAbsoluteValue;
-    }
-
-    add(value: NumericValue): AuditableAmount {
-        const other = AuditableAmount.from(value);
+    public add(value: CurrencyNBRAllowedValue): CurrencyNBR {
+        const other = CurrencyNBR.from(value);
         const newAccumulatedValue = this.accumulatedValue + this.activeTermValue;
-        return new AuditableAmount(
+        return new CurrencyNBR(
             newAccumulatedValue,
             other.accumulatedValue + other.activeTermValue,
             this.getFullLaTeXExpression(),
@@ -99,11 +76,11 @@ export class AuditableAmount {
         );
     }
 
-    sub(value: NumericValue): AuditableAmount {
-        const other = AuditableAmount.from(value);
+    public sub(value: CurrencyNBRAllowedValue): CurrencyNBR {
+        const other = CurrencyNBR.from(value);
         const otherValue = other.accumulatedValue + other.activeTermValue;
         const newAccumulatedValue = this.accumulatedValue + this.activeTermValue;
-        return new AuditableAmount(
+        return new CurrencyNBR(
             newAccumulatedValue,
             -otherValue,
             this.getFullLaTeXExpression(),
@@ -115,20 +92,20 @@ export class AuditableAmount {
         );
     }
 
-    mult(value: NumericValue): AuditableAmount {
-        const other = AuditableAmount.from(value);
+    public mult(value: CurrencyNBRAllowedValue): CurrencyNBR {
+        const other = CurrencyNBR.from(value);
         const otherValue = other.accumulatedValue + other.activeTermValue;
         const nextActiveValue = (this.activeTermValue * otherValue) / INTERNAL_SCALE_FACTOR;
 
-        const nextActiveExpr = `${this.wrapLaTeX(this.activeTermExpression)} \\times ${
-            other.wrapLaTeX(other.getFullLaTeXExpression())
+        const nextActiveExpr = `${wrapLaTeX(this.activeTermExpression)} \\times ${
+            wrapLaTeX(other.getFullLaTeXExpression())
         }`;
         const nextActiveVerbal = `${this.activeTermVerbal} multiplicado por ${other.getFullVerbalExpression()}`;
-        const nextActiveUnicode = `${this.wrapUnicode(this.activeTermUnicode)} × ${
-            this.wrapUnicode(other.getFullUnicodeExpression())
+        const nextActiveUnicode = `${wrapUnicode(this.activeTermUnicode)} × ${
+            wrapUnicode(other.getFullUnicodeExpression())
         }`;
 
-        return new AuditableAmount(
+        return new CurrencyNBR(
             this.accumulatedValue,
             nextActiveValue,
             this.accumulatedExpression,
@@ -140,19 +117,19 @@ export class AuditableAmount {
         );
     }
 
-    div(value: NumericValue): AuditableAmount {
-        const other = AuditableAmount.from(value);
+    public div(value: CurrencyNBRAllowedValue): CurrencyNBR {
+        const other = CurrencyNBR.from(value);
         const otherValue = other.accumulatedValue + other.activeTermValue;
         if (otherValue === 0n) { throw new Error("Division by zero"); }
         const nextActiveValue = (this.activeTermValue * INTERNAL_SCALE_FACTOR) / otherValue;
 
         const nextActiveExpr = `\\frac{${this.activeTermExpression}}{${other.getFullLaTeXExpression()}}`;
         const nextActiveVerbal = `${this.activeTermVerbal} dividido por ${other.getFullVerbalExpression()}`;
-        const nextActiveUnicode = `${this.wrapUnicode(this.activeTermUnicode)} ÷ ${
-            this.wrapUnicode(other.getFullUnicodeExpression())
+        const nextActiveUnicode = `${wrapUnicode(this.activeTermUnicode)} ÷ ${
+            wrapUnicode(other.getFullUnicodeExpression())
         }`;
 
-        return new AuditableAmount(
+        return new CurrencyNBR(
             this.accumulatedValue,
             nextActiveValue,
             this.accumulatedExpression,
@@ -164,11 +141,11 @@ export class AuditableAmount {
         );
     }
 
-    pow(exponent: string | number): AuditableAmount {
+    public pow(exponent: string | number): CurrencyNBR {
         const baseValue = this.activeTermValue;
-        const baseExpr = this.wrapLaTeX(this.activeTermExpression);
+        const baseExpr = wrapLaTeX(this.activeTermExpression);
         const baseVerbal = this.activeTermVerbal;
-        const baseUnicode = this.wrapUnicode(this.activeTermUnicode);
+        const baseUnicode = wrapUnicode(this.activeTermUnicode);
 
         let nextExpr: string;
         let nextVerbal: string;
@@ -183,15 +160,15 @@ export class AuditableAmount {
                 den,
             );
 
-            const denSup = AuditableAmount.toSuperscript(den.toString());
-            const numSup = num === 1n ? "" : AuditableAmount.toSuperscript(num.toString());
+            const denSup = toSuperscript(den.toString());
+            const numSup = num === 1n ? "" : toSuperscript(num.toString());
 
             nextExpr = num === 1n ? `\\sqrt[${den}]{${baseExpr}}` : `\\sqrt[${den}]{${baseExpr}^{${num}}}`;
             nextVerbal = `raiz de índice ${den} de ${baseVerbal}${num === 1n ? "" : " elevado a " + num}`;
             nextUnicode = `${denSup === "²" ? "" : denSup}√(${baseUnicode}${numSup})`;
         } else {
             const exp = BigInt(expStr);
-            const expSup = AuditableAmount.toSuperscript(expStr);
+            const expSup = toSuperscript(expStr);
 
             nextExpr = `{${baseExpr}}^{${expStr}}`;
             nextVerbal = `${baseVerbal} elevado a ${expStr}`;
@@ -207,7 +184,7 @@ export class AuditableAmount {
                 nextValue = (INTERNAL_SCALE_FACTOR * INTERNAL_SCALE_FACTOR) / denVal;
             }
         }
-        return new AuditableAmount(
+        return new CurrencyNBR(
             this.accumulatedValue,
             nextValue,
             this.accumulatedExpression,
@@ -219,62 +196,27 @@ export class AuditableAmount {
         );
     }
 
-    group(): AuditableAmount {
+    public group(): CurrencyNBR {
         const totalValue = this.accumulatedValue + this.activeTermValue;
         const groupedExpr = `\\left( ${this.getFullLaTeXExpression()} \\right)`;
         const groupedVerbal = `em grupo, ${this.getFullVerbalExpression()}, fim do grupo`;
         const groupedUnicode = `(${this.getFullUnicodeExpression()})`;
-        return new AuditableAmount(0n, totalValue, "", groupedExpr, "", groupedVerbal, "", groupedUnicode);
-    }
-
-    commit(decimals: number = DEFAULT_DISPLAY_PRECISION): string {
-        const finalValue = this.accumulatedValue + this.activeTermValue;
-        const rounded = roundToPrecisionNBR5891(finalValue, INTERNAL_CALCULATION_PRECISION, decimals);
-        return this.formatBigIntToString(rounded, decimals);
-    }
-
-    private formatBigIntToString(value: bigint, decimals: number): string {
-        const isNeg = value < 0n;
-        const abs = isNeg ? -value : value;
-        const scale = 10n ** BigInt(decimals);
-        const int = abs / scale;
-        const frac = (abs % scale).toString().padStart(decimals, "0");
-        return `${isNeg ? "-" : ""}${int}.${frac}`;
-    }
-
-    toLaTeX(decimals: number = DEFAULT_DISPLAY_PRECISION): string {
-        return `$$ ${this.getFullLaTeXExpression()} = ${this.commit(decimals)} $$`;
-    }
-
-    toHTML(decimals: number = DEFAULT_DISPLAY_PRECISION): string {
-        if (!AuditableAmount.cachedKaTeXCSS) {
-            AuditableAmount.cachedKaTeXCSS = KATEX_CSS_MINIFIED;
-        }
-        const latex = this.getFullLaTeXExpression() + " = " + this.commit(decimals);
-        const renderedHTML = katex.renderToString(latex, {
-            displayMode: true,
-            throwOnError: false,
-        });
-        return `
-<div class="auditable-amount-container" aria-label="${this.toVerbal(decimals)}">
-  <style>
-    ${AuditableAmount.cachedKaTeXCSS}
-    .auditable-amount-container { margin: 1em 0; overflow-x: auto; }
-  </style>
-  ${renderedHTML}
-</div>`.trim();
-    }
-
-    toVerbal(decimals: number = DEFAULT_DISPLAY_PRECISION): string {
-        const result = this.commit(decimals).replace(".", " vírgula ");
-        return `${this.getFullVerbalExpression()} é igual a ${result}`;
+        return new CurrencyNBR(0n, totalValue, "", groupedExpr, "", groupedVerbal, "", groupedUnicode);
     }
 
     /**
-     * Gera uma representação em string Unicode para visualização em CLI.
+     * Finaliza o cálculo e retorna um objeto de saída para formatação.
+     * @param decimals A precisão padrão desejada para o output (default: 6).
      */
-    toUnicode(decimals: number = DEFAULT_DISPLAY_PRECISION): string {
-        return `${this.getFullUnicodeExpression()} = ${this.commit(decimals)}`;
+    public commit(decimals: number = DEFAULT_DISPLAY_PRECISION): CurrencyNBROutput {
+        const finalValue = this.accumulatedValue + this.activeTermValue;
+        return new CurrencyNBROutput(
+            finalValue,
+            decimals,
+            this.getFullLaTeXExpression(),
+            this.getFullVerbalExpression(),
+            this.getFullUnicodeExpression(),
+        );
     }
 
     private getFullLaTeXExpression(): string {
@@ -302,52 +244,5 @@ export class AuditableAmount {
         }
         unicode += this.activeTermUnicode;
         return unicode;
-    }
-
-    private wrapLaTeX(expr: string): string {
-        const trimmed = expr.trim();
-        if (
-            !trimmed.startsWith("\\left(") && !trimmed.startsWith("{")
-            && (trimmed.includes("+") || trimmed.includes(" - "))
-        ) {
-            return `\\left( ${expr} \\right)`;
-        }
-        return expr;
-    }
-
-    private wrapUnicode(expr: string): string {
-        const trimmed = expr.trim();
-        if (
-            !trimmed.startsWith("(") && (trimmed.includes("+") || trimmed.includes(" - "))
-        ) {
-            return `(${expr})`;
-        }
-        return expr;
-    }
-
-    private static toSuperscript(s: string): string {
-        const map: Record<string, string> = {
-            "0": "⁰",
-            "1": "¹",
-            "2": "²",
-            "3": "³",
-            "4": "⁴",
-            "5": "⁵",
-            "6": "⁶",
-            "7": "⁷",
-            "8": "⁸",
-            "9": "⁹",
-            "+": "⁺",
-            "-": "⁻",
-            "(": "⁽",
-            ")": "⁾",
-            ".": "·",
-            ",": "·",
-        };
-        return s.split("").map((c) => map[c] || c).join("");
-    }
-
-    toString(): string {
-        return this.commit();
     }
 }

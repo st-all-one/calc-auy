@@ -1,11 +1,11 @@
-# Manual Mestre: `AuditableAmount` — Engenharia Financeira de Alta Precisão
+# Manual Mestre: `CurrencyNBR` — Engenharia Financeira de Alta Precisão
 
 Este documento é o mapa didático completo da biblioteca `currency-math-audit`. Ele explica a filosofia de design, os algoritmos fundamentais e as diretrizes de uso para garantir cálculos exatos, auditáveis e acessíveis.
 
 ---
 
 ## 1. O Que é esta Ferramenta?
-A `AuditableAmount` é uma biblioteca Deno/TypeScript projetada para manipular valores monetários e fórmulas financeiras complexas. Diferente de uma calculadora comum, ela mantém uma **memória histórica** de cada operação, permitindo gerar relatórios visuais (LaTeX) e narrações auditivas (WCAG AAA) em tempo real.
+A `CurrencyNBR` é uma biblioteca Deno/TypeScript projetada para manipular valores monetários e fórmulas financeiras complexas. Diferente de uma calculadora comum, ela mantém uma **memória histórica** de cada operação, permitindo gerar relatórios visuais (LaTeX) e narrações auditivas (WCAG AAA) em tempo real.
 
 ---
 
@@ -52,7 +52,7 @@ Aqui está o fluxo completo de como utilizar a biblioteca em um cenário real:
 ### Passo 1: Instanciação
 Sempre inicie o cálculo definindo o valor base. O uso de **Strings** é obrigatório para garantir que o JavaScript não perca decimais antes do processamento.
 ```typescript
-const base = AuditableAmount.from("1000.00");
+const base = CurrencyNBR.from("1000.00");
 ```
 
 ### Passo 2: Operações em Cadeia

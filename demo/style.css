@@ -1,246 +1,195 @@
-/* =========================================
-   Padrões de Acessibilidade (WCAG AAA & eMAG)
-   Projeto: Currency Math Audit
-   ========================================= */
-
 :root {
     --bg: #ffffff;
     --text: #1a1a1a;
     --primary: #003366;
-    --primary-light: #f0f7ff;
     --accent: #d4a017;
+    --primary-light: #f0f7ff;
     --border: #333333;
-    --focus: #005fcc;
     --code-bg: #1e1e1e;
-    --code-text: #d4d4d4;
-}
-
-/* Reset e Estrutura Base */
-* {
-    box-sizing: border-box;
 }
 
 body {
-    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-    font-size: 1.15rem;
+    font-family: "Segoe UI", system-ui, sans-serif;
     line-height: 1.6;
-    background-color: var(--bg);
     color: var(--text);
-    max-width: 1300px; /* Aumentado para acomodar 2 colunas largas */
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem 1.5rem;
+    padding: 2rem;
 }
 
-/* Link de Salto (eMAG) */
 .skip-link {
     position: absolute;
     top: -100px;
-    left: 10px;
     background: var(--primary);
-    color: #fff;
-    padding: 10px 20px;
-    z-index: 999;
-    text-decoration: none;
-    font-weight: bold;
-    border: 2px solid var(--accent);
+    color: white;
+    padding: 1rem;
 }
-.skip-link:focus {
-    top: 10px;
-}
+.skip-link:focus { top: 0; }
 
-/* Cabeçalho */
 header {
-    border-bottom: 8px solid var(--primary);
-    margin-bottom: 4rem;
-    padding-bottom: 1.5rem;
-}
-
-h1 {
-    font-size: 2.8rem;
-    color: var(--primary);
-    margin: 0;
-    letter-spacing: -1px;
+    border-bottom: 5px solid var(--primary);
+    margin-bottom: 2rem;
 }
 
 h2 {
-    font-size: 2rem;
     border-left: 10px solid var(--accent);
     padding-left: 1rem;
-    margin: 3rem 0 1.5rem;
-}
-
-/* Grid de Exemplos (2 Colunas Largas) */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Força exatamente 2 colunas */
-    gap: 3rem;
-}
-
-/* Responsividade do Grid */
-@media (max-width: 900px) {
-    .grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Cartões de Auditoria */
-.card {
-    background: var(--primary-light);
-    border: 3px solid var(--primary);
-    border-radius: 16px;
-    padding: 2.5rem;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-}
-
-.card h3 {
-    margin-top: 0;
-    font-size: 1.5rem;
+    margin-top: 4rem;
     color: var(--primary);
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-    padding-bottom: 0.75rem;
 }
 
-/* Código Fonte (Auditabilidade de Dev) */
-.card-code {
-    background: var(--code-bg);
-    color: var(--code-text);
-    padding: 1.25rem;
-    border-radius: 8px;
-    font-family: "Cascadia Code", "Consolas", monospace;
-    font-size: 0.9rem;
-    margin: 1.5rem 0;
-    overflow-x: auto; /* Resolve overflow de código */
-    border-left: 6px solid var(--accent);
-    white-space: pre-wrap; /* Quebra linha se necessário para evitar scroll excessivo */
-    word-break: break-all;
-}
-
-/* Renderização Matemática (Auditabilidade Visual) */
-.card-math {
-    background: #ffffff;
-    padding: 2rem;
-    border-radius: 10px;
-    text-align: center;
-    margin: 1.5rem 0;
-    border: 2px solid var(--border);
-    min-height: 120px;
+.nav-links {
+    list-style: none;
+    padding: 0;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-x: auto; /* Resolve overflow de fórmulas longas (Baskhara/ICMS) */
-}
-
-/* Ajuste de escala para KaTeX em telas menores */
-.katex-display {
-    font-size: 1.3em !important;
-    margin: 0 !important;
-}
-
-/* Formulário e Simulador */
-#f {
-    background: #fff;
-    padding: 2.5rem;
-    border: 3px solid var(--border);
-    border-radius: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
     margin-bottom: 3rem;
 }
 
-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
+.nav-links a {
+    text-decoration: none;
+    background: var(--primary-light);
     color: var(--primary);
+    padding: 5px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    border: 1px solid var(--primary);
 }
 
-input {
-    padding: 1rem;
-    font-size: 1.2rem;
-    border: 3px solid var(--border);
-    border-radius: 8px;
+/* Simulator Form */
+.simulator-form {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    background: #f9f9f9;
+    padding: 2rem;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+}
+
+.form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.form-group.full-width {
+    flex: 0 0 100%;
+}
+
+textarea {
     width: 100%;
-    margin-bottom: 1.5rem;
-    transition: border-color 0.2s;
+    padding: 1rem;
+    font-family: monospace;
+    font-size: 1.1rem;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    resize: vertical;
 }
 
-input:focus {
-    outline: 4px solid var(--focus);
-    outline-offset: 2px;
-    border-color: var(--focus);
+small {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+}
+
+.error {
+    color: #cc0000;
+    font-weight: bold;
+    margin-top: 10px;
 }
 
 button {
     background: var(--primary);
     color: white;
-    padding: 1.2rem;
-    font-size: 1.3rem;
-    font-weight: 800;
     border: none;
-    border-radius: 8px;
+    padding: 1rem 2rem;
+    font-weight: bold;
     cursor: pointer;
-    width: 100%;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    transition: transform 0.1s, background 0.2s;
+    border-radius: 5px;
 }
 
-button:hover {
-    background: #002244;
-}
-button:active {
-    transform: scale(0.98);
-}
-button:focus {
-    outline: 5px solid var(--accent);
-    outline-offset: 5px;
-}
-
-/* Caixa de Resultado */
-#res-box {
-    margin-top: 4rem;
-    padding: 3rem;
-    border: 6px dashed var(--primary);
-    background: #ffffff;
-    border-radius: 24px;
-    position: relative;
-}
-
-#res-box h3 {
-    margin-top: 0;
-    color: var(--primary);
-    font-size: 1.8rem;
-}
-
-#res-txt {
-    font-weight: 500;
-    font-size: 1.4rem;
-    color: #333;
-}
-
-#res-math {
+/* Interactive Results Grid */
+.output-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
     margin-top: 2rem;
+}
+
+.output-item {
+    background: white;
+    border: 1px solid #ddd;
     padding: 1rem;
-    overflow-x: auto;
+    border-radius: 8px;
 }
 
-/* Helpers */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
+.output-item.full-width {
+    grid-column: span 3;
 }
 
-footer {
-    margin-top: 8rem;
-    padding: 4rem 0;
-    border-top: 4px solid var(--primary-light);
-    text-align: center;
-    font-size: 1rem;
-    color: #555;
+.output-item strong {
+    display: block;
+    color: var(--primary);
+    margin-bottom: 5px;
+}
+
+/* Cards */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+@media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+
+.card {
+    background: white;
+    border: 2px solid var(--primary-light);
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.card-code {
+    background: var(--code-bg);
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    margin: 10px 0;
+    word-break: break-all;
+}
+
+.result-area {
+    background: var(--primary-light);
+    padding: 1rem;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* Views */
+.binary-view, .binary-view-small {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: #666;
+    background: #eee;
+    padding: 5px;
+    overflow-y: auto;
+    max-height: 100px;
+    margin-bottom: 10px;
+}
+
+.image-result {
+    max-width: 100%;
+    border: 1px solid #ccc;
+}
+
+.card-math-render {
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
 }

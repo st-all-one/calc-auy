@@ -20,13 +20,13 @@ A `currency-math-audit` é uma biblioteca Deno/TypeScript projetada para sistema
 
 ### Instalação (Deno)
 ```typescript
-import { AuditableAmount } from "...";
+import { CurrencyNBR } from "...";
 ```
 
 ### Exemplo de Uso
 ```typescript
-const principal = AuditableAmount.from("1000.00");
-const taxa = AuditableAmount.from(1).add("0.05").group(); // (1 + 0.05)
+const principal = CurrencyNBR.from("1000.00");
+const taxa = CurrencyNBR.from(1).add("0.05").group(); // (1 + 0.05)
 const montante = principal.mult(taxa.pow(12));           // P * (1+i)^12
 
 console.log(montante.commit(2));   // "1795.86"
