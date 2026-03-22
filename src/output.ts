@@ -6,6 +6,26 @@ import { generateVerbal } from "./output_helpers/verbal_generator.ts";
 import { generateImageBuffer } from "./output_helpers/image_generator.ts";
 
 /**
+ * Métodos de saída disponíveis para a classe CurrencyNBROutput.
+ */
+export const AVAILABLE_OUTPUT_METHODS = [
+    "toString",
+    "toFloatNumber",
+    "toBigInt",
+    "toMonetary",
+    "toLaTeX",
+    "toHTML",
+    "toVerbalA11y",
+    "toUnicode",
+    "toImageBuffer",
+] as const;
+
+/**
+ * Tipo representando as chaves de saída permitidas.
+ */
+export type CurrencyOutputMethod = typeof AVAILABLE_OUTPUT_METHODS[number];
+
+/**
  * Classe responsável por formatar e exibir o resultado de um cálculo CurrencyNBR.
  */
 export class CurrencyNBROutput {
@@ -107,5 +127,49 @@ export class CurrencyNBROutput {
             this.toString(decimals),
             this.toVerbalA11y(decimals),
         );
+    }
+
+    /**
+     * Retorna um objeto JSON contendo os resultados dos métodos solicitados.
+     * @param elements Array de métodos desejados. Se vazio, retorna todos.
+     * @param decimals Casas decimais para os métodos que suportam.
+     */
+    public toJson(elements: CurrencyOutputMethod[] = [], decimals: number = this.defaultDecimals): string {
+        const targetElements = elements.length > 0 ? elements : AVAILABLE_OUTPUT_METHODS;
+        const result: Record<string, unknown> = {};
+
+        for (const key of targetElements) {
+            switch (key) {
+                case "toString":
+                    result[key] = this.toString(decimals);
+                    break;
+                case "toFloatNumber":
+                    result[key] = this.toFloatNumber(decimals);
+                    break;
+                case "toBigInt":
+                    result[key] = this.toBigInt().toString();
+                    break;
+                case "toMonetary":
+                    result[key] = this.toMonetary("pt-BR", "BRL", decimals);
+                    break;
+                case "toLaTeX":
+                    result[key] = this.toLaTeX(decimals);
+                    break;
+                case "toHTML":
+                    result[key] = this.toHTML(decimals);
+                    break;
+                case "toVerbalA11y":
+                    result[key] = this.toVerbalA11y(decimals);
+                    break;
+                case "toUnicode":
+                    result[key] = this.toUnicode(decimals);
+                    break;
+                case "toImageBuffer":
+                    result[key] = Array.from(this.toImageBuffer(decimals));
+                    break;
+            }
+        }
+
+        return JSON.stringify(result);
     }
 }

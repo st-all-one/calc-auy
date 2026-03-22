@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CurrencyNBR - Demonstração Completa de Auditabilidade</title>
-    <link rel="stylesheet" href="/assets/katex.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
 
@@ -38,7 +39,37 @@
                 <form id="f" class="simulator-form">
                     <div class="form-group full-width">
                         <label for="expr">Expressão de Cálculo (TypeScript):</label>
-                        <textarea id="expr" name="expression" rows="3" placeholder="Ex: CurrencyNBR.from(1000).mult(1.05).pow(12).commit(2)">CurrencyNBR.from(1000).mult(1.05).pow(12).commit(2)</textarea>
+                        <textarea id="expr" name="expression" rows="30"
+                            placeholder="Ex: CurrencyNBR.from(1000).mult(1.05).pow(12).commit(2)">
+CurrencyNBR.from("50000.00")
+    // ============================================
+    // Exemplo: Liquidação de Debênture em Atraso
+    // ============================================
+    
+    // 1. Montante Bruto Atualizado: P * (1 + 0.12)^(34/252)
+    .mult(
+        CurrencyNBR.from("1").add("0.12").group().pow("34/252")
+    )
+    
+    // 2. Subtrai o IRRF sobre o lucro: - [ (Bruto - P) * 0.225 ]
+    .sub(
+        CurrencyNBR.from("50000.00")
+            .mult(
+                CurrencyNBR.from("1").add("0.12").group().pow("34/252")
+            )
+            .sub("50000.00")
+            .group()
+            .mult("0.225")
+    )
+    
+    // 3. Adiciona a multa fixa: + (P * 0.02)
+    .add(
+        CurrencyNBR.from("50000.00").mult("0.02")
+    )
+    
+    // 4. Fecha a expressão matemática geral e gera o output auditável
+    .group()
+    .commit(2)</textarea>
                         <small>Use a sintaxe da biblioteca: <code>CurrencyNBR.from(val).add(x).commit(n)</code></small>
                     </div>
                     <button type="submit">Executar e Gerar Auditoria</button>
@@ -100,4 +131,5 @@
 
     <script src="script.js" type="module"></script>
 </body>
+
 </html>

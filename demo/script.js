@@ -13,8 +13,10 @@ function updateInteractiveDisplay(data) {
     toVerbalA11y: data.toVerbalA11y,
     toHTML: data.toHTML,
     toImageBuffer: `
-      <div class="binary-view">${data.toImageBufferHex}</div>
-      <img src="${data.toImageDataBase64}" alt="Renderização visual do resultado" class="image-result">
+      <div class="image-output-wrapper">
+        <div class="binary-view">${data.toImageBufferHex}</div>
+        <img src="${data.toImageDataBase64}" alt="Renderização visual do resultado" class="image-result">
+      </div>
     `,
   };
 
@@ -64,9 +66,9 @@ async function loadExamples() {
         let resultView = "";
         if (method === "toImageBuffer") {
           resultView = `
-            <div class="binary-view-small">${ex.outputs.toImageBufferHex}</div>
-            <div class="card-img-preview">
-              <img src="${ex.outputs.toImageDataBase64}" alt="Image Result">
+            <div class="image-output-wrapper">
+              <div class="binary-view-small">${ex.outputs.toImageBufferHex}</div>
+              <img src="${ex.outputs.toImageDataBase64}" alt="Image Result" class="image-result">
             </div>
           `;
         } else if (method === "toHTML") {
