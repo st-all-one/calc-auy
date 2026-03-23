@@ -10,13 +10,32 @@ import { CurrencyNBRError } from "../errors.ts";
  * @throws CurrencyNBRError se o formato for inválido.
  */
 export function parseStringValue(value: string): bigint {
+    // Normalização: Se houver vírgula e ponto, assumimos o formato BR (1.234,56) ou US (1,234.56)
+    // Se houver apenas vírgula, tratamos como decimal (ex: 123,45)
+    let normalized = value.trim();
+
+    if (normalized.includes(",") && normalized.includes(".")) {
+        const lastComma = normalized.lastIndexOf(",");
+        const lastDot = normalized.lastIndexOf(".");
+        if (lastComma > lastDot) {
+            // Formato BR: 1.234,56 -> 1234.56
+            normalized = normalized.replace(/\./g, "").replace(",", ".");
+        } else {
+            // Formato US: 1,234.56 -> 1234.56
+            normalized = normalized.replace(/,/g, "");
+        }
+    } else if (normalized.includes(",")) {
+        // Apenas vírgula: 123,45 -> 123.45
+        normalized = normalized.replace(",", ".");
+    }
+
     const numericPattern = /^(-?\d+)(?:\.(\d+))?$/;
-    const match = value.match(numericPattern);
+    const match = normalized.match(numericPattern);
     if (!match) {
         throw new CurrencyNBRError({
             type: "invalid-numeric-format",
             title: "Erro de Parsing Numérico",
-            detail: `O valor '${value}' não é um formato numérico válido (ex: 123.45).`,
+            detail: "O valor fornecido não é um formato numérico válido (ex: 123.45 ou 1.234,56).",
             operation: "parse",
         });
     }

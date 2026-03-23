@@ -65,9 +65,7 @@ export class CurrencyNBR {
                 throw new CurrencyNBRError({
                     type: "invalid-currency-format",
                     title: "Tipo de Dado Inválido",
-                    detail: `O valor '${
-                        String(value)
-                    }' do tipo '${typeof value}' não é um formato de moeda válido para inicialização.`,
+                    detail: `O tipo '${typeof value}' não é um formato de moeda suportado para inicialização.`,
                     operation: "from",
                 });
             }
