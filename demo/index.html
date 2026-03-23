@@ -41,6 +41,18 @@
     </head>
 
     <body>
+        <div id="barra-acessibilidade" role="region" aria-label="Barra de Acessibilidade">
+            <ul id="atalhos">
+                <li><a href="#main-content" accesskey="1">Ir para o conteúdo [1]</a></li>
+                <li><a href="#menu-principal" accesskey="2">Ir para o menu [2]</a></li>
+                <li><a href="#f" accesskey="3">Ir para a busca/simulação [3]</a></li>
+                <li><a href="#footer" accesskey="4">Ir para o rodapé [4]</a></li>
+            </ul>
+            <ul id="opcoes-acessibilidade">
+                <li><a href="#" id="alto-contraste" aria-pressed="false"><span aria-hidden="true">◐</span> Alto Contraste</a></li>
+            </ul>
+        </div>
+
         <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
 
         <header role="banner">
@@ -48,23 +60,23 @@
             <p>Demonstração exaustiva de todos os métodos da classe <code>CurrencyNBROutput</code>.</p>
         </header>
 
-        <nav aria-label="Navegação rápida">
+        <nav id="menu-principal" aria-label="Navegação rápida">
             <ul class="nav-links">
                 <li><a href="#sec-interactive">1. interactive</a></li>
                 
                 <li class="nav-group-title">Outputs</li>
-                <li><a href="#sec-verbalMonetary">1. locale</a></li>
-                <li><a href="#sec-roundingShowcase">2. Rounding</a></li>
-                <li><a href="#sec-toString">3. toString</a></li>
-                <li><a href="#sec-toFloatNumber">4. toFloatNumber</a></li>
-                <li><a href="#sec-toBigInt">5. toBigInt</a></li>
-                <li><a href="#sec-toMonetary">6. toMonetary</a></li>
-                <li><a href="#sec-toLaTeX">7. toLaTeX</a></li>
-                <li><a href="#sec-toHTML">8. toHTML</a></li>
-                <li><a href="#sec-toUnicode">9. toUnicode</a></li>
+                <li><a href="#sec-verbalMonetary">2. locale</a></li>
+                <li><a href="#sec-roundingShowcase">3. Rounding</a></li>
+                <li><a href="#sec-toString">4. toString</a></li>
+                <li><a href="#sec-toFloatNumber">5. toFloatNumber</a></li>
+                <li><a href="#sec-toBigInt">6. toBigInt</a></li>
+                <li><a href="#sec-toMonetary">7. toMonetary</a></li>
+                <li><a href="#sec-toLaTeX">8. toLaTeX</a></li>
+                <li><a href="#sec-toHTML">9. toHTML</a></li>
                 <li><a href="#sec-toVerbalA11y">10. toVerbalA11y</a></li>
-                <li><a href="#sec-toImageBuffer">11. toImageBuffer</a></li>
-                <li><a href="#sec-toJson">12. toJson</a></li>
+                <li><a href="#sec-toUnicode">11. toUnicode</a></li>
+                <li><a href="#sec-toImageBuffer">12. toImageBuffer</a></li>
+                <li><a href="#sec-toJson">13. toJson</a></li>
 
                 <li class="nav-group-title">Operações</li>
                 <li><a href="#sec-add">add</a></li>
@@ -120,8 +132,7 @@ CurrencyNBR.from("50000.00")
     // 4. Fecha a expressão matemática geral e gera o output auditável
 
     .commit(2)</textarea>
-                            <small>Use a sintaxe da biblioteca: <code
-                                >CurrencyNBR.from(val).add(x).commit(n)</code></small>
+                            <small>Use a sintaxe da biblioteca: <code>CurrencyNBR.from(val).add(x).commit(n)</code></small>
                         </div>
                         <button type="submit">Executar e Gerar Auditoria</button>
                     </form>
@@ -180,10 +191,39 @@ CurrencyNBR.from("50000.00")
             </div>
         </main>
 
-        <footer role="contentinfo">
+        <footer id="footer" role="contentinfo">
             <p>&copy; 2026 Currency Math Audit. Auditoria rigorosa conforme ABNT NBR 5891.</p>
         </footer>
 
+        <!-- VLibras Widget -->
+        <div vw class="enabled">
+            <div vw-access-button class="active"></div>
+            <div vw-plugin-wrapper>
+                <div class="vw-plugin-top-wrapper"></div>
+            </div>
+        </div>
+        <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+        <script>
+            new window.VLibras.Widget('https://vlibras.gov.br/app');
+        </script>
+
+        <!-- High Contrast & Common Scripts -->
+        <script>
+            // Alto Contraste (Persistente)
+            const contrastBtn = document.getElementById('alto-contraste');
+            contrastBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const isPressed = contrastBtn.getAttribute('aria-pressed') === 'true';
+                document.body.classList.toggle('alto-contraste');
+                contrastBtn.setAttribute('aria-pressed', !isPressed);
+                localStorage.setItem('altoContraste', !isPressed);
+            });
+
+            if (localStorage.getItem('altoContraste') === 'true') {
+                document.body.classList.add('alto-contraste');
+                contrastBtn.setAttribute('aria-pressed', 'true');
+            }
+        </script>
         <script src="script.js" type="module"></script>
     </body>
 </html>

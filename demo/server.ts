@@ -8,7 +8,7 @@ const ROOT = dirname(__dirname);
 /**
  * Mapeia todos os outputs de uma instância CurrencyNBROutput para um objeto JSON.
  */
-function mapAllOutputs(output: CurrencyNBROutput) {
+function mapAllOutputs(output: CurrencyNBROutput): Record<string, string | number | null> {
     const buffer = output.toImageBuffer();
     const hex = Array.from(buffer).map((b) => b.toString(16).padStart(2, "0")).join(" ");
     const base64 = btoa(String.fromCharCode(...buffer));
@@ -191,7 +191,9 @@ const getCategorizedExamples = () => {
                     title: "Baskhara (Fragmento)",
                     context: "delta = (-5)^2 - 4*1*6",
                     code: "CurrencyNBR.from('-5').pow(2).sub(CurrencyNBR.from(4).mult(1).mult(6)).commit(0).toHTML()",
-                    outputs: mapAllOutputs(CurrencyNBR.from("-5").pow(2).sub(CurrencyNBR.from(4).mult(1).mult(6)).commit(0)),
+                    outputs: mapAllOutputs(
+                        CurrencyNBR.from("-5").pow(2).sub(CurrencyNBR.from(4).mult(1).mult(6)).commit(0),
+                    ),
                 },
                 {
                     title: "Divisões Aninhadas",
@@ -236,8 +238,11 @@ const getCategorizedExamples = () => {
                 {
                     title: "Cenário de Desconto",
                     context: "1000 - 15%",
-                    code: "CurrencyNBR.from(1000).sub(CurrencyNBR.from(1000).mult('0.15').group()).commit(0).toVerbalA11y()",
-                    outputs: mapAllOutputs(CurrencyNBR.from(1000).sub(CurrencyNBR.from(1000).mult("0.15").group()).commit(0)),
+                    code:
+                        "CurrencyNBR.from(1000).sub(CurrencyNBR.from(1000).mult('0.15').group()).commit(0).toVerbalA11y()",
+                    outputs: mapAllOutputs(
+                        CurrencyNBR.from(1000).sub(CurrencyNBR.from(1000).mult("0.15").group()).commit(0),
+                    ),
                 },
             ],
             toImageBuffer: [
@@ -311,7 +316,9 @@ const getCategorizedExamples = () => {
                     title: "Subtotal de NF",
                     context: "Soma de itens com impostos embutidos",
                     code: "CurrencyNBR.from('1540.20').add('120.50').add('45.15').add('10.00').commit(2)",
-                    outputs: mapAllOutputs(CurrencyNBR.from("1540.20").add("120.50").add("45.15").add("10.00").commit(2)),
+                    outputs: mapAllOutputs(
+                        CurrencyNBR.from("1540.20").add("120.50").add("45.15").add("10.00").commit(2),
+                    ),
                 },
             ],
             sub: [
@@ -371,7 +378,9 @@ const getCategorizedExamples = () => {
                     title: "Juros Compostos",
                     context: "Montante final: P * (1 + i)^n",
                     code: "CurrencyNBR.from(1000).mult(CurrencyNBR.from(1).add(0.005).group().pow(360)).commit(2)",
-                    outputs: mapAllOutputs(CurrencyNBR.from(1000).mult(CurrencyNBR.from(1).add(0.005).group().pow(360)).commit(2)),
+                    outputs: mapAllOutputs(
+                        CurrencyNBR.from(1000).mult(CurrencyNBR.from(1).add(0.005).group().pow(360)).commit(2),
+                    ),
                 },
             ],
             mod: [
@@ -411,7 +420,9 @@ const getCategorizedExamples = () => {
                     title: "Amortização de Parcelas",
                     context: "Quantidade de parcelas fixas",
                     code: "CurrencyNBR.from(CurrencyNBR.from(1000).sub(100).group()).divInt(12).commit(0)",
-                    outputs: mapAllOutputs(CurrencyNBR.from(CurrencyNBR.from(1000).sub(100).group()).divInt(12).commit(0)),
+                    outputs: mapAllOutputs(
+                        CurrencyNBR.from(CurrencyNBR.from(1000).sub(100).group()).divInt(12).commit(0),
+                    ),
                 },
             ],
             group: [
@@ -425,13 +436,18 @@ const getCategorizedExamples = () => {
                     title: "Grupos Aninhados",
                     context: "(100 - 10) / (2 + 3)",
                     code: "CurrencyNBR.from(100).sub(10).group().div(CurrencyNBR.from(2).add(3).group()).commit(2)",
-                    outputs: mapAllOutputs(CurrencyNBR.from(100).sub(10).group().div(CurrencyNBR.from(2).add(3).group()).commit(2)),
+                    outputs: mapAllOutputs(
+                        CurrencyNBR.from(100).sub(10).group().div(CurrencyNBR.from(2).add(3).group()).commit(2),
+                    ),
                 },
                 {
                     title: "Fator de Price",
                     context: "Fragmento da fórmula de amortização",
-                    code: "CurrencyNBR.from(1.01).pow(12).div(CurrencyNBR.from(1.01).pow(12).sub(1).group()).commit(10)",
-                    outputs: mapAllOutputs(CurrencyNBR.from(1.01).pow(12).div(CurrencyNBR.from(1.01).pow(12).sub(1).group()).commit(10)),
+                    code:
+                        "CurrencyNBR.from(1.01).pow(12).div(CurrencyNBR.from(1.01).pow(12).sub(1).group()).commit(10)",
+                    outputs: mapAllOutputs(
+                        CurrencyNBR.from(1.01).pow(12).div(CurrencyNBR.from(1.01).pow(12).sub(1).group()).commit(10),
+                    ),
                 },
             ],
         },

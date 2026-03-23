@@ -12,13 +12,54 @@
     --code-bg: #1e1e1e;
 }
 
+/* Foco Global Visível (WCAG 2.4.7 AAA) */
+*:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px var(--bg);
+}
+
+/* Barra de Acessibilidade (eMAG) */
+#barra-acessibilidade {
+    background: #333;
+    color: #fff;
+    padding: 0.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    width: 100%;
+}
+
+#barra-acessibilidade ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 15px;
+}
+
+#barra-acessibilidade a {
+    color: #fff;
+    text-decoration: none;
+    padding: 5px 8px; /* Touch target increment */
+}
+
+#barra-acessibilidade a:hover,
+#barra-acessibilidade a:focus {
+    text-decoration: underline;
+    outline: 2px solid #fff;
+}
+
 body {
     font-family: "Segoe UI", system-ui, sans-serif;
     line-height: 1.6;
     color: var(--text);
+    background-color: var(--bg);
     max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 0 2rem 2rem 2rem;
+    font-size: 100%; /* Respeita config do navegador */
 }
 
 .skip-link {
@@ -27,6 +68,7 @@ body {
     background: var(--primary);
     color: white;
     padding: 1rem;
+    z-index: 9999;
 }
 
 .skip-link:focus {
@@ -35,14 +77,16 @@ body {
 
 header {
     border-bottom: 5px solid var(--primary);
-    margin-bottom: 2rem;
+    margin: 2rem 0;
 }
 
+/* Headers de Seção */
 h2 {
     border-left: 10px solid var(--accent);
     padding-left: 1rem;
     margin-top: 4rem;
     color: var(--primary);
+    font-size: 1.8rem;
 }
 
 .nav-links {
@@ -54,14 +98,23 @@ h2 {
     margin-bottom: 3rem;
 }
 
+/* Botões de Navegação - Touch Targets 44px+ */
 .nav-links a {
     text-decoration: none;
     background: var(--primary-light);
     color: var(--primary);
-    padding: 5px 15px;
+    padding: 12px 20px; /* Aumentado para touch */
     border-radius: 5px;
     font-weight: bold;
     border: 1px solid var(--primary);
+    display: inline-block;
+    min-height: 44px;
+}
+
+.nav-links a:hover,
+.nav-links a:focus {
+    background: var(--primary);
+    color: white;
 }
 
 /* Simulator Form */
@@ -82,6 +135,12 @@ h2 {
 
 .form-group.full-width {
     flex: 0 0 100%;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
 }
 
 textarea {
@@ -110,10 +169,16 @@ button {
     background: var(--primary);
     color: white;
     border: none;
-    padding: 1rem 2rem;
+    padding: 1rem 2rem; /* 44px+ height garantido */
     font-weight: bold;
     cursor: pointer;
     border-radius: 5px;
+    font-size: 1rem;
+    min-height: 44px;
+}
+
+button:hover {
+    filter: brightness(1.1);
 }
 
 /* Interactive Results Grid */
@@ -157,6 +222,17 @@ button {
 @media (max-width: 700px) {
     .grid {
         grid-template-columns: 1fr;
+    }
+    .output-grid {
+        grid-template-columns: 1fr;
+    }
+    .output-item.full-width {
+        grid-column: span 1;
+    }
+    #barra-acessibilidade {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
     }
 }
 
@@ -236,4 +312,44 @@ button {
     background: white;
     padding: 10px;
     border-radius: 5px;
+}
+
+/* Modo Alto Contraste (eMAG) */
+body.alto-contraste {
+    --bg: #000000;
+    --text: #ffffff;
+    --primary: #ffff00; /* Amarelo de alto contraste */
+    --accent: #ffffff;
+    --primary-light: #333333;
+    --border: #ffffff;
+    --code-bg: #000000;
+}
+
+body.alto-contraste a {
+    color: #ffff00;
+    text-decoration: underline;
+}
+
+body.alto-contraste .card,
+body.alto-contraste .output-item {
+    background: #000;
+    border: 2px solid #fff;
+}
+
+body.alto-contraste button {
+    background: #ffff00;
+    color: #000;
+    border: 2px solid #fff;
+}
+
+body.alto-contraste .nav-links a {
+    background: #000;
+    color: #ffff00;
+    border: 1px solid #fff;
+}
+
+body.alto-contraste .nav-links a:hover,
+body.alto-contraste .nav-links a:focus {
+    background: #ffff00;
+    color: #000;
 }
