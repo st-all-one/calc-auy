@@ -51,21 +51,23 @@ describe("Outputs Exaustivos (Unit)", () => {
     });
 
     describe("toLaTeX", () => {
-        it("deve gerar uma expressão LaTeX válida com delimitadores", () => {
+        it("deve gerar uma expressão LaTeX válida com delimitadores e método de arredondamento", () => {
             const latex = output.toLaTeX();
             expect(latex.startsWith("$$")).toBe(true);
             expect(latex.endsWith("$$")).toBe(true);
             expect(latex).toContain("100.5 + 50.25");
             expect(latex).toContain("=");
+            expect(latex).toContain("\\text{round}_{NBR}(150.75, 2)");
             expect(latex).toContain("150.75");
         });
     });
 
     describe("toUnicode", () => {
-        it("deve gerar uma expressão Unicode legível", () => {
+        it("deve gerar uma expressão Unicode legível com método de arredondamento", () => {
             const unicode = output.toUnicode();
             expect(unicode).toContain("100.5 + 50.25");
             expect(unicode).toContain("=");
+            expect(unicode).toContain("roundₙʙᵣ(150.75, 2)");
             expect(unicode).toContain("150.75");
         });
     });
@@ -106,6 +108,7 @@ describe("Outputs Exaustivos (Unit)", () => {
             const html = output.toHTML();
             expect(html).toContain("<div");
             expect(html).toContain("100.5 + 50.25"); // O conteúdo LaTeX
+            expect(html).toContain("\\text{round}_{NBR}(150.75, 2)"); // Arredondamento explícito na annotation
             expect(html).toContain("aria-label"); // Narração verbal para SR
         });
     });

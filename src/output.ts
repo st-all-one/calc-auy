@@ -3,11 +3,12 @@ import { formatBigIntToString, formatMonetary } from "./output_helpers/formattin
 import { generateHTML } from "./output_helpers/html_generator.ts";
 import { translateVerbal } from "./output_helpers/verbal_translator.ts";
 import { generateImageBuffer } from "./output_helpers/image_generator.ts";
-import { type CurrencyNBROutputOptions, DEFAULT_OPTIONS, VALID_ROUNDING_METHODS } from "./output_helpers/options.ts";
+import { type CurrencyNBROutputOptions, DEFAULT_OPTIONS, type RoundingMethod, VALID_ROUNDING_METHODS } from "./output_helpers/options.ts";
 import { applyRounding } from "./output_helpers/rounding_manager.ts";
 import { LOCALE_CURRENCY_MAP } from "./output_helpers/locales.ts";
 import { CurrencyNBRError } from "./errors.ts";
 import { Logger } from "./logger.ts";
+import { toSubscript } from "./internal/subscript.ts";
 
 /**
  * Métodos de saída disponíveis para a classe CurrencyNBROutput.
@@ -28,6 +29,17 @@ export const AVAILABLE_OUTPUT_METHODS = [
  * Tipo representando as chaves de saída permitidas.
  */
 export type CurrencyOutputMethod = typeof AVAILABLE_OUTPUT_METHODS[number];
+
+/**
+ * Siglas para os métodos de arredondamento.
+ */
+const ROUNDING_ABBREVIATIONS: Record<RoundingMethod, string> = {
+    "NBR-5891": "NBR",
+    "HALF-EVEN": "HE",
+    "HALF-UP": "HU",
+    "TRUNCATE": "TR",
+    "CEIL": "CE",
+};
 
 /**
  * Classe responsável por formatar e exibir o resultado de um cálculo CurrencyNBR.
@@ -148,7 +160,13 @@ export class CurrencyNBROutput {
      */
     public toLaTeX(): string {
         const start = performance.now();
-        const result = `$$ ${this.latexExpression} = ${this.toString()} $$`;
+        const abbrev = this.getRoundingAbbreviation();
+        const unrounded = this.getUnroundedString();
+        const decimals = this.defaultDecimals;
+        const rounded = this.toString();
+
+        const roundExpr = `\\text{round}_{${abbrev}}(${unrounded}, ${decimals})`;
+        const result = `$$ ${this.latexExpression} = ${roundExpr} = ${rounded} $$`;
         const end = performance.now();
         Logger.getChild(["output", "toLaTeX"]).info("LaTeX output generated {*}", {
             calcTime: end - start,
@@ -162,9 +180,17 @@ export class CurrencyNBROutput {
      */
     public toHTML(): string {
         const start = performance.now();
+        const abbrev = this.getRoundingAbbreviation();
+        const unrounded = this.getUnroundedString();
+        const decimals = this.defaultDecimals;
+        const rounded = this.toString();
+
+        const roundExpr = `\\text{round}_{${abbrev}}(${unrounded}, ${decimals})`;
+        const fullExpr = `${roundExpr} = ${rounded}`;
+
         const result = generateHTML(
             this.latexExpression,
-            this.toString(),
+            fullExpr,
             this.toVerbalA11y(),
         );
         const end = performance.now();
@@ -198,7 +224,14 @@ export class CurrencyNBROutput {
      */
     public toUnicode(): string {
         const start = performance.now();
-        const result = `${this.unicodeExpression} = ${this.toString()}`;
+        const abbrev = this.getRoundingAbbreviation();
+        const unrounded = this.getUnroundedString();
+        const decimals = this.defaultDecimals;
+        const rounded = this.toString();
+
+        const subAbbrev = toSubscript(abbrev);
+        const roundExpr = `round${subAbbrev}(${unrounded}, ${decimals})`;
+        const result = `${this.unicodeExpression} = ${roundExpr} = ${rounded}`;
         const end = performance.now();
         Logger.getChild(["output", "toUnicode"]).info("Unicode output generated {*}", {
             calcTime: end - start,
@@ -212,9 +245,17 @@ export class CurrencyNBROutput {
      */
     public toImageBuffer(): Uint8Array {
         const start = performance.now();
+        const abbrev = this.getRoundingAbbreviation();
+        const unrounded = this.getUnroundedString();
+        const decimals = this.defaultDecimals;
+        const rounded = this.toString();
+
+        const roundExpr = `\\text{round}_{${abbrev}}(${unrounded}, ${decimals})`;
+        const fullResultExpr = `${roundExpr} = ${rounded}`;
+
         const result = generateImageBuffer(
             this.latexExpression,
-            this.toString(),
+            fullResultExpr,
             this.toVerbalA11y(),
         );
         const end = performance.now();
@@ -276,5 +317,17 @@ export class CurrencyNBROutput {
             elements: targetElements,
         });
         return result;
+    }
+
+    private getRoundingAbbreviation(): string {
+        return ROUNDING_ABBREVIATIONS[this.options.roundingMethod] || "??";
+    }
+
+    private getUnroundedString(): string {
+        const full = formatBigIntToString(this.value, INTERNAL_CALCULATION_PRECISION);
+        if (full.indexOf(".") !== -1) {
+            return full.replace(/\.?0+$/, "");
+        }
+        return full;
     }
 }

@@ -26,7 +26,9 @@ describe("Operações de Inteiros: divInt e mod (Unit)", () => {
         it("deve validar outputs auditáveis para divInt", () => {
             const output = CurrencyNBR.from(10).divInt(3).commit(0);
             expect(output.toLaTeX()).toContain("\\lfloor \\frac{10}{3} \\rfloor");
+            expect(output.toLaTeX()).toContain("\\text{round}_{NBR}(3, 0)");
             expect(output.toUnicode()).toContain("⌊10 ÷ 3⌋");
+            expect(output.toUnicode()).toContain("roundₙʙᵣ(3, 0)");
             expect(output.toVerbalA11y()).toContain("10 dividido inteiramente por 3");
         });
     });
@@ -54,7 +56,9 @@ describe("Operações de Inteiros: divInt e mod (Unit)", () => {
         it("deve validar outputs auditáveis para mod", () => {
             const output = CurrencyNBR.from(10).mod(3).commit(0);
             expect(output.toLaTeX()).toContain("10 \\pmod{3}");
+            expect(output.toLaTeX()).toContain("\\text{round}_{NBR}(1, 0)");
             expect(output.toUnicode()).toContain("10 mod 3");
+            expect(output.toUnicode()).toContain("roundₙʙᵣ(1, 0)");
             expect(output.toVerbalA11y()).toContain("10 módulo 3");
         });
     });
