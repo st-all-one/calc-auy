@@ -1,3 +1,5 @@
+import { Logger } from "./logger.ts";
+
 /**
  * Custom Error following RFC 7807 (Problem Details for HTTP APIs).
  * Used for tracking and auditing mathematical and operational failures in the library.
@@ -29,7 +31,7 @@ export class CurrencyNBRError extends Error {
         this.name = "CurrencyNBRError";
 
         // Base RFC 7807 fields
-        this.type = `https://currency-math-audit.land/errors/${params.type}`;
+        this.type = `https://github.com/st-all-one/currency-nbr-a11y/tree/main/errors/${params.type}`;
         this.title = params.title;
         this.detail = params.detail;
         this.status = params.status || 400;
@@ -43,6 +45,13 @@ export class CurrencyNBRError extends Error {
                 operation: params.operation,
             };
         }
+
+        // Automated logging for recognized errors (ERROR level)
+        // Using direct child logger call as requested
+        Logger.getChild("errors").error(`${this.title} {*}`, {
+            ...this.toJSON(),
+            timestamp: new Date().toISOString(),
+        });
     }
 
     /**
@@ -69,4 +78,20 @@ export class CurrencyNBRError extends Error {
             ...(this.math_audit ? { math_audit: this.math_audit } : {}),
         };
     }
+}
+
+/**
+ * Logs unexpected errors as FATAL.
+ */
+export function logFatal(error: unknown, context?: Record<string, unknown>): void {
+    const message = error instanceof Error ? error.message : String(error);
+    const stack = error instanceof Error ? error.stack : undefined;
+
+    // Using direct child logger call for fatal errors
+    Logger.getChild(["errors", "fatal"]).fatal(`${message} {*}`, {
+        ...context,
+        error,
+        stack,
+        timestamp: new Date().toISOString(),
+    });
 }

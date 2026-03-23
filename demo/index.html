@@ -1,46 +1,49 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CurrencyNBR - Demonstração Completa de Auditabilidade</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CurrencyNBR - Demonstração Completa de Auditabilidade</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <body>
+        <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
 
-<body>
-    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+        <header role="banner">
+            <h1>CurrencyNBR: Showcase de Auditabilidade</h1>
+            <p>Demonstração exaustiva de todos os métodos da classe <code>CurrencyNBROutput</code>.</p>
+        </header>
 
-    <header role="banner">
-        <h1>CurrencyNBR: Showcase de Auditabilidade</h1>
-        <p>Demonstração exaustiva de todos os métodos da classe <code>CurrencyNBROutput</code>.</p>
-    </header>
+        <nav aria-label="Navegação rápida">
+            <ul class="nav-links">
+                <li><a href="#sec-interactive">1. Interativo</a></li>
+                <li><a href="#sec-toString">2. toString</a></li>
+                <li><a href="#sec-toFloatNumber">3. toFloatNumber</a></li>
+                <li><a href="#sec-toBigInt">4. toBigInt</a></li>
+                <li><a href="#sec-toMonetary">5. toMonetary</a></li>
+                <li><a href="#sec-toLaTeX">6. toLaTeX</a></li>
+                <li><a href="#sec-toHTML">7. toHTML</a></li>
+                <li><a href="#sec-toVerbalA11y">8. toVerbalA11y</a></li>
+                <li><a href="#sec-toUnicode">9. toUnicode</a></li>
+                <li><a href="#sec-toImageBuffer">10. toImageBuffer</a></li>
+            </ul>
+        </nav>
 
-    <nav aria-label="Navegação rápida">
-        <ul class="nav-links">
-            <li><a href="#sec-interactive">1. Interativo</a></li>
-            <li><a href="#sec-toString">2. toString</a></li>
-            <li><a href="#sec-toFloatNumber">3. toFloatNumber</a></li>
-            <li><a href="#sec-toBigInt">4. toBigInt</a></li>
-            <li><a href="#sec-toMonetary">5. toMonetary</a></li>
-            <li><a href="#sec-toLaTeX">6. toLaTeX</a></li>
-            <li><a href="#sec-toHTML">7. toHTML</a></li>
-            <li><a href="#sec-toVerbalA11y">8. toVerbalA11y</a></li>
-            <li><a href="#sec-toUnicode">9. toUnicode</a></li>
-            <li><a href="#sec-toImageBuffer">10. toImageBuffer</a></li>
-        </ul>
-    </nav>
-
-    <main id="main-content" role="main">
-        <!-- 1. SIMULADOR INTERATIVO -->
-        <section id="sec-interactive" aria-labelledby="h-interactive">
-            <h2 id="h-interactive">1. Simulador Interativo (Manual)</h2>
-            <div class="interactive-container">
-                <form id="f" class="simulator-form">
-                    <div class="form-group full-width">
-                        <label for="expr">Expressão de Cálculo (TypeScript):</label>
-                        <textarea id="expr" name="expression" rows="30"
-                            placeholder="Ex: CurrencyNBR.from(1000).mult(1.05).pow(12).commit(2)">
+        <main id="main-content" role="main">
+            <!-- 1. SIMULADOR INTERATIVO -->
+            <section id="sec-interactive" aria-labelledby="h-interactive">
+                <h2 id="h-interactive">1. Simulador Interativo (Manual)</h2>
+                <div class="interactive-container">
+                    <form id="f" class="simulator-form">
+                        <div class="form-group full-width">
+                            <label for="expr">Expressão de Cálculo (TypeScript):</label>
+                            <textarea
+                                id="expr"
+                                name="expression"
+                                rows="30"
+                                placeholder="Ex: CurrencyNBR.from(1000).mult(1.05).pow(12).commit(2)"
+                            >
 CurrencyNBR.from("50000.00")
     // ============================================
     // Exemplo: Liquidação de Debênture em Atraso
@@ -70,66 +73,66 @@ CurrencyNBR.from("50000.00")
     // 4. Fecha a expressão matemática geral e gera o output auditável
     .group()
     .commit(2)</textarea>
-                        <small>Use a sintaxe da biblioteca: <code>CurrencyNBR.from(val).add(x).commit(n)</code></small>
-                    </div>
-                    <button type="submit">Executar e Gerar Auditoria</button>
-                </form>
+                            <small>Use a sintaxe da biblioteca: <code
+                                >CurrencyNBR.from(val).add(x).commit(n)</code></small>
+                        </div>
+                        <button type="submit">Executar e Gerar Auditoria</button>
+                    </form>
 
-                <div id="res-box" class="interactive-results" aria-live="polite">
-                    <h3>Resultados em Tempo Real</h3>
-                    <div class="output-grid" id="interactive-outputs">
-                        <div class="output-item" data-type="toString">
-                            <strong>toString():</strong>
-                            <span class="val">--</span>
-                        </div>
-                        <div class="output-item" data-type="toFloatNumber">
-                            <strong>toFloatNumber():</strong>
-                            <span class="val">--</span>
-                        </div>
-                        <div class="output-item" data-type="toBigInt">
-                            <strong>toBigInt():</strong>
-                            <span class="val">--</span>
-                        </div>
-                        <div class="output-item" data-type="toMonetary">
-                            <strong>toMonetary():</strong>
-                            <span class="val">--</span>
-                        </div>
-                        <div class="output-item" data-type="toLaTeX">
-                            <strong>toLaTeX():</strong>
-                            <span class="val">--</span>
-                        </div>
-                        <div class="output-item" data-type="toUnicode">
-                            <strong>toUnicode():</strong>
-                            <span class="val">--</span>
-                        </div>
-                        <div class="output-item full-width" data-type="toVerbalA11y">
-                            <strong>toVerbalA11y():</strong>
-                            <span class="val">--</span>
-                        </div>
-                        <div class="output-item full-width" data-type="toHTML">
-                            <strong>toHTML():</strong>
-                            <div class="val-math">--</div>
-                        </div>
-                        <div class="output-item full-width" data-type="toImageBuffer">
-                            <strong>toImageBuffer():</strong>
-                            <div class="img-preview">--</div>
+                    <div id="res-box" class="interactive-results" aria-live="polite">
+                        <h3>Resultados em Tempo Real</h3>
+                        <div class="output-grid" id="interactive-outputs">
+                            <div class="output-item" data-type="toString">
+                                <strong>toString():</strong>
+                                <span class="val">--</span>
+                            </div>
+                            <div class="output-item" data-type="toFloatNumber">
+                                <strong>toFloatNumber():</strong>
+                                <span class="val">--</span>
+                            </div>
+                            <div class="output-item" data-type="toBigInt">
+                                <strong>toBigInt():</strong>
+                                <span class="val">--</span>
+                            </div>
+                            <div class="output-item" data-type="toMonetary">
+                                <strong>toMonetary():</strong>
+                                <span class="val">--</span>
+                            </div>
+                            <div class="output-item" data-type="toLaTeX">
+                                <strong>toLaTeX():</strong>
+                                <span class="val">--</span>
+                            </div>
+                            <div class="output-item" data-type="toUnicode">
+                                <strong>toUnicode():</strong>
+                                <span class="val">--</span>
+                            </div>
+                            <div class="output-item full-width" data-type="toVerbalA11y">
+                                <strong>toVerbalA11y():</strong>
+                                <span class="val">--</span>
+                            </div>
+                            <div class="output-item full-width" data-type="toHTML">
+                                <strong>toHTML():</strong>
+                                <div class="val-math">--</div>
+                            </div>
+                            <div class="output-item full-width" data-type="toImageBuffer">
+                                <strong>toImageBuffer():</strong>
+                                <div class="img-preview">--</div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <!-- EXEMPLOS ESTÁTICOS POR CATEGORIA -->
+            <div id="categories-container">
+                <p class="loading">Carregando galeria de exemplos...</p>
             </div>
-        </section>
+        </main>
 
-        <!-- EXEMPLOS ESTÁTICOS POR CATEGORIA -->
-        <div id="categories-container">
-            <p class="loading">Carregando galeria de exemplos...</p>
-        </div>
-    </main>
+        <footer role="contentinfo">
+            <p>&copy; 2026 Currency Math Audit. Auditoria rigorosa conforme ABNT NBR 5891.</p>
+        </footer>
 
-    <footer role="contentinfo">
-        <p>&copy; 2026 Currency Math Audit. Auditoria rigorosa conforme ABNT NBR 5891.</p>
-    </footer>
-
-    <script src="script.js" type="module"></script>
-</body>
-
+        <script src="script.js" type="module"></script>
+    </body>
 </html>

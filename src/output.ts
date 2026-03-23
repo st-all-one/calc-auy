@@ -7,6 +7,7 @@ import { type CurrencyNBROutputOptions, DEFAULT_OPTIONS, VALID_ROUNDING_METHODS 
 import { applyRounding } from "./output_helpers/rounding_manager.ts";
 import { LOCALE_CURRENCY_MAP } from "./output_helpers/locales.ts";
 import { CurrencyNBRError } from "./errors.ts";
+import { Logger } from "./logger.ts";
 
 /**
  * Métodos de saída disponíveis para a classe CurrencyNBROutput.
@@ -58,8 +59,8 @@ export class CurrencyNBROutput {
         ) {
             throw new CurrencyNBRError({
                 type: "invalid-currency-format",
-                title: "Opção de Arredondamento Inválida",
-                detail: `O método de arredondamento '${options.roundingMethod}' não é suportado pela biblioteca.`,
+                title: "Arredondamento Inválido",
+                detail: `O método '${options.roundingMethod}' não é suportado.`,
                 operation: "output-options",
             });
         }
@@ -68,7 +69,7 @@ export class CurrencyNBROutput {
             throw new CurrencyNBRError({
                 type: "invalid-currency-format",
                 title: "Locale não Suportado",
-                detail: `O locale '${options.locale}' não está disponível para formatação nesta biblioteca.`,
+                detail: `O locale '${options.locale}' não está disponível.`,
                 operation: "output-options",
             });
         }
@@ -77,97 +78,159 @@ export class CurrencyNBROutput {
     }
 
     /**
-     * Retorna o valor arredondado e formatado como string decimal conforme configurado no commit.
+     * Retorna o valor arredondado e formatado como string decimal.
      */
     public toString(): string {
+        const start = performance.now();
         const rounded = applyRounding(
             this.value,
             this.options.roundingMethod,
             INTERNAL_CALCULATION_PRECISION,
             this.defaultDecimals,
         );
-        return formatBigIntToString(rounded, this.defaultDecimals);
+        const result = formatBigIntToString(rounded, this.defaultDecimals);
+        const end = performance.now();
+        Logger.getChild(["output", "string"]).info("String output generated {*}", {
+            calcTime: end - start,
+            result,
+        });
+        return result;
     }
 
     /**
-     * Retorna o valor como um número de ponto flutuante (JavaScript Number).
-     * @warning Pode haver perda de precisão para valores muito grandes ou muito precisos.
+     * Retorna o valor como Number.
      */
     public toFloatNumber(): number {
-        return Number(this.toString());
+        const start = performance.now();
+        const result = Number(this.toString());
+        const end = performance.now();
+        Logger.getChild(["output", "toFloatNumber"]).info("Float output generated {*}", {
+            calcTime: end - start,
+            result,
+        });
+        return result;
     }
 
     /**
-     * Retorna o valor bruto como BigInt (na escala interna).
+     * Retorna o valor como BigInt.
      */
     public toBigInt(): bigint {
-        return this.value;
+        const start = performance.now();
+        const result = this.value;
+        const end = performance.now();
+        Logger.getChild(["output", "toBigInt"]).info("BigInt output generated {*}", {
+            calcTime: end - start,
+            result: result.toString(),
+        });
+        return result;
     }
 
     /**
-     * Retorna o resultado formatado como moeda conforme o locale e moeda definidos no commit.
+     * Retorna o resultado formatado como moeda.
      */
     public toMonetary(): string {
+        const start = performance.now();
         const targetLocale = this.options.locale;
         const targetCurrency = LOCALE_CURRENCY_MAP[targetLocale] ?? "BRL";
-        return formatMonetary(this.toString(), targetLocale, targetCurrency);
+        const result = formatMonetary(this.toString(), targetLocale, targetCurrency);
+        const end = performance.now();
+        Logger.getChild(["output", "toMonetary"]).info("Monetary output generated {*}", {
+            calcTime: end - start,
+            result,
+            locale: targetLocale,
+            currency: targetCurrency,
+        });
+        return result;
     }
 
     /**
-     * Retorna a expressão completa e o resultado em LaTeX.
+     * Retorna a expressão e o resultado em LaTeX.
      */
     public toLaTeX(): string {
-        return `$$ ${this.latexExpression} = ${this.toString()} $$`;
+        const start = performance.now();
+        const result = `$$ ${this.latexExpression} = ${this.toString()} $$`;
+        const end = performance.now();
+        Logger.getChild(["output", "toLaTeX"]).info("LaTeX output generated {*}", {
+            calcTime: end - start,
+            result,
+        });
+        return result;
     }
 
     /**
-     * Retorna o HTML renderizado (com KaTeX) para a fórmula.
+     * Retorna o HTML renderizado para a fórmula.
      */
     public toHTML(): string {
-        return generateHTML(
+        const start = performance.now();
+        const result = generateHTML(
             this.latexExpression,
             this.toString(),
             this.toVerbalA11y(),
         );
+        const end = performance.now();
+        Logger.getChild(["output", "toHTML"]).info("HTML output generated {*}", {
+            calcTime: end - start,
+        });
+        return result;
     }
 
     /**
-     * Retorna a descrição verbal acessível traduzida para o locale configurado.
+     * Retorna a descrição verbal acessível.
      */
     public toVerbalA11y(): string {
-        return translateVerbal(
+        const start = performance.now();
+        const result = translateVerbal(
             this.verbalExpression,
             this.toString(),
             this.options.locale,
             this.options.roundingMethod,
         );
+        const end = performance.now();
+        Logger.getChild(["output", "toVerbalA11y"]).info("Verbal output generated {*}", {
+            calcTime: end - start,
+            locale: this.options.locale,
+        });
+        return result;
     }
 
     /**
-     * Retorna a expressão em Unicode para terminal/CLI.
+     * Retorna a expressão em Unicode.
      */
     public toUnicode(): string {
-        return `${this.unicodeExpression} = ${this.toString()}`;
+        const start = performance.now();
+        const result = `${this.unicodeExpression} = ${this.toString()}`;
+        const end = performance.now();
+        Logger.getChild(["output", "toUnicode"]).info("Unicode output generated {*}", {
+            calcTime: end - start,
+            result,
+        });
+        return result;
     }
 
     /**
-     * Retorna um buffer de imagem (SVG) contendo a renderização visual.
+     * Retorna um buffer de imagem contendo a renderização.
      */
     public toImageBuffer(): Uint8Array {
-        return generateImageBuffer(
+        const start = performance.now();
+        const result = generateImageBuffer(
             this.latexExpression,
             this.toString(),
             this.toVerbalA11y(),
         );
+        const end = performance.now();
+        Logger.getChild(["output", "toImageBuffer"]).info("ImageBuffer output generated {*}", {
+            calcTime: end - start,
+        });
+        return result;
     }
 
     /**
-     * Retorna um objeto JSON contendo os resultados dos métodos solicitados e as opções utilizadas.
-     * @param elements Array de métodos desejados. Se vazio, retorna todos os disponíveis.
+     * Retorna um objeto JSON contendo os resultados solicitados.
      */
     public toJson(elements: CurrencyOutputMethod[] = []): string {
+        const start = performance.now();
         const targetElements = elements.length > 0 ? elements : AVAILABLE_OUTPUT_METHODS;
-        const result: Record<string, unknown> = {
+        const resultObj: Record<string, unknown> = {
             meta: {
                 options: this.options,
                 decimals: this.defaultDecimals,
@@ -177,35 +240,41 @@ export class CurrencyNBROutput {
         for (const key of targetElements) {
             switch (key) {
                 case "toString":
-                    result[key] = this.toString();
+                    resultObj[key] = this.toString();
                     break;
                 case "toFloatNumber":
-                    result[key] = this.toFloatNumber();
+                    resultObj[key] = this.toFloatNumber();
                     break;
                 case "toBigInt":
-                    result[key] = this.toBigInt().toString();
+                    resultObj[key] = this.toBigInt().toString();
                     break;
                 case "toMonetary":
-                    result[key] = this.toMonetary();
+                    resultObj[key] = this.toMonetary();
                     break;
                 case "toLaTeX":
-                    result[key] = this.toLaTeX();
+                    resultObj[key] = this.toLaTeX();
                     break;
                 case "toHTML":
-                    result[key] = this.toHTML();
+                    resultObj[key] = this.toHTML();
                     break;
                 case "toVerbalA11y":
-                    result[key] = this.toVerbalA11y();
+                    resultObj[key] = this.toVerbalA11y();
                     break;
                 case "toUnicode":
-                    result[key] = this.toUnicode();
+                    resultObj[key] = this.toUnicode();
                     break;
                 case "toImageBuffer":
-                    result[key] = Array.from(this.toImageBuffer());
+                    resultObj[key] = Array.from(this.toImageBuffer());
                     break;
             }
         }
 
-        return JSON.stringify(result);
+        const result = JSON.stringify(resultObj);
+        const end = performance.now();
+        Logger.getChild(["output", "toJson"]).info("JSON output generated {*}", {
+            calcTime: end - start,
+            elements: targetElements,
+        });
+        return result;
     }
 }
