@@ -119,6 +119,17 @@ describe("Aritmética e Limites (Unit)", () => {
             expect(result.toString()).toBe("1.414214"); // Arredondado para 6 casas
         });
 
+        it("deve calcular potência fracionária onde numerador > denominador (9^(3/2) === 27)", () => {
+            const result = CurrencyNBR.from(9).pow("3/2").commit(0);
+            expect(result.toString()).toBe("27");
+        });
+
+        it("deve calcular potência fracionária complexa (2^(3/2) approx 2.828427)", () => {
+            // sqrt(8) approx 2.828427124746
+            const result = CurrencyNBR.from(2).pow("3/2").commit(6);
+            expect(result.toString()).toBe("2.828427");
+        });
+
         it("deve lançar erro em raiz de índice par de número negativo", () => {
             expect(() => CurrencyNBR.from(-1).pow("1/2")).toThrow();
         });

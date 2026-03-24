@@ -90,3 +90,38 @@ export function calculateNthRoot(value: bigint, rootIndex: bigint): bigint {
 
     return isValueNegative ? -currentGuess : currentGuess;
 }
+
+/**
+ * Calcula a potência fracionária de um BigInt com um fator de escala.
+ * Representa matematicamente: (base / scale) ^ (num / den) * scale
+ * Simplificado para: nthRoot(base^num * scale^(den-num), den)
+ *
+ * @param base O valor base (já escalonado).
+ * @param num O numerador do expoente.
+ * @param den O denominador do expoente.
+ * @param scale O fator de escala interna.
+ * @returns O resultado da operação, escalonado.
+ */
+export function calculateFractionalPower(base: bigint, num: bigint, den: bigint, scale: bigint): bigint {
+    if (den <= 0n) {
+        throw new CurrencyNBRError({
+            type: "invalid-root-index",
+            title: "Operação de Raiz Inválida",
+            detail: "O denominador de um expoente fracionário deve ser um número inteiro positivo.",
+            operation: "power",
+        });
+    }
+
+    const exponentDiff = den - num;
+
+    let radicand: bigint;
+    if (exponentDiff >= 0n) {
+        radicand = calculateBigIntPower(base, num) * calculateBigIntPower(scale, exponentDiff);
+    } else {
+        // Quando num > den, o expoente de scale (den - num) é negativo.
+        // Representa (base^num / scale^(num - den)).
+        radicand = calculateBigIntPower(base, num) / calculateBigIntPower(scale, -exponentDiff);
+    }
+
+    return calculateNthRoot(radicand, den);
+}

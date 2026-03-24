@@ -1,6 +1,6 @@
 // deno-lint-ignore-file ban-unused-ignore default-param-last
 
-import { calculateBigIntPower, calculateNthRoot } from "./internal/math_utils.ts";
+import { calculateBigIntPower, calculateFractionalPower } from "./internal/math_utils.ts";
 import { parseStringValue } from "./internal/parser.ts";
 import { toSuperscript } from "./internal/superscript.ts";
 import { wrapLaTeX, wrapUnicode } from "./internal/wrappers.ts";
@@ -395,10 +395,7 @@ export class CurrencyNBR {
             const expStr = exponent.toString();
             if (expStr.includes("/")) {
                 const [num, den] = expStr.split("/").map((s) => BigInt(s.trim()));
-                nextValue = calculateNthRoot(
-                    calculateBigIntPower(baseValue, num) * calculateBigIntPower(INTERNAL_SCALE_FACTOR, den - num),
-                    den,
-                );
+                nextValue = calculateFractionalPower(baseValue, num, den, INTERNAL_SCALE_FACTOR);
 
                 const denSup = toSuperscript(den.toString());
                 const numSup = num === 1n ? "" : toSuperscript(num.toString());
