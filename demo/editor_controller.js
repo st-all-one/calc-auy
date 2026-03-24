@@ -6,12 +6,12 @@ import { defaultKeymap } from "@codemirror/commands";
 import { autocompletion, snippet } from "@codemirror/autocomplete";
 
 // Configuração do Editor
-const readOnlyCompartment = new Compartment();
+const _readOnlyCompartment = new Compartment();
 
 // Texto inicial fixo
-const FIXED_START = 'CurrencyNBR.from("';
-const FIXED_END = '").commit(2)';
-const INITIAL_CONTENT = `50000.00")\n// Adicione suas operações abaixo:\n.mult("1.05")\n.add("100.00")`;
+const _FIXED_START = 'CurrencyNBR.from("';
+const _FIXED_END = '").commit(2)';
+const _INITIAL_CONTENT = `50000.00")\n// Adicione suas operações abaixo:\n.mult("1.05")\n.add("100.00")`;
 
 // A estrutura visual será:
 // CurrencyNBR.from(" [CONTEUDO EDITAVEL] ").commit(2)
@@ -31,7 +31,7 @@ export function initEditor(containerId) {
   if (!parent) return;
 
   // Estado inicial
-  const startDoc = `${FIXED_START}50000.00")
+  const startDoc = `${_FIXED_START}50000.00")
   .add("1000.00")
   .group()
   .mult("0.10")
@@ -68,23 +68,6 @@ function readOnlyRangesExtension(docText) {
   return EditorState.readOnly.of((state) => {
     // Bloqueia o início: CurrencyNBR.from("
     // Bloqueia o final: .commit(2)
-
-    // Encontrar os índices
-    // Assumimos que o texto fixo está lá. Se o usuário deletar tudo, o readOnly impede.
-    // Mas precisamos recalcular se o doc mudar? Sim.
-    // O handler é chamado a cada update?
-    // EditorState.readOnly takes a function? No, it takes a boolean or a mapping?
-    // Actually, EditorState.readOnly is a facet that takes a boolean.
-    // To do ranges, we need `EditorView.inputHandler` or specific extensions.
-    // Modern CodeMirror usage for read-only ranges:
-    // Use `EditorState.readOnly.of(false)` globally, but map specific ranges with a helper?
-    // No, `EditorView.editable` controls the whole view.
-    // To lock ranges, we use `state.readOnly`? No.
-    // We use `EditorState.readOnly` facet? No.
-    // We use `markText` (CM5)? No, CM6 is different.
-    // In CM6, we use `EditorState.readOnly` to lock the WHOLE doc.
-    // To lock PARTS, we need to filter transactions using `EditorState.changeFilter`.
-
     return [];
   });
 }
@@ -120,7 +103,7 @@ const readOnlyFilter = EditorState.changeFilter.of((tr) => {
 // Completions personalizados
 function customCompletions(context) {
   // 1. Sugestão para o início (CurrencyNBR.from)
-  let word = context.matchBefore(/\w*/);
+  const word = context.matchBefore(/\w*/);
   if (word && (word.from != word.to || context.explicit)) {
     if ("CurrencyNBR".startsWith(word.text)) {
       return {
@@ -139,7 +122,7 @@ function customCompletions(context) {
   }
 
   // 2. Sugestão para métodos encadeados (ao digitar ".")
-  let dotWord = context.matchBefore(/\.\w*/);
+  const dotWord = context.matchBefore(/\.\w*/);
   if (dotWord && (dotWord.from != dotWord.to || context.explicit)) {
     return {
       from: dotWord.from,
@@ -169,24 +152,28 @@ export function setupEditor(containerId) {
 
   const themeCompartment = new Compartment();
 
-  const startCode = `CurrencyNBR.from("1000.00")
-  .mult(
-    CurrencyNBR.from("1").add("0.12").group().pow("34/252")
-  )
-  .sub(
-    CurrencyNBR.from("1000.00")
-      .mult(
-        CurrencyNBR.from("1").add("0.12").group().pow("34/252")
-      )
-      .sub("1000.00")
-      .group()
-      .mult("0.225")
-  )
-  .add(
-    CurrencyNBR.from("1000.00").mult("0.02")
-  )
-  .group()
-  .commit(2)`;
+  const startCode = `
+    CurrencyNBR.from("1234567.89")
+        .pow("353/1141")
+        .add(
+            CurrencyNBR.from(0.00123).div(
+                CurrencyNBR.from(7)
+                            .div(11)
+            ).group()
+            .pow(9)
+        )
+        .mult(
+            CurrencyNBR.from(3)
+            .div(
+                CurrencyNBR.from(7)
+                           .div(13)
+            )
+            .pow("999/135")
+        )
+        .group().div(CurrencyNBR.from(0.0123).div(
+                CurrencyNBR.from(0.007).pow("81/46")
+            ).group()).pow("49/189")
+      .commit(2)`;
 
   const getTheme = () => EditorView.theme({
     "&": { height: "100%", fontSize: "16px", border: "none", background: "#fcfcfc" },

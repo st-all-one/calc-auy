@@ -25024,13 +25024,13 @@ var autoCloseTags = /* @__PURE__ */ EditorView.inputHandler.of((view, from, to, 
 });
 
 // editor_controller.js
-var readOnlyCompartment = new Compartment();
-var FIXED_START = 'CurrencyNBR.from("';
+var _readOnlyCompartment = new Compartment();
+var _FIXED_START = 'CurrencyNBR.from("';
 var editorView;
 function initEditor(containerId) {
   const parent = document.getElementById(containerId);
   if (!parent) return;
-  const startDoc = `${FIXED_START}50000.00")
+  const startDoc = `${_FIXED_START}50000.00")
   .add("1000.00")
   .group()
   .mult("0.10")
@@ -25081,7 +25081,7 @@ var readOnlyFilter = EditorState.changeFilter.of((tr) => {
   return allowed;
 });
 function customCompletions(context) {
-  let word = context.matchBefore(/\w*/);
+  const word = context.matchBefore(/\w*/);
   if (word && (word.from != word.to || context.explicit)) {
     if ("CurrencyNBR".startsWith(word.text)) {
       return {
@@ -25098,7 +25098,7 @@ function customCompletions(context) {
       };
     }
   }
-  let dotWord = context.matchBefore(/\.\w*/);
+  const dotWord = context.matchBefore(/\.\w*/);
   if (dotWord && (dotWord.from != dotWord.to || context.explicit)) {
     return {
       from: dotWord.from,
@@ -25121,24 +25121,28 @@ function setupEditor(containerId) {
   if (!parent) return;
   parent.innerHTML = "";
   const themeCompartment = new Compartment();
-  const startCode = `CurrencyNBR.from("1000.00")
-  .mult(
-    CurrencyNBR.from("1").add("0.12").group().pow("34/252")
-  )
-  .sub(
-    CurrencyNBR.from("1000.00")
-      .mult(
-        CurrencyNBR.from("1").add("0.12").group().pow("34/252")
-      )
-      .sub("1000.00")
-      .group()
-      .mult("0.225")
-  )
-  .add(
-    CurrencyNBR.from("1000.00").mult("0.02")
-  )
-  .group()
-  .commit(2)`;
+  const startCode = `
+    CurrencyNBR.from("1234567.89")
+        .pow("353/1141")
+        .add(
+            CurrencyNBR.from(0.00123).div(
+                CurrencyNBR.from(7)
+                            .div(11)
+            ).group()
+            .pow(9)
+        )
+        .mult(
+            CurrencyNBR.from(3)
+            .div(
+                CurrencyNBR.from(7)
+                           .div(13)
+            )
+            .pow("999/135")
+        )
+        .group().div(CurrencyNBR.from(0.0123).div(
+                CurrencyNBR.from(0.007).pow("81/46")
+            ).group()).pow("49/189")
+      .commit(2)`;
   const getTheme = () => EditorView.theme({
     "&": { height: "100%", fontSize: "16px", border: "none", background: "#fcfcfc" },
     ".cm-content, .cm-scroller": { fontFamily: "'JetBrains Mono', 'Fira Code', monospace", padding: "12px", color: "#1a1a1a !important" },

@@ -1,4 +1,4 @@
-import { CurrencyNBR, CurrencyNBROutput } from "../../mod.ts";
+import { CurrencyNBR, CurrencyNBROutput } from "@currency-nbr-a11y";
 
 export function executeExpression(
   expression: string,

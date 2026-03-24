@@ -13,7 +13,9 @@ export default Deno.serve({ port: 8000 }, async (req) => {
   const url = new URL(req.url);
 
   if (url.pathname === "/") return serveFile(join(__dirname, "index.html"));
-  if (url.pathname === "/editor.html") return serveFile(join(__dirname, "editor.html"));
+  if (url.pathname === "/editor.html") {
+    return serveFile(join(__dirname, "editor.html"));
+  }
   if (url.pathname === "/style.css") {
     return serveFile(join(__dirname, "style.css"));
   }

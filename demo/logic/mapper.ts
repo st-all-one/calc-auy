@@ -1,4 +1,4 @@
-import { CurrencyNBROutput } from "../../mod.ts";
+import type { CurrencyNBROutput } from "@currency-nbr-a11y";
 
 /**
  * Mapeia todos os outputs de uma instância CurrencyNBROutput para um objeto JSON.

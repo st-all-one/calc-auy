@@ -1,4 +1,4 @@
-import { CurrencyNBR } from "../../mod.ts";
+import { CurrencyNBR } from "@currency-nbr-a11y";
 import { mapAllOutputs } from "../logic/mapper.ts";
 
 export const getCategorizedExamples = () => {

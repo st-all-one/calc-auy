@@ -9,12 +9,14 @@
     font-weight: 400;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'JetBrains Mono';
     src: url('/fonts/JetBrainsMono-Bold.ttf') format('truetype');
     font-weight: 700;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Fira Code';
     src: url('/fonts/FiraCode-Regular.ttf') format('truetype');
@@ -771,10 +773,10 @@ html[data-theme="dark"] {
     --editor-text: #ffffff;
 }
 
-    /* Scrollbar Variables for Dark Mode */
-    --scrollbar-thumb-bg: var(--primary);
-    --scrollbar-track-bg: var(--bg);
-    --scrollbar-thumb-border: var(--bg);
+/* Scrollbar Variables for Dark Mode */
+--scrollbar-thumb-bg: var(--primary);
+--scrollbar-track-bg: var(--bg);
+--scrollbar-thumb-border: var(--bg);
 }
 
 html[data-theme="dark"] #barra-acessibilidade {
