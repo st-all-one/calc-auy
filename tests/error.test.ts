@@ -37,4 +37,28 @@ describe("CalcAUDError (RFC 7807)", () => {
         const json = err.toJSON();
         expect(json.math_audit).toBeUndefined();
     });
+
+    it("deve lidar com operation vazia ou undefined em math_audit", () => {
+        const err = new CalcAUDError({
+            type: "math-error",
+            title: "Erro",
+            detail: "Detalhe",
+            operation: "", // Edge case: string vazia
+        });
+
+        expect(err.math_audit?.operation).toBe("");
+    });
+});
+
+import { logFatal } from "../src/errors.ts";
+
+describe("logFatal (Edge Cases)", () => {
+    it("deve lidar com erros que não são instâncias de Error (string)", () => {
+        // Apenas para garantir que a lógica do else em logFatal executa sem erros
+        expect(() => logFatal("Erro fatal como string")).not.toThrow();
+    });
+
+    it("deve lidar com erros que não são instâncias de Error (objeto)", () => {
+        expect(() => logFatal({ code: 500, message: "Erro objeto" })).not.toThrow();
+    });
 });

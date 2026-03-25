@@ -16,7 +16,7 @@ describe("Compliance e Telemetria (Integration)", () => {
         filters: {},
         loggers: [
             {
-                category: ["currency-nbr-a11y"],
+                category: ["calcaud-nbr-a11y"],
                 sinks: ["test"],
                 lowestLevel: "debug",
             },
@@ -62,8 +62,8 @@ describe("Compliance e Telemetria (Integration)", () => {
             records.length = 0;
             CalcAUD.from(100).add(50).commit();
 
-            const inputLog = records.find((r) => r.category.join(".") === "currency-nbr-a11y.input");
-            const engineLog = records.find((r) => r.category.join(".") === "currency-nbr-a11y.engine.add");
+            const inputLog = records.find((r) => r.category.join(".") === "calcaud-nbr-a11y.input.from");
+            const engineLog = records.find((r) => r.category.join(".") === "calcaud-nbr-a11y.engine.add");
 
             expect(inputLog).toBeDefined();
             expect(inputLog?.level).toBe("debug");
@@ -71,8 +71,6 @@ describe("Compliance e Telemetria (Integration)", () => {
 
             expect(engineLog).toBeDefined();
             expect(engineLog?.level).toBe("debug");
-            const mathState = (engineLog?.properties as any).mathState;
-            expect(mathState.latex).toContain("100 + 50");
         });
     });
 

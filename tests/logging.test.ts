@@ -2,7 +2,6 @@ import { describe, it } from "@std/testing/bdd";
 import { expect } from "@std/expect";
 import { configure, type LogRecord, type Sink } from "@logtape";
 import { CalcAUD } from "../src/main.ts";
-import { getFileSink } from "@logtape/file";
 
 describe("CalcAUD Logging System", () => {
     const records: LogRecord[] = [];
@@ -14,11 +13,10 @@ describe("CalcAUD Logging System", () => {
     configure({
         sinks: {
             test: testSink,
-            console: getFileSink("my-app.log"),
         },
         filters: {},
         loggers: [
-            { category: ["calc-aud-nbr-a11y"], sinks: ["test", "console"], lowestLevel: "debug" },
+            { category: ["calcaud-nbr-a11y"], sinks: ["test"], lowestLevel: "debug" },
         ],
     });
 
@@ -50,14 +48,13 @@ describe("CalcAUD Logging System", () => {
             val.toMonetary();
             val.toLaTeX();
 
-            const toStringLog = records.find((r) => r.category.join(".").includes("output.string"));
+            console.log("ALL LOG CATEGORIES:", records.map((r) => r.category.join(".")).join(", "));
+
+            const toStringLog = records.find((r) => r.category.join(".").includes("output.tostring"));
             const toMonetaryLog = records.find((r) => r.category.join(".").includes("output.toMonetary"));
             const toLaTeXLog = records.find((r) => r.category.join(".").includes("output.toLaTeX"));
 
-            expect(toStringLog).toBeDefined();
             expect(toStringLog?.properties.result).toBe("100.000000");
-
-            expect(toMonetaryLog).toBeDefined();
             expect(toMonetaryLog?.properties.locale).toBe("pt-BR");
 
             expect(toLaTeXLog).toBeDefined();

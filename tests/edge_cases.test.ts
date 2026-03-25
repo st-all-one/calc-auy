@@ -21,7 +21,7 @@ describe("Edge Cases e Robustez (logFatal)", () => {
         sinks: { test: testSink },
         filters: {},
         loggers: [
-            { category: ["currency-nbr-a11y"], sinks: ["test"], lowestLevel: "debug" },
+            { category: ["calcaud-nbr-a11y"], sinks: ["test"], lowestLevel: "debug" },
         ],
     });
 
@@ -48,7 +48,6 @@ describe("Edge Cases e Robustez (logFatal)", () => {
             && (r.properties as any).operation === "group"
         );
 
-        expect(fatalLog).toBeDefined();
         expect((fatalLog?.properties as any).operation).toBe("group");
     });
 
@@ -75,7 +74,6 @@ describe("Edge Cases e Robustez (logFatal)", () => {
             && (r.properties as any).operation === "add"
         );
 
-        expect(fatalLog).toBeDefined();
         expect((fatalLog?.properties as any).operation).toBe("add");
     });
 

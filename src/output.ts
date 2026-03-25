@@ -192,7 +192,7 @@ export class CalcAUDOutput {
         this._resolveLazyCache();
         const result = this._cachedStringValue ?? "CACHE_ERROR";
         const end = performance.now();
-        Logger.getChild(["output", "string"]).info("String output generated {*}", {
+        Logger.getChild(["output", "tostring"]).info("String output generated {*}", {
             calcTime: end - start,
             result,
         });
@@ -214,7 +214,7 @@ export class CalcAUDOutput {
         const start = performance.now();
         const result = Number(this.toString());
         const end = performance.now();
-        Logger.getChild(["output", "float"]).info("Float output generated {*}", {
+        Logger.getChild(["output", "toFloat"]).info("Float output generated {*}", {
             calcTime: end - start,
             result,
         });
@@ -238,7 +238,7 @@ export class CalcAUDOutput {
         this._resolveLazyCache();
         const result = this._cachedCentsValue ?? 0n;
         const end = performance.now();
-        Logger.getChild(["output", "cents"]).info("Cents BigInt output generated {*}", {
+        Logger.getChild(["output", "toCentsBigInt"]).info("Cents BigInt output generated {*}", {
             calcTime: end - start,
             result: result.toString(),
         });
@@ -255,7 +255,7 @@ export class CalcAUDOutput {
         const start = performance.now();
         const result = this.value;
         const end = performance.now();
-        Logger.getChild(["output", "raw"]).info("Raw Internal BigInt output generated {*}", {
+        Logger.getChild(["output", "rawInternalBigInt"]).info("Raw Internal BigInt output generated {*}", {
             calcTime: end - start,
             result: result.toString(),
         });
@@ -280,7 +280,7 @@ export class CalcAUDOutput {
         const targetCurrency = this.options.currency;
         const result = formatMonetary(this.toString(), targetLocale, targetCurrency);
         const end = performance.now();
-        Logger.getChild(["output", "monetary"]).info("Monetary output generated {*}", {
+        Logger.getChild(["output", "toMonetary"]).info("Monetary output generated {*}", {
             calcTime: end - start,
             result,
             locale: targetLocale,
@@ -305,7 +305,7 @@ export class CalcAUDOutput {
         const roundExpr = `\\text{round}_{${abbrev}}(${unrounded}, ${decimals})`;
         const result = `$$ ${this.latexExpression} = ${roundExpr} = ${rounded} $$`;
         const end = performance.now();
-        Logger.getChild(["output", "latex"]).info("LaTeX output generated {*}", {
+        Logger.getChild(["output", "toLaTeX"]).info("LaTeX output generated {*}", {
             calcTime: end - start,
             result,
         });
@@ -334,7 +334,7 @@ export class CalcAUDOutput {
             this.toVerbalA11y(),
         );
         const end = performance.now();
-        Logger.getChild(["output", "html"]).info("HTML output generated {*}", {
+        Logger.getChild(["output", "toHTML"]).info("HTML output generated {*}", {
             calcTime: end - start,
         });
         return result;
@@ -355,7 +355,7 @@ export class CalcAUDOutput {
             this.options.roundingMethod,
         );
         const end = performance.now();
-        Logger.getChild(["output", "verbal"]).info("Verbal output generated {*}", {
+        Logger.getChild(["output", "toVerbalA11y"]).info("Verbal output generated {*}", {
             calcTime: end - start,
             locale: this.options.locale,
         });
@@ -379,7 +379,7 @@ export class CalcAUDOutput {
         const roundExpr = `round${subAbbrev}(${unrounded}, ${decimals})`;
         const result = `${this.unicodeExpression} = ${roundExpr} = ${rounded}`;
         const end = performance.now();
-        Logger.getChild(["output", "unicode"]).info("Unicode output generated {*}", {
+        Logger.getChild(["output", "toUnicode"]).info("Unicode output generated {*}", {
             calcTime: end - start,
             result,
         });
@@ -407,7 +407,7 @@ export class CalcAUDOutput {
             this.toVerbalA11y(),
         );
         const end = performance.now();
-        Logger.getChild(["output", "image"]).info("ImageBuffer output generated {*}", {
+        Logger.getChild(["output", "toImageBuffer"]).info("ImageBuffer output generated {*}", {
             calcTime: end - start,
         });
         return result;
@@ -466,7 +466,7 @@ export class CalcAUDOutput {
 
         const result = JSON.stringify(resultObj);
         const end = performance.now();
-        Logger.getChild(["output", "json"]).info("JSON output generated {*}", {
+        Logger.getChild(["output", "toJSON"]).info("JSON output generated {*}", {
             calcTime: end - start,
             elements: targetElements,
         });
@@ -499,7 +499,7 @@ export class CalcAUDOutput {
         });
 
         const end = performance.now();
-        Logger.getChild(["output", "custom"]).info("Custom output generated {*}", {
+        Logger.getChild(["output", "toCustomOutput"]).info("Custom output generated {*}", {
             calcTime: end - start,
         });
 
@@ -512,8 +512,21 @@ export class CalcAUDOutput {
 
     private getUnroundedString(): string {
         const full = formatBigIntToString(this.value, INTERNAL_CALCULATION_PRECISION);
-        if (full.indexOf(".") !== -1) {
-            return full.replace(/0+$/, "").replace(/\.$/, "");
+        if (full.includes(".")) {
+            let endIndex = full.length;
+
+            // Caminha de trás para frente ignorando os zeros
+            while (endIndex > 0 && full[endIndex - 1] === "0") {
+                endIndex--;
+            }
+
+            // Se, depois de tirar os zeros, sobrou o ponto no final, ignoramos ele também
+            if (endIndex > 0 && full[endIndex - 1] === ".") {
+                endIndex--;
+            }
+
+            // Retorna apenas a parte da string que importa
+            return full.slice(0, endIndex);
         }
         return full;
     }

@@ -67,7 +67,7 @@ export function parseStringValue(value: string): bigint {
 }
 
 function removeUnderscores(s: string): string {
-    return s.replaceAll(/_/g, "");
+    return s.replaceAll("_", "");
 }
 
 /**
@@ -98,7 +98,7 @@ function parseFractionLiteral(value: string): bigint {
         });
     }
 
-    const finalSign = (num < 0n) !== (den < 0n) ? -1n : 1n;
+    const finalSign = (num < 0n) === (den < 0n) ? 1n : -1n;
     const absNum = num < 0n ? -num : num;
     const absDen = den < 0n ? -den : den;
 

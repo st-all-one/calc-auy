@@ -66,9 +66,9 @@ export class CalcAUDError extends Error {
 
         if (params.latex !== undefined || params.unicode !== undefined || params.operation !== undefined) {
             this.math_audit = {
-                latex: params.latex,
-                unicode: params.unicode,
-                operation: params.operation,
+                latex: params.latex ?? "",
+                unicode: params.unicode ?? "",
+                operation: params.operation ?? "",
             };
         }
 
@@ -123,7 +123,15 @@ export class CalcAUDError extends Error {
  * ```
  */
 export function logFatal(error: unknown, context?: Record<string, unknown>): void {
-    const message = error instanceof Error ? error.message : error.toString();
+    // Agora garantimos que message será sempre uma string válida
+    let message;
+
+    if (error instanceof Error) {
+        message = error.message;
+    } else {
+        message = typeof error === "string" ? error : JSON.stringify(error);
+    }
+
     const stack = error instanceof Error ? error.stack : undefined;
 
     // Erros fatais são registrados em um namespace específico para alertas imediatos.

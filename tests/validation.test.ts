@@ -23,7 +23,7 @@ describe("Validação e Tipos (Unit)", () => {
                 } catch (e) {
                     expect(e).toBeInstanceOf(CalcAUDError);
                     expect((e as CalcAUDError).type).toBe(
-                        "https://github.com/st-all-one/calcaud-nbr-a11y/tree/main/errors/invalid-currency-format",
+                        "https://github.com/st-all-one/calcaud-nbr-a11y/tree/main/errors/invalid-input-format",
                     );
                 }
             }
@@ -39,7 +39,7 @@ describe("Validação e Tipos (Unit)", () => {
             } catch (e) {
                 expect(e).toBeInstanceOf(CalcAUDError);
                 expect((e as CalcAUDError).type).toBe(
-                    "https://github.com/st-all-one/calcaud-nbr-a11y/tree/main/errors/invalid-currency-format",
+                    "https://github.com/st-all-one/calcaud-nbr-a11y/tree/main/errors/invalid-rounding-method",
                 );
             }
         });
@@ -52,7 +52,7 @@ describe("Validação e Tipos (Unit)", () => {
             } catch (e) {
                 expect(e).toBeInstanceOf(CalcAUDError);
                 expect((e as CalcAUDError).type).toBe(
-                    "https://github.com/st-all-one/calcaud-nbr-a11y/tree/main/errors/invalid-currency-format",
+                    "https://github.com/st-all-one/calcaud-nbr-a11y/tree/main/errors/invalid-locale",
                 );
             }
         });
