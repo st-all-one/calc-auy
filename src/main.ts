@@ -180,6 +180,10 @@ export class CalcAUD {
                 0n,
                 INTERNAL_SCALE_FACTOR,
                 rawValue,
+                undefined,
+                initialExpression,
+                initialUnicode,
+                initialVerbal,
                 "MULT",
                 "euclidean",
                 "",
@@ -241,6 +245,12 @@ export class CalcAUD {
                 newAccumulatedValue,
                 INTERNAL_SCALE_FACTOR,
                 otherValue,
+                undefined,
+                wrapLaTeX(other.getFullLaTeXExpression()),
+                wrapUnicode(other.getFullUnicodeExpression()),
+                other.accumulatedVerbal
+                    ? `${VERBAL_TOKENS.GRP_START}${other.getFullVerbalExpression()}${VERBAL_TOKENS.GRP_END}`
+                    : other.activeFactorVerbal,
                 "MULT",
                 "euclidean",
                 this.getFullLaTeXExpression(),
@@ -283,6 +293,14 @@ export class CalcAUD {
                 newAccumulatedValue,
                 INTERNAL_SCALE_FACTOR,
                 -otherValue,
+                undefined,
+                `- ${wrapLaTeX(other.getFullLaTeXExpression())}`,
+                `- ${wrapUnicode(other.getFullUnicodeExpression())}`,
+                `${VERBAL_TOKENS.SUB}${
+                    other.accumulatedVerbal
+                        ? `${VERBAL_TOKENS.GRP_START}${other.getFullVerbalExpression()}${VERBAL_TOKENS.GRP_END}`
+                        : other.activeFactorVerbal
+                }`,
                 "MULT",
                 "euclidean",
                 this.getFullLaTeXExpression(),
@@ -348,6 +366,12 @@ export class CalcAUD {
                 this.accumulatedValue,
                 nextProduct,
                 otherValue,
+                undefined,
+                wrapLaTeX(other.getFullLaTeXExpression()),
+                wrapUnicode(other.getFullUnicodeExpression()),
+                other.accumulatedVerbal
+                    ? `${VERBAL_TOKENS.GRP_START}${other.getFullVerbalExpression()}${VERBAL_TOKENS.GRP_END}`
+                    : other.activeFactorVerbal,
                 "MULT",
                 "euclidean",
                 this.accumulatedExpression,
@@ -403,6 +427,12 @@ export class CalcAUD {
                 this.accumulatedValue,
                 nextProduct,
                 otherValue,
+                undefined,
+                wrapLaTeX(other.getFullLaTeXExpression()),
+                wrapUnicode(other.getFullUnicodeExpression()),
+                other.accumulatedVerbal
+                    ? `${VERBAL_TOKENS.GRP_START}${other.getFullVerbalExpression()}${VERBAL_TOKENS.GRP_END}`
+                    : other.activeFactorVerbal,
                 "DIV",
                 "euclidean",
                 this.accumulatedExpression,
@@ -479,6 +509,12 @@ export class CalcAUD {
                 this.accumulatedValue,
                 nextProduct,
                 otherValue,
+                undefined,
+                wrapLaTeX(other.getFullLaTeXExpression()),
+                wrapUnicode(other.getFullUnicodeExpression()),
+                other.accumulatedVerbal
+                    ? `${VERBAL_TOKENS.GRP_START}${other.getFullVerbalExpression()}${VERBAL_TOKENS.GRP_END}`
+                    : other.activeFactorVerbal,
                 "DIV_INT",
                 divStrategy,
                 this.accumulatedExpression,
@@ -534,6 +570,12 @@ export class CalcAUD {
                 this.accumulatedValue,
                 nextProduct,
                 otherValue,
+                undefined,
+                wrapLaTeX(other.getFullLaTeXExpression()),
+                wrapUnicode(other.getFullUnicodeExpression()),
+                other.accumulatedVerbal
+                    ? `${VERBAL_TOKENS.GRP_START}${other.getFullVerbalExpression()}${VERBAL_TOKENS.GRP_END}`
+                    : other.activeFactorVerbal,
                 "MOD",
                 divStrategy,
                 this.accumulatedExpression,
@@ -585,23 +627,12 @@ export class CalcAUD {
     public pow(exponent: CalcAUDAllowedValue): CalcAUD {
         const start = performance.now();
         try {
-            const baseValue = this.activeFactorValue;
-            const baseExpr = wrapLaTeX(this.activeFactorExpression);
-            const baseVerbal = this.activeFactorVerbal;
-            const baseUnicode = wrapUnicode(this.activeFactorUnicode);
-
-            let nextExpr: string;
-            let nextVerbal: string;
-            let nextUnicode: string;
-            let nextValue: bigint;
-
             const isFractionString = typeof exponent === "string" && exponent.includes("/");
             const expStr = exponent.toString();
 
             if (isFractionString) {
-                // Lógica para potências fracionárias (raízes n-ésimas) via string (retrocompatibilidade)
+                // Validação de Fração (Exigido pelos testes de validação)
                 const parts = expStr.split("/");
-
                 if (parts.length !== 2) {
                     throw new CalcAUDError({
                         type: "invalid-fractional-exponent",
@@ -610,12 +641,9 @@ export class CalcAUD {
                         operation: "pow",
                     });
                 }
-
-                let num: bigint;
-                let den: bigint;
                 try {
-                    num = BigInt(parts[0].trim());
-                    den = BigInt(parts[1].trim());
+                    BigInt(parts[0].trim());
+                    BigInt(parts[1].trim());
                 } catch {
                     throw new CalcAUDError({
                         type: "invalid-exponent-value",
@@ -624,60 +652,69 @@ export class CalcAUD {
                         operation: "pow",
                     });
                 }
-                nextValue = calculateFractionalPower(baseValue, num, den, INTERNAL_SCALE_FACTOR);
-
-                const denSup = toSuperscript(den.toString());
-                const numSup = num === 1n ? "" : toSuperscript(num.toString());
-
-                nextExpr = num === 1n ? `\\sqrt[${den}]{${baseExpr}}` : `\\sqrt[${den}]{${baseExpr}^{${num}}}`;
-                nextVerbal = `${VERBAL_TOKENS.ROOT_IDX}${den}${VERBAL_TOKENS.ROOT_OF}${baseVerbal}${
-                    num === 1n ? "" : VERBAL_TOKENS.POW + num
-                }`;
-                nextUnicode = `${denSup === "²" ? "" : denSup}√(${baseUnicode}${numSup})`;
-            } else {
-                // Lógica para potências via CalcAUDAllowedValue
-                const other = CalcAUD.from(exponent);
-                const expValue = other.accumulatedValue + other.getActiveTermValue();
-                const exp = expValue / INTERNAL_SCALE_FACTOR;
-                const expDispStr = other.getFullUnicodeExpression();
-                const expSup = toSuperscript(expDispStr);
-
-                nextExpr = `{${baseExpr}}^{${other.getFullLaTeXExpression()}}`;
-                nextVerbal = `${baseVerbal}${VERBAL_TOKENS.POW}${other.getFullVerbalExpression()}`;
-                nextUnicode = `${baseUnicode}${expSup}`;
-
-                if (exp === 0n) { nextValue = INTERNAL_SCALE_FACTOR; }
-                else if (exp > 0n) {
-                    nextValue = calculateBigIntPower(baseValue, exp)
-                        / calculateBigIntPower(INTERNAL_SCALE_FACTOR, exp - 1n);
-                } else {
-                    const denVal = calculateBigIntPower(baseValue, -exp)
-                        / calculateBigIntPower(INTERNAL_SCALE_FACTOR, (-exp) - 1n);
-                    nextValue = (INTERNAL_SCALE_FACTOR * INTERNAL_SCALE_FACTOR) / denVal;
-                }
             }
+
+            const other = CalcAUD.from(exponent);
+            
+            let nextBase: bigint;
+            let nextExponent: CalcAUD;
+            let nextFactorExpr: string;
+            let nextFactorUnicode: string;
+            let nextFactorVerbal: string;
+
+            if (!this.activeFactorExponent) {
+                // Primeiro nível da potência: base^exp
+                nextBase = this.activeFactorBaseValue;
+                nextExponent = other;
+                
+                const isRoot = isFractionString && other.activeFactorExpression.split("/")[0].trim() === "1";
+                if (isRoot) {
+                    const den = other.activeFactorExpression.split("/")[1].trim();
+                    const denSup = toSuperscript(den);
+                    nextFactorExpr = `\\sqrt[${den}]{${this.activeFactorRawBaseExpression}}`;
+                    nextFactorUnicode = `${denSup === "²" ? "" : denSup}√(${this.activeFactorRawBaseUnicode})`;
+                    nextFactorVerbal = `${VERBAL_TOKENS.ROOT_IDX}${den}${VERBAL_TOKENS.ROOT_OF}${this.activeFactorRawBaseVerbal}`;
+                } else {
+                    nextFactorExpr = `{${this.activeFactorRawBaseExpression}}^{${other.getFullLaTeXExpression()}}`;
+                    nextFactorUnicode = `${wrapUnicode(this.activeFactorRawBaseUnicode)}${toSuperscript(other.getFullUnicodeExpression())}`;
+                    nextFactorVerbal = `${this.activeFactorRawBaseVerbal}${VERBAL_TOKENS.POW}${other.getFullVerbalExpression()}`;
+                }
+            } else {
+                // Torres de Potência (Associatividade à Direita)
+                nextBase = this.activeFactorBaseValue;
+                nextExponent = this.activeFactorExponent.pow(other);
+                
+                nextFactorExpr = `{${this.activeFactorRawBaseExpression}}^{${nextExponent.getFullLaTeXExpression()}}`;
+                nextFactorUnicode = `${wrapUnicode(this.activeFactorRawBaseUnicode)}${toSuperscript("(" + nextExponent.getFullUnicodeExpression() + ")")}`;
+                nextFactorVerbal = `${this.activeFactorRawBaseVerbal}${VERBAL_TOKENS.POW}${VERBAL_TOKENS.GRP_START}${nextExponent.getFullVerbalExpression()}${VERBAL_TOKENS.GRP_END}`;
+            }
+
             const result = new CalcAUD(
                 this.accumulatedValue,
                 this.activeTermProduct,
-                nextValue,
+                nextBase,
+                nextExponent,
+                this.activeFactorRawBaseExpression,
+                this.activeFactorRawBaseUnicode,
+                this.activeFactorRawBaseVerbal,
                 this.activePendingOperation,
                 this.activePendingStrategy,
                 this.accumulatedExpression,
                 this.activeTermProductExpression,
-                nextExpr,
+                nextFactorExpr,
                 this.accumulatedVerbal,
                 this.activeTermProductVerbal,
-                nextVerbal,
+                nextFactorVerbal,
                 this.accumulatedUnicode,
                 this.activeTermProductUnicode,
-                nextUnicode,
+                nextFactorUnicode,
                 true,
             );
             const end = performance.now();
-            Logger.getChild(["engine", "pow"]).debug("Power/Root operation performed {*}", {
+            Logger.getChild(["engine", "pow"]).debug("Power operation performed {*}", {
                 calcTime: end - start,
                 exponent: expStr,
-                result: result.getActiveTermValue().toString(),
+                isTower: !!this.activeFactorExponent,
             });
             return result;
         } catch (e) {
@@ -713,6 +750,10 @@ export class CalcAUD {
                 0n,
                 INTERNAL_SCALE_FACTOR,
                 totalValue,
+                undefined,
+                groupedExpr,
+                groupedUnicode,
+                groupedVerbal,
                 "MULT",
                 "euclidean",
                 "",
@@ -827,8 +868,58 @@ export class CalcAUD {
         return unicode;
     }
 
+    private getActiveFactorValue(): bigint {
+        if (!this.activeFactorExponent) {
+            return this.activeFactorBaseValue;
+        }
+
+        const expAUD = this.activeFactorExponent;
+        
+        // Detecção de Fração Simples (para raízes)
+        const isFractionStr = expAUD.accumulatedExpression === "" &&
+            expAUD.activeFactorExpression.includes("/") &&
+            !expAUD.activeFactorExponent;
+
+        if (isFractionStr) {
+            const parts = expAUD.activeFactorExpression.split("/");
+            try {
+                const num = BigInt(parts[0].trim());
+                const den = BigInt(parts[1].trim());
+                return calculateFractionalPower(this.activeFactorBaseValue, num, den, INTERNAL_SCALE_FACTOR);
+            } catch (e) {
+                // Se for um CalcAUDError (ex: raiz par de negativo), relança
+                if (e instanceof CalcAUDError) throw e;
+                // Se falhar o parse do BigInt, segue para o cálculo normal via valor consolidado
+            }
+        }
+
+        const expValue = expAUD.accumulatedValue + expAUD.getActiveTermValue();
+        const exp = expValue / INTERNAL_SCALE_FACTOR;
+
+        if (exp === 0n) return INTERNAL_SCALE_FACTOR;
+        if (exp > 0n) {
+            return calculateBigIntPower(this.activeFactorBaseValue, exp) /
+                calculateBigIntPower(INTERNAL_SCALE_FACTOR, exp - 1n);
+        } else {
+            // Potência negativa: 1 / (base^-exp)
+            if (this.activeFactorBaseValue === 0n) {
+                throw new CalcAUDError({
+                    type: "division-by-zero",
+                    title: "Operação Matemática Inválida",
+                    detail: "Base zero com expoente negativo resulta em divisão por zero.",
+                    operation: "pow",
+                });
+            }
+            const denVal = calculateBigIntPower(this.activeFactorBaseValue, -exp) /
+                calculateBigIntPower(INTERNAL_SCALE_FACTOR, (-exp) - 1n);
+            if (denVal === 0n) return 0n;
+            return (INTERNAL_SCALE_FACTOR * INTERNAL_SCALE_FACTOR) / denVal;
+        }
+    }
+
     private getActiveTermValue(): bigint {
-        if (this.activeFactorValue === 0n && this.activePendingOperation !== "MULT") {
+        const factorValue = this.getActiveFactorValue();
+        if (factorValue === 0n && this.activePendingOperation !== "MULT") {
             // Divisão por zero deve ser evitada pelo chamador ou lançar erro antes.
             return 0n;
         }
@@ -836,20 +927,21 @@ export class CalcAUD {
         switch (this.activePendingOperation) {
             case "DIV": {
                 const numerator = this.activeTermProduct * INTERNAL_SCALE_FACTOR;
-                const halfDenominator = this.activeFactorValue / 2n;
-                const adjustment = (this.activeTermProduct < 0n) === (this.activeFactorValue < 0n)
+                const halfDenominator = factorValue / 2n;
+                const adjustment = (this.activeTermProduct < 0n) === (factorValue < 0n)
                     ? halfDenominator
                     : -halfDenominator;
-                return (numerator + adjustment) / this.activeFactorValue;
+                return (numerator + adjustment) / factorValue;
             }
             case "DIV_INT": {
                 const termValue = this.activeTermProduct;
-                const divisor = this.activeFactorValue;
-                let quotient = termValue / divisor;
+                const divisor = factorValue;
+                const res = termValue / divisor;
+                let quotient = res / INTERNAL_SCALE_FACTOR;
 
                 if (this.activePendingStrategy === "euclidean") {
                     const remainder = termValue % divisor;
-                    if (remainder !== 0n && ((this.activeTermProduct < 0n) !== (this.activeFactorValue < 0n))) {
+                    if (remainder !== 0n && ((this.activeTermProduct < 0n) !== (factorValue < 0n))) {
                         quotient -= 1n;
                     }
                 }
@@ -857,7 +949,7 @@ export class CalcAUD {
             }
             case "MOD": {
                 const termValue = this.activeTermProduct;
-                const divisor = this.activeFactorValue;
+                const divisor = factorValue;
                 const rawMod = termValue % divisor;
 
                 if (this.activePendingStrategy === "euclidean") {
@@ -868,7 +960,7 @@ export class CalcAUD {
             }
             case "MULT":
             default: {
-                const product = this.activeTermProduct * this.activeFactorValue;
+                const product = this.activeTermProduct * factorValue;
                 const halfScale = INTERNAL_SCALE_FACTOR / 2n;
                 const adjustment = product >= 0n ? halfScale : -halfScale;
                 return (product + adjustment) / INTERNAL_SCALE_FACTOR;
