@@ -81,7 +81,8 @@ Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAU
 - **Padrão:** `["toString", "toCentsInBigInt", "toMonetary", "toLaTeX", "toUnicode", "toVerbalA11y", "toAuditTrace"]`.
 
 ### `toCustomOutput<Toutput>(processor: ICalcAUYCustomOutput<Toutput>): Toutput`
-- **Extensibilidade:** Permite injetar formatadores proprietários (XML, Protobuf, etc).
+- **Descrição:** O ápice da extensibilidade da CalcAUY. Permite injetar um formatador externo que tem acesso total ao rastro de auditoria e ao valor racional.
+- **Detalhes Técnicos:** Consulte a **`specs/16-Custom-Output-Processors.md`** para a definição completa da interface e do contexto de dados.
 
 ## Interface de Opções
 ```typescript

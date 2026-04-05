@@ -15,6 +15,8 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
     - **Hibernação:** `.hibernate()` (ou `.getAST()`) extrai o estado atual para armazenamento persistente.
 4.  **Precedência e Execução (`specs/07`, `specs/13`):** O `commit()` aplica regras como **NBR-5891**.
 5.  **Saída e Acessibilidade (`specs/09`, `specs/14`):** Geração de multiformatos com rastro forense.
+6.  **Qualidade e Rigor (`specs/15`):** Padrões de tipagem estrita e performance.
+7.  **Extensibilidade (`specs/16`):** Processadores de saída customizados e injeção de lógica.
 
 ## Resumo de Métodos Principais
 
