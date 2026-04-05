@@ -52,10 +52,13 @@ Diferente das APIs tradicionais, a injeção de uma instância de `CalcAUY` em o
 - **Descrição:** Anexa dados de auditoria ao nó atual da árvore.
 - **Exemplo:** `.setMetadata("description", "Taxa de IOF")`. Estes dados aparecerão no `toAuditTrace()`.
 
-### `hibernate(): CalculationNode`
-- **Descrição:** Captura e serializa a árvore atual em um objeto JSON puro para armazenamento duradouro e futura recuperação.
-- **Alias:** `getAST()`.
-- **Caso de Uso:** Salvar o estado parcial ou final de um cálculo em um banco de dados ou enviá-lo através de uma rede.
+### `hibernate(): string`
+- **Descrição:** Captura e serializa a árvore atual em uma **string JSON** pronta para armazenamento duradouro.
+- **Caso de Uso:** Salvar o estado de um cálculo em um banco de dados ou enviá-lo através de uma rede.
+
+### `getAST(): CalculationNode`
+- **Descrição:** Retorna o **objeto** da Árvore de Sintaxe Abstrata (AST) no estado atual.
+- **Caso de Uso:** Manipulação programática ou inspeção técnica da árvore.
 
 ## Reidratação, Ingestão e Persistência
 

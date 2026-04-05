@@ -1,6 +1,6 @@
 import { CalculationNode } from "./ast.ts";
 import { RationalNumber } from "./rational.ts";
-import { ROUNDING_IDS, RoundingStrategy } from "./constants.ts";
+import { DEFAULT_DECIMAL_PRECISION, ROUNDING_IDS, RoundingStrategy } from "./constants.ts";
 import { applyRounding } from "./rounding.ts";
 import { getLocale, LocaleDefinition } from "./i18n.ts";
 import { CalcAUYError } from "./errors.ts";
@@ -57,7 +57,7 @@ export class CalcAUYOutput {
     }
 
     toStringNumber(options?: OutputOptions): string {
-        const p = options?.decimalPrecision ?? 2;
+        const p = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
         const rounded = this.getRounded(p);
         return rounded.toDecimalString(p);
     }
@@ -67,7 +67,7 @@ export class CalcAUYOutput {
     }
 
     toCentsInBigInt(options?: OutputOptions): bigint {
-        const p = options?.decimalPrecision ?? 2;
+        const p = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
         const pScale = 10n ** BigInt(p);
         const rounded = this.getRounded(p);
         return (rounded.n * pScale) / rounded.d;
@@ -78,7 +78,7 @@ export class CalcAUYOutput {
     }
 
     toMonetary(options?: OutputOptions): string {
-        const p = options?.decimalPrecision ?? 2;
+        const p = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
         const loc = getLocale(options?.locale);
         const currency = options?.currency ?? loc.currency;
         const val = this.toStringNumber(options);
@@ -98,7 +98,7 @@ export class CalcAUYOutput {
         const base = this.renderAST(this.#ast, "unicode");
         const strategyId = ROUNDING_IDS[this.#strategy];
         const subStrategy = toSubscript(strategyId);
-        const p = options?.decimalPrecision ?? 2;
+        const p = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
 
         return `round${subStrategy}(${base}, ${p}) = ${this.toStringNumber(options)}`;
     }
@@ -111,10 +111,10 @@ export class CalcAUYOutput {
         return `<div class="calc-auy-result" aria-label="${verbal}">${html}</div>`;
     }
 
-    async toImageBuffer(
+    toImageBuffer(
         katexRenderer: (latex: string) => string,
         _options?: OutputOptions,
-    ): Promise<Uint8Array> {
+    ): Uint8Array {
         const html = this.toHTML(katexRenderer);
         const latex = this.toLaTeX();
 
@@ -136,7 +136,7 @@ export class CalcAUYOutput {
     }
 
     toVerbalA11y(options?: OutputOptions): string {
-        const p = options?.decimalPrecision ?? 2;
+        const p = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
         const loc = getLocale(options?.locale);
         const base = this.renderAST(this.#ast, "verbal", loc);
         const strategyName = ROUNDING_IDS[this.#strategy];
@@ -150,7 +150,7 @@ export class CalcAUYOutput {
 
     toSlice(parts: number, options?: OutputOptions): string[] {
         if (parts <= 0) { throw new CalcAUYError("invalid-precision", "Número de partes deve ser maior que zero."); }
-        const p = options?.decimalPrecision ?? 2;
+        const p = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
         const totalCents = this.toCentsInBigInt(options);
 
         const baseCents = totalCents / BigInt(parts);
@@ -170,7 +170,7 @@ export class CalcAUYOutput {
 
     toSliceByRatio(ratios: (number | string)[], options?: OutputOptions): string[] {
         if (ratios.length === 0) { return []; }
-        const p = options?.decimalPrecision ?? 2;
+        const p = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
         const totalCents = this.toCentsInBigInt(options);
 
         // 1. Normalizar ratios para frações decimais
@@ -201,12 +201,12 @@ export class CalcAUYOutput {
         });
     }
 
-    toAuditTrace(): Record<string, unknown> {
-        return {
+    toAuditTrace(): string {
+        return JSON.stringify({
             ast: this.#ast,
             finalResult: this.#result.toJSON(),
             strategy: this.#strategy,
-        };
+        });
     }
 
     toJSON(outputs?: string[]): Record<string, unknown> {
@@ -221,7 +221,7 @@ export class CalcAUYOutput {
         ];
         const res: Record<string, unknown> = {};
         for (const key of keys) {
-            if (key === "toJSON" || key === "toCustomOutput") continue;
+            if (key === "toJSON" || key === "toCustomOutput") { continue; }
             const method = (this as any)[key];
             if (typeof method === "function") {
                 res[key] = method.call(this);

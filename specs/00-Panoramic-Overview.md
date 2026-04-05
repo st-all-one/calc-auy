@@ -25,8 +25,9 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 - `group()`: Agrupamento manual.
 - **`parseExpression(str)`**: Parser de strings matemáticas complexas (com auto-agrupamento).
 - **`setMetadata(key, val)`**: O pilar da auditoria.
-- **`hibernate()`**: Serializa a árvore atual (JSON). Alias: `getAST()`.
-- **`static hydrate(ast)`**: Reconstrói a instância (com auto-agrupamento inteligente).
+- **`hibernate()`**: Serializa a árvore atual (**string JSON**).
+- **`getAST()`**: Retorna o objeto da árvore atual (**CalculationNode**).
+- **`static hydrate(ast)`**: Reconstrói a instância (aceita string ou objeto).
 - `commit(strategy)`: Finaliza e congela o cálculo.
 
 ### Classe `CalcAUYOutput` (Result)

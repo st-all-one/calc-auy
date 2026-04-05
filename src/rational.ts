@@ -49,7 +49,13 @@ export class RationalNumber {
     /**
      * Factory method to create a RationalNumber from various inputs.
      */
-    static from(value: string | number | bigint | RationalNumber): RationalNumber {
+    static from(n: bigint, d: bigint): RationalNumber;
+    static from(value: string | number | bigint | RationalNumber): RationalNumber;
+    static from(arg1: string | number | bigint | RationalNumber, arg2?: bigint): RationalNumber {
+        if (arg2 !== undefined && typeof arg1 === "bigint") {
+            return new RationalNumber(arg1, arg2);
+        }
+        let value = arg1;
         if (value instanceof RationalNumber) { return value; }
         if (typeof value === "bigint") { return new RationalNumber(value, 1n); }
 
@@ -136,38 +142,104 @@ export class RationalNumber {
      * Power operation. If exponent is fractional or negative, it might collapse to PRECISION.
      */
     pow(exponent: RationalNumber): RationalNumber {
-        // Integer power optimization
-        if (exponent.#d === 1n && exponent.#n >= 0n) {
-            return new RationalNumber(this.#n ** exponent.#n, this.#d ** exponent.#n);
+        // Optimization for zero base
+        if (this.#n === 0n) {
+            if (exponent.#n === 0n) return RationalNumber.from(1n);
+            if (exponent.#n > 0n) return RationalNumber.from(0n);
+            throw new CalcAUYError("division-by-zero", "Zero elevado a um expoente negativo.");
         }
 
-        // Fractional or negative power: collapse to decimal precision (50 houses)
-        const val = this.toDecimal(PRECISION_BIGINT + 5n); // Extra precision for calculation
-        const exp = Number(exponent.n) / Number(exponent.d);
-        const result = Math.pow(val, exp);
-
-        if (isNaN(result)) {
-            throw new CalcAUYError("complex-result", "A operação resultou em um número complexo não suportado.");
+        // Optimization for integer power
+        if (exponent.#d === 1n) {
+            if (exponent.#n === 0n) return RationalNumber.from(1n);
+            if (exponent.#n > 0n) {
+                return new RationalNumber(this.#n ** exponent.#n, this.#d ** exponent.#n);
+            }
+            // Negative integer exponent: (a/b)^-n = (b/a)^n
+            const inv = new RationalNumber(this.#d, this.#n);
+            const absExp = -exponent.#n;
+            return new RationalNumber(inv.#n ** absExp, inv.#d ** absExp);
         }
 
-        return RationalNumber.from(result.toFixed(Number(PRECISION_BIGINT)));
+        // Handle negative base with fractional exponent
+        if (this.#n < 0n) {
+            // For negative base, exponent must be integer or have odd denominator to be real.
+            // But decimal approximations (d=10^50) always have even denominator.
+            if (exponent.#d % 2n === 0n) {
+                throw new CalcAUYError("complex-result", "A operação resultou em um número complexo não suportado.");
+            }
+            // If d is odd and large, it's also safer to consider complex if it's an approximation
+            if (exponent.#d > 1000n) {
+                throw new CalcAUYError("complex-result", "A operação resultou em um número complexo não suportado.");
+            }
+        }
+
+        // Fractional exponent: x^(m/d) = root_d(x^m)
+        // Separate into integer and fractional parts: x^(I + f) = x^I * x^f
+        const I = exponent.#n / exponent.#d;
+        const remainderN = exponent.#n % exponent.#d;
+        
+        let result = RationalNumber.from(1n);
+        if (I !== 0n) {
+            result = this.pow(RationalNumber.from(I));
+        }
+        
+        if (remainderN === 0n) return result;
+
+        // Calculate fractional part: this^(remainderN / d)
+        // Ensure positive exponent for the root calculation
+        const m = remainderN < 0n ? -remainderN : remainderN;
+        const d = exponent.#d;
+        const base = remainderN < 0n ? new RationalNumber(this.#d, this.#n) : this;
+
+        let fractionalResult: RationalNumber;
+        
+        if (d <= 1000n) {
+            // Use standard nthRoot for small denominators (precise for simple fractions)
+            const p = PRECISION_BIGINT;
+            const scale = 10n ** (p * d);
+            const rootN = RationalNumber.#bigIntNthRoot(base.#n ** m * scale, d);
+            const rootD = RationalNumber.#bigIntNthRoot(base.#d ** m * scale, d);
+            fractionalResult = new RationalNumber(rootN, rootD);
+        } else {
+            // Use binary expansion (repeated square roots) for large denominators to avoid RangeError
+            fractionalResult = RationalNumber.#bigIntPowFractional(base, m, d, PRECISION_BIGINT);
+        }
+        
+        return result.mul(fractionalResult);
     }
 
     mod(other: RationalNumber): RationalNumber {
-        // Euclidean modulo: result is always positive
-        const q = this.divInt(other);
-        return this.sub(q.mul(other));
+        // Euclidean modulo: result is always 0 <= r < |b|
+        const a = this.#n * other.#d;
+        const b = this.#d * other.#n;
+        
+        let r = a % b;
+        if (r < 0n) {
+            // Se o resto for negativo, ajustamos baseado no sinal de b
+            // Para Euclides, r deve ser positivo, então r += abs(b)
+            r += (b < 0n ? -b : b);
+        }
+        
+        return new RationalNumber(r, this.#d * other.#d);
     }
 
     divInt(other: RationalNumber): RationalNumber {
-        // Euclidean integer division
-        const ratio = this.div(other);
-        let n = ratio.#n / ratio.#d;
-        // Floor logic for negative results to ensure positive modulo
-        if (ratio.#n < 0n && ratio.#n % ratio.#d !== 0n) {
-            n -= 1n;
+        // Euclidean integer division: a = bq + r, where 0 <= r < |b|
+        // Isso implica q = (a - r) / b
+        const a = this.#n * other.#d;
+        const b = this.#d * other.#n;
+        
+        // Primeiro calculamos o resto euclidiano r
+        let r = a % b;
+        if (r < 0n) {
+            r += (b < 0n ? -b : b);
         }
-        return new RationalNumber(n, 1n);
+        
+        // Agora q é garantido como o quociente euclidiano
+        const q = (a - r) / b;
+        
+        return new RationalNumber(q, 1n);
     }
 
     abs(): RationalNumber {
@@ -189,15 +261,6 @@ export class RationalNumber {
     }
 
     /**
-     * Internal helper to get a floating point approximation for complex ops.
-     */
-    private toDecimal(extraPrecision: bigint): number {
-        const scale = 10n ** extraPrecision;
-        const scaled = (this.#n * scale) / this.#d;
-        return Number(scaled) / Number(scale);
-    }
-
-    /**
      * Converts to a decimal string with specific precision.
      */
     toDecimalString(precision: number): string {
@@ -215,12 +278,74 @@ export class RationalNumber {
 
         if (precision === 0) { return (negative ? "-" : "") + s; }
 
-        while (s.length <= precision) { s = "0" + s; }
+        // Padding ensure at least precision + 1 chars (e.g. "0.001" for p=3)
+        s = s.padStart(precision + 1, "0");
         const insertAt = s.length - precision;
         return (negative ? "-" : "") + s.substring(0, insertAt) + "." + s.substring(insertAt);
     }
 
     toJSON() {
         return { n: this.#n.toString(), d: this.#d.toString() };
+    }
+
+    /**
+     * Calculates the n-th root of a bigint using Newton's method.
+     */
+    static #bigIntNthRoot(value: bigint, n: bigint): bigint {
+        if (value < 0n) {
+            if (n % 2n === 0n) {
+                throw new CalcAUYError("complex-result", "A operação resultou em um número complexo não suportado.");
+            }
+            return -RationalNumber.#bigIntNthRoot(-value, n);
+        }
+        if (value === 0n) return 0n;
+        if (value === 1n) return 1n;
+        if (n === 1n) return value;
+
+        // Optimized guess using bit length
+        let x = 1n << (BigInt(value.toString(2).length) / n + 1n);
+        let prevX = 0n;
+        const nm1 = n - 1n;
+
+        // Newton's method loop
+        while (x !== prevX && x !== prevX + 1n && x !== prevX - 1n) {
+            prevX = x;
+            x = (nm1 * x + value / (x ** nm1)) / n;
+        }
+
+        // Adjustment for integer division (floor behavior)
+        while (x ** n > value) x -= 1n;
+        while ((x + 1n) ** n <= value) x += 1n;
+
+        return x;
+    }
+
+    /**
+     * Calculates x^(expN/expD) using binary expansion and repeated square roots.
+     * Used for exponents with large denominators to avoid 10^(P*D) RangeError.
+     */
+    static #bigIntPowFractional(base: RationalNumber, expN: bigint, expD: bigint, p: bigint): RationalNumber {
+        const internalPrecision = p + 15n;
+        const scale = 10n ** internalPrecision;
+        const bits = 256; // 256 bits of fractional exponent precision
+        const fractionalBits = (expN << BigInt(bits)) / expD;
+
+        const solve = (V: bigint) => {
+            let res = scale;
+            let currRoot = V * scale; // In fixed point
+            for (let i = 1; i <= bits; i++) {
+                // Successive square roots
+                currRoot = RationalNumber.#bigIntNthRoot(currRoot * scale, 2n);
+                const bit = 1n << BigInt(bits - i);
+                if ((fractionalBits & bit) !== 0n) {
+                    res = (res * currRoot) / scale;
+                }
+            }
+            return res;
+        };
+
+        const rootN = solve(base.#n);
+        const rootD = solve(base.#d);
+        return new RationalNumber(rootN, rootD);
     }
 }

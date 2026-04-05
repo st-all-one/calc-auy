@@ -46,10 +46,10 @@ Essencial para auditoria. Permite que cada nó da árvore saiba *por que* foi cr
 Essencial para ERPs e sistemas de faturamento. Se você tem `10.00` e precisa dividir em 3 parcelas, a **CalcAUY** retorna `["3.34", "3.33", "3.33"]`. A soma das fatias é **sempre** idêntica ao valor total, eliminando as famosas "diferenças de 1 centavo" em balanços contábeis.
 
 ### `hibernate()` e `hydrate(json)`
-Permite a **persistência e composição de cálculos** (Hibernação).
-- **`hibernate()`**: Captura e serializa a árvore atual em JSON para armazenamento duradouro. (Alias: `getAST()`).
-- **`hydrate(json)`**: Reconstrói uma instância ativa.
-  - **Como Raiz**: Inicia uma nova cadeia de cálculo (`CalcAUY.hydrate(AST).add(10)`).
+Permite a **persistência e composição de cálculos** (Hibernação). 
+- **`hibernate()`**: Captura e serializa a árvore atual em uma **string JSON** para armazenamento duradouro.
+- **`getAST()`**: Retorna o objeto da árvore (AST) para uso programático.
+- **`hydrate(json | object)`**: Reconstrói uma instância ativa.  - **Como Raiz**: Inicia uma nova cadeia de cálculo (`CalcAUY.hydrate(AST).add(10)`).
   - **Como Operando**: Quando injetado em outro cálculo (`calc.mult(CalcAUY.hydrate(AST))`), ele se comporta como uma instância normal e é **automaticamente protegido por parênteses**, garantindo a integridade da precedência matemática.
 
 ---

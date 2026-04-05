@@ -1,13 +1,10 @@
-import { CalculationNode, GroupNode, LiteralNode, OperationNode, OperationType } from "./ast.ts";
+import { CalculationNode, LiteralNode, GroupNode, OperationType } from "./ast.ts";
 import { RationalNumber } from "./rational.ts";
 import { RoundingStrategy } from "./constants.ts";
 import { evaluate } from "./engine.ts";
 import { CalcAUYOutput } from "./output.ts";
 import { Lexer } from "./parser/lexer.ts";
 import { Parser } from "./parser/parser.ts";
-import { getSubLogger } from "./logger.ts";
-
-const logger = getSubLogger("builder");
 
 export type InputValue = string | number | bigint | CalcAUY;
 
@@ -19,7 +16,7 @@ export class CalcAUY {
     }
 
     static from(value: InputValue): CalcAUY {
-        if (value instanceof CalcAUY) { return value; }
+        if (value instanceof CalcAUY) return value;
 
         const r = RationalNumber.from(value as any);
         const node: LiteralNode = {
@@ -38,22 +35,27 @@ export class CalcAUY {
     }
 
     static hydrate(ast: CalculationNode | string): CalcAUY {
-        const node = typeof ast === "string" ? JSON.parse(ast) : ast;
-        // Validation would go here (Spec 10)
+        const node: CalculationNode = typeof ast === "string" ? JSON.parse(ast) : ast;
         return new CalcAUY(node);
     }
 
-    hibernate(): CalculationNode {
-        return this.#ast;
+    /**
+     * Captura e serializa a árvore atual em uma string JSON pronta para persistência.
+     */
+    hibernate(): string {
+        return JSON.stringify(this.#ast);
     }
 
+    /**
+     * Retorna o objeto da Árvore de Sintaxe Abstrata (AST) no estado atual.
+     */
     getAST(): CalculationNode {
         return this.#ast;
     }
 
     setMetadata(key: string, value: unknown): CalcAUY {
         const newAST = { ...this.#ast, metadata: { ...(this.#ast.metadata || {}), [key]: value } };
-        return new CalcAUY(newAST);
+        return new CalcAUY(newAST as CalculationNode);
     }
 
     group(): CalcAUY {
@@ -66,29 +68,15 @@ export class CalcAUY {
 
     // --- Fluent Operations ---
 
-    add(value: InputValue): CalcAUY {
-        return this.op("add", value);
-    }
-    sub(value: InputValue): CalcAUY {
-        return this.op("sub", value);
-    }
-    mult(value: InputValue): CalcAUY {
-        return this.op("mul", value);
-    }
-    div(value: InputValue): CalcAUY {
-        return this.op("div", value);
-    }
-    pow(value: InputValue): CalcAUY {
-        return this.op("pow", value);
-    }
-    mod(value: InputValue): CalcAUY {
-        return this.op("mod", value);
-    }
-    divInt(value: InputValue): CalcAUY {
-        return this.op("divInt", value);
-    }
+    add(value: InputValue): CalcAUY { return this.op("add", value); }
+    sub(value: InputValue): CalcAUY { return this.op("sub", value); }
+    mult(value: InputValue): CalcAUY { return this.op("mul", value); }
+    div(value: InputValue): CalcAUY { return this.op("div", value); }
+    pow(value: InputValue): CalcAUY { return this.op("pow", value); }
+    mod(value: InputValue): CalcAUY { return this.op("mod", value); }
+    divInt(value: InputValue): CalcAUY { return this.op("divInt", value); }
 
-    // Precedência conforme Spec 07
+    // Precedência conforme Spec 07 (Menor valor = Maior prioridade)
     private static readonly PRECEDENCE: Record<OperationType, number> = {
         pow: 2,
         mul: 3,
@@ -100,8 +88,6 @@ export class CalcAUY {
     };
 
     private op(type: OperationType, value: InputValue): CalcAUY {
-        logger.debug(`Operation ${type} requested`, { currentAST: this.#ast });
-
         let rightNode: CalculationNode;
         if (value instanceof CalcAUY) {
             rightNode = { kind: "group", child: value.#ast };
@@ -110,42 +96,39 @@ export class CalcAUY {
             rightNode = { kind: "literal", value: r.toJSON(), originalInput: value.toString() };
         }
 
-        const newPrec = CalcAUY.PRECEDENCE[type];
-        const currentAST = this.#ast;
+        return new CalcAUY(this.attachOp(this.#ast, type, rightNode));
+    }
 
-        // Se a raiz atual for uma operação e tiver menor precedência (número maior),
-        // precisamos descer para manter a hierarquia correta (Spec 07).
-        if (currentAST.kind === "operation") {
-            const currentPrec = CalcAUY.PRECEDENCE[currentAST.type];
-
-            // Caso especial: Precedência superior ou Associatividade à Direita (para potências)
-            if (newPrec < currentPrec || (type === "pow" && currentAST.type === "pow")) {
-                const operands = [...currentAST.operands];
-                const lastOperand = operands.pop()!;
-
-                // O novo nó "rouba" o último operando do nó anterior
-                const nestedNode: OperationNode = {
-                    kind: "operation",
-                    type,
-                    operands: [lastOperand, rightNode],
-                };
-
-                const rotatedNode: OperationNode = {
-                    ...currentAST,
-                    operands: [...operands, nestedNode],
-                };
-
-                return new CalcAUY(rotatedNode);
-            }
+    /**
+     * Anexa recursivamente uma nova operação à árvore respeitando PEMDAS e Associatividade.
+     */
+    private attachOp(target: CalculationNode, type: OperationType, right: CalculationNode): CalculationNode {
+        if (target.kind !== "operation") {
+            return { kind: "operation", type, operands: [target, right] };
         }
 
-        // Caso padrão: Envolve a árvore atual como operando da esquerda
-        const node: OperationNode = {
+        const currentPrec = CalcAUY.PRECEDENCE[target.type];
+        const newPrec = CalcAUY.PRECEDENCE[type];
+
+        // Regra de Ouro: Se a nova operação tem maior precedência (valor menor),
+        // ou se é potência (associatividade à direita), ela deve "mergulhar" para o operando da direita.
+        if (newPrec < currentPrec || (type === "pow" && target.type === "pow")) {
+            const operands = [...target.operands];
+            const last = operands.pop()!;
+            const updatedLast = this.attachOp(last, type, right);
+            
+            return {
+                ...target,
+                operands: [...operands, updatedLast],
+            };
+        }
+
+        // Caso contrário, a árvore atual inteira torna-se o operando da esquerda do novo nó.
+        return {
             kind: "operation",
             type,
-            operands: [this.#ast, rightNode],
+            operands: [target, right],
         };
-        return new CalcAUY(node);
     }
 
     commit(options: { roundStrategy?: RoundingStrategy } = {}): CalcAUYOutput {

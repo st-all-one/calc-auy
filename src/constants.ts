@@ -11,6 +11,7 @@ export const SCALE_BIGINT = 10n ** PRECISION_BIGINT;
 
 export const DEFAULT_LOCALE = "pt-BR";
 export const DEFAULT_CURRENCY = "BRL";
+export const DEFAULT_DECIMAL_PRECISION = 4;
 
 export const ROUNDING_IDS = {
     NBR5891: "NBR",
