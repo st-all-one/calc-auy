@@ -5,10 +5,10 @@ Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAU
 
 ## Métodos de Exportação Numérica e Monetária
 
-### `toString(options?: OutputOptions): string`
+### `toStringNumber(options?: OutputOptions): string`
 - **Descrição:** Retorna a representação decimal do resultado final arredondado.
 - **Lógica:** Aplica a `roundStrategy` (definida no `commit`) na precisão `decimalPrecision` informada.
-- **Exemplo:** `1.2345` -> `toString({ decimalPrecision: 2 })` -> `"1.23"` (se TRUNCATE).
+- **Exemplo:** `1.2345` -> `toStringNumber({ decimalPrecision: 2 })` -> `"1.23"` (se TRUNCATE).
 
 ### `toFloatNumber(options?: OutputOptions): number`
 - **Descrição:** Converte o resultado para o tipo `number` (float) do JavaScript.
@@ -59,7 +59,7 @@ Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAU
 - **Rigor:** Deve detalhar o início e fim de grupos (parênteses) e explicitar a estratégia de arredondamento usada.
 - **Exemplo:** "Abre parênteses, dez mais cinco, fecha parênteses, dividido por três, igual a cinco vírgula zero zero (Arredondamento: NBR-5891 para 2 casas decimais)".
 
-### `toUnicode(): string`
+### `toUnicode(options?: OutputOptions): string`
 - **Descrição:** Representação visual simples para logs e terminais.
 - **Exemplo:** `2³ + √(16)`.
 
@@ -68,7 +68,7 @@ Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAU
 
 ## Auditoria de Rastro e Estrutura
 
-### `toAuditTrace(): ASTSnapshot`
+### `toAuditTrace(): Record<string, unknown>`
 - **Descrição:** Retorna um snapshot completo da execução.
 - **Conteúdo:** Um objeto JSON contendo a Árvore AST serializada, onde cada nó inclui:
   - O valor intermediário calculado naquele ponto (como `RationalNumber`).
@@ -78,7 +78,7 @@ Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAU
 
 ### `toJSON(outputs?: OutputKey[]): Record<string, unknown>`
 - **Descrição:** Consolida múltiplos outputs em um único objeto.
-- **Padrão:** `["toString", "toCentsInBigInt", "toMonetary", "toLaTeX", "toUnicode", "toVerbalA11y", "toAuditTrace"]`.
+- **Padrão:** `["toStringNumber", "toCentsInBigInt", "toMonetary", "toLaTeX", "toUnicode", "toVerbalA11y", "toAuditTrace"]`.
 
 ### `toCustomOutput<Toutput>(processor: ICalcAUYCustomOutput<Toutput>): Toutput`
 - **Descrição:** O ápice da extensibilidade da CalcAUY. Permite injetar um formatador externo que tem acesso total ao rastro de auditoria e ao valor racional.

@@ -31,7 +31,7 @@ Nesta fase, você monta a fórmula e **anexa o contexto de negócio**.
 
 ### Fase 4: Exportação (Rich Outputs)
 Com o cálculo selado, você extrai o resultado no formato desejado. É aqui que você define a **precisão decimal** de exibição.
-- **Métodos:** `.toMonetary()`, `.toString()`, `.toLaTeX()`, `.toVerbalA11y()`, `.toAuditTrace()`, `.toImageBuffer()`.
+- **Métodos:** `.toMonetary()`, `.toStringNumber()`, `.toLaTeX()`, `.toVerbalA11y()`, `.toAuditTrace()`, `.toImageBuffer()`.
 - **Rateio de Precisão:** `.toSlice()` e `.toSliceByRatio()` garantem que você possa dividir um valor entre parcelas ou sócios sem "perder" centavos no arredondamento (Algoritmo de Maior Resto).
 
 ---
@@ -46,8 +46,8 @@ Essencial para auditoria. Permite que cada nó da árvore saiba *por que* foi cr
 Essencial para ERPs e sistemas de faturamento. Se você tem `10.00` e precisa dividir em 3 parcelas, a **CalcAUY** retorna `["3.34", "3.33", "3.33"]`. A soma das fatias é **sempre** idêntica ao valor total, eliminando as famosas "diferenças de 1 centavo" em balanços contábeis.
 
 ### `hibernate()` e `hydrate(json)`
-Permite a **persistência e composição de cálculos**.
-- **`hibernate()`**: Captura e serializa a árvore atual em JSON para armazenamento duradouro.
+Permite a **persistência e composição de cálculos** (Hibernação).
+- **`hibernate()`**: Captura e serializa a árvore atual em JSON para armazenamento duradouro. (Alias: `getAST()`).
 - **`hydrate(json)`**: Reconstrói uma instância ativa.
   - **Como Raiz**: Inicia uma nova cadeia de cálculo (`CalcAUY.hydrate(AST).add(10)`).
   - **Como Operando**: Quando injetado em outro cálculo (`calc.mult(CalcAUY.hydrate(AST))`), ele se comporta como uma instância normal e é **automaticamente protegido por parênteses**, garantindo a integridade da precedência matemática.
@@ -68,11 +68,15 @@ const calculoBase = CalcAUY.from(1000)
 const snapshot = calculoBase.hibernate();
 
 // Reidratação e Composição: Retoma ou injeta em outro cálculo
+// 2. Selagem do cálculo (Execução Racional)
 const resultadoFinal = CalcAUY.from(500)
   .add(
     CalcAUY.hydrate(snapshot) // Injetado e auto-agrupado como (1000 * 1.10)
   )
-  .commit("NBR-5891");
+  .commit({ roundStrategy: "NBR-5891" });
+
+console.log(resultadoFinal.toMonetary({ locale: "pt-BR", decimalPrecision: 2 }));
+console.log(resultadoFinal.toStringNumber({ decimalPrecision: 2 })); // "1600.00"
 ```
 
 ---
@@ -83,9 +87,7 @@ const resultadoFinal = CalcAUY.from(500)
 | :--- | :--- | :--- |
 | **Metadados** | Fase de Construção (`.setMetadata`) | Contexto de negócio no `toAuditTrace`. |
 | **Persistência** | Qualquer momento (`.hibernate()`) | Permite salvar/retomar o cálculo (JSON). |
-| **Estratégia** | Fase de Commit (`.commit()`) | Define a lógica matemática do colapso. |
+| **Estratégia** | Fase de Commit (`.commit({ strategy })`) | Define a lógica matemática do colapso. |
 | **Locale / Moeda** | Fase de Output (`.toX()`) | Internacionalização e localização. |
-
 ---
 **CalcAUY: Rigor Matemático, Transparência de Auditoria e Inclusão por Acessibilidade.**
- Inclusão por Acessibilidade.**

@@ -1,4 +1,4 @@
-import { CalculationNode } from "./ast.ts";
+import { CalculationNode, OperationType } from "./ast.ts";
 import { RationalNumber } from "./rational.ts";
 import { CalcAUYError } from "./errors.ts";
 import { getSubLogger } from "./logger.ts";
@@ -34,7 +34,7 @@ export function evaluate(node: CalculationNode): RationalNumber {
  * Resolves a specific operation node.
  */
 function evaluateOperation(
-    type: string,
+    type: OperationType,
     operands: CalculationNode[],
 ): RationalNumber {
     if (operands.length === 0) {

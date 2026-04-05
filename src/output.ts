@@ -29,7 +29,7 @@ export interface ICalcAUYCustomOutputContext {
     options: Readonly<OutputOptions>;
     methods: Pick<
         CalcAUYOutput,
-        "toString" | "toMonetary" | "toCentsInBigInt" | "toFloatNumber"
+        "toStringNumber" | "toMonetary" | "toCentsInBigInt" | "toFloatNumber"
     >;
 }
 
@@ -37,6 +37,7 @@ export class CalcAUYOutput {
     readonly #result: RationalNumber;
     readonly #ast: CalculationNode;
     readonly #strategy: RoundingStrategy;
+    readonly #cache = new Map<number, RationalNumber>();
 
     constructor(result: RationalNumber, ast: CalculationNode, strategy: RoundingStrategy) {
         this.#result = result;
@@ -44,20 +45,31 @@ export class CalcAUYOutput {
         this.#strategy = strategy;
     }
 
-    toString(options?: OutputOptions): string {
+    /**
+     * Internal helper to get or calculate rounded result (Lazy Cache).
+     */
+    private getRounded(precision: number): RationalNumber {
+        if (!this.#cache.has(precision)) {
+            const rounded = applyRounding(this.#result, this.#strategy, precision);
+            this.#cache.set(precision, rounded);
+        }
+        return this.#cache.get(precision)!;
+    }
+
+    toStringNumber(options?: OutputOptions): string {
         const p = options?.decimalPrecision ?? 2;
-        const rounded = applyRounding(this.#result, this.#strategy, p);
+        const rounded = this.getRounded(p);
         return rounded.toDecimalString(p);
     }
 
     toFloatNumber(options?: OutputOptions): number {
-        return parseFloat(this.toString(options));
+        return parseFloat(this.toStringNumber(options));
     }
 
     toCentsInBigInt(options?: OutputOptions): bigint {
         const p = options?.decimalPrecision ?? 2;
         const pScale = 10n ** BigInt(p);
-        const rounded = applyRounding(this.#result, this.#strategy, p);
+        const rounded = this.getRounded(p);
         return (rounded.n * pScale) / rounded.d;
     }
 
@@ -69,9 +81,9 @@ export class CalcAUYOutput {
         const p = options?.decimalPrecision ?? 2;
         const loc = getLocale(options?.locale);
         const currency = options?.currency ?? loc.currency;
-        const val = this.toString(options);
+        const val = this.toStringNumber(options);
 
-        // Simple manual formatting for agnostic runtime (no Intl dependency for basic case)
+        // Simple manual formatting for agnostic runtime
         const [int, dec] = val.split(".");
         const formattedInt = int.replace(/\B(?=(\d{3})+(?!\d))/g, loc.thousandSeparator);
         const symbol = currency === "BRL" ? "R$ " : "$ ";
@@ -82,8 +94,13 @@ export class CalcAUYOutput {
         return this.renderAST(this.#ast, "latex");
     }
 
-    toUnicode(): string {
-        return this.renderAST(this.#ast, "unicode");
+    toUnicode(options?: OutputOptions): string {
+        const base = this.renderAST(this.#ast, "unicode");
+        const strategyId = ROUNDING_IDS[this.#strategy];
+        const subStrategy = toSubscript(strategyId);
+        const p = options?.decimalPrecision ?? 2;
+
+        return `round${subStrategy}(${base}, ${p}) = ${this.toStringNumber(options)}`;
     }
 
     toHTML(katexRenderer: (latex: string) => string): string {
@@ -125,7 +142,7 @@ export class CalcAUYOutput {
         const strategyName = ROUNDING_IDS[this.#strategy];
 
         // Formata o número final com o separador falado (ex: " vírgula " ou " point ")
-        const finalValueStr = this.toString(options).replace(".", loc.voicedSeparator);
+        const finalValueStr = this.toStringNumber(options).replace(".", loc.voicedSeparator);
 
         const { phrases } = loc;
         return `${base}${phrases.isEqual}${finalValueStr} (${phrases.rounding}: ${strategyName} ${phrases.for} ${p} ${phrases.decimalPlaces}).`;
@@ -184,12 +201,33 @@ export class CalcAUYOutput {
         });
     }
 
-    toAuditTrace(): any {
+    toAuditTrace(): Record<string, unknown> {
         return {
             ast: this.#ast,
             finalResult: this.#result.toJSON(),
             strategy: this.#strategy,
         };
+    }
+
+    toJSON(outputs?: string[]): Record<string, unknown> {
+        const keys = outputs ?? [
+            "toStringNumber",
+            "toCentsInBigInt",
+            "toMonetary",
+            "toLaTeX",
+            "toUnicode",
+            "toVerbalA11y",
+            "toAuditTrace",
+        ];
+        const res: Record<string, unknown> = {};
+        for (const key of keys) {
+            if (key === "toJSON" || key === "toCustomOutput") continue;
+            const method = (this as any)[key];
+            if (typeof method === "function") {
+                res[key] = method.call(this);
+            }
+        }
+        return res;
     }
 
     toCustomOutput<T>(processor: ICalcAUYCustomOutput<T>): T {
@@ -204,7 +242,7 @@ export class CalcAUYOutput {
             },
             options: {},
             methods: {
-                toString: this.toString.bind(this),
+                toStringNumber: this.toStringNumber.bind(this),
                 toMonetary: this.toMonetary.bind(this),
                 toCentsInBigInt: this.toCentsInBigInt.bind(this),
                 toFloatNumber: this.toFloatNumber.bind(this),
@@ -214,8 +252,6 @@ export class CalcAUYOutput {
     }
 
     private renderAST(node: CalculationNode, format: "latex" | "unicode" | "verbal", loc?: LocaleDefinition): string {
-        // Logic to traverse AST and generate strings based on format
-        // This is a simplified version for implementation
         if (node.kind === "literal") { return node.originalInput; }
         if (node.kind === "group") {
             const inner = this.renderAST(node.child, format, loc);
@@ -227,7 +263,39 @@ export class CalcAUYOutput {
         const ops = node.operands.map((o) => this.renderAST(o, format, loc));
         if (format === "latex") {
             if (node.type === "div") { return `\\frac{${ops[0]}}{${ops[1]}}`; }
-            const symbols: any = { add: "+", sub: "-", mul: "\\times", pow: "^", mod: "\\bmod", divInt: "//" };
+            const symbols: Record<string, string> = {
+                add: "+",
+                sub: "-",
+                mul: "\\times",
+                pow: "^",
+                mod: "\\bmod",
+                divInt: "//",
+            };
+            return ops.join(` ${symbols[node.type]} `);
+        }
+
+        if (format === "unicode") {
+            if (node.type === "pow") {
+                const expNode = node.operands[1];
+                if (expNode.kind === "literal" && expNode.originalInput.includes("/")) {
+                    const [num, den] = expNode.originalInput.split("/");
+
+                    if (num === "1") {
+                        if (den === "2") { return `√(${ops[0]})`; }
+                        if (den === "3") { return `∛(${ops[0]})`; }
+                        if (den === "4") { return `∜(${ops[0]})`; }
+                        return `${toSuperscript(den)}√(${ops[0]})`;
+                    }
+
+                    // Ex: x^(7/3) -> ∛(x⁷)
+                    if (den === "2") { return `√(${ops[0]}${toSuperscript(num)})`; }
+                    if (den === "3") { return `∛(${ops[0]}${toSuperscript(num)})`; }
+                    if (den === "4") { return `∜(${ops[0]}${toSuperscript(num)})`; }
+                    return `${toSuperscript(den)}√(${ops[0]}${toSuperscript(num)})`;
+                }
+                return `${ops[0]}${toSuperscript(ops[1])}`;
+            }
+            const symbols: Record<string, string> = { add: "+", sub: "-", mul: "×", div: "÷", mod: "%", divInt: "//" };
             return ops.join(` ${symbols[node.type]} `);
         }
 
@@ -235,7 +303,15 @@ export class CalcAUYOutput {
             return ops.join(` ${loc?.operators[node.type]} `);
         }
 
-        const symbols: any = { add: "+", sub: "-", mul: "*", div: "/", pow: "^", mod: "%", divInt: "//" };
+        const symbols: Record<string, string> = {
+            add: "+",
+            sub: "-",
+            mul: "*",
+            div: "/",
+            pow: "^",
+            mod: "%",
+            divInt: "//",
+        };
         return ops.join(` ${symbols[node.type]} `);
     }
 }

@@ -148,7 +148,8 @@ export class CalcAUY {
         return new CalcAUY(node);
     }
 
-    commit(strategy: RoundingStrategy = "NBR5891"): CalcAUYOutput {
+    commit(options: { roundStrategy?: RoundingStrategy } = {}): CalcAUYOutput {
+        const strategy = options.roundStrategy ?? "NBR5891";
         const result = evaluate(this.#ast);
         return new CalcAUYOutput(result, this.#ast, strategy);
     }

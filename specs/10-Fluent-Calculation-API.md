@@ -80,9 +80,10 @@ Diferente das APIs tradicionais, a injeção de uma instância de `CalcAUY` em o
 
 ## Finalização (Commit)
 
-### `commit(roundStrategy: RoundingStrategy): CalcAUYOutput`
+### `commit(options?: { roundStrategy?: RoundingStrategy }): CalcAUYOutput`
 - **Ação:** Inicia o colapso da AST em um resultado numérico racional.
-- **Estratégia de Arredondamento:** Define *como* a biblioteca lidará com dízimas ou arredondamentos posteriores (ex: `NBR-5891`, `HALF_EVEN`, `TRUNCATE`, `CEIL`).
+- **Opções:**
+  - `roundStrategy`: Define *como* a biblioteca lidará com dízimas ou arredondamentos posteriores (ex: `NBR-5891`, `HALF_EVEN`, `TRUNCATE`, `CEIL`).
 - **Retorno:** Uma instância de `CalcAUYOutput`.
 
 ## Exemplo Detalhado
@@ -92,8 +93,8 @@ const juros = CalcAUY.from(1000)
     CalcAUY.from(1).add("0.10").pow(12) // (1 + 0.10)^12
   )
   .setMetadata("op_type", "compound_interest")
-  .commit("NBR-5891");
+  .commit({ roundStrategy: "NBR-5891" });
 
-console.log(juros.toString({ decimalPrecision: 2 })); 
+console.log(juros.toStringNumber({ decimalPrecision: 2 })); 
 // "3138.43" (Valor auditado e arredondado conforme norma brasileira)
 ```

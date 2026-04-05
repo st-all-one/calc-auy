@@ -30,7 +30,7 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 - `commit(strategy)`: Finaliza e congela o cálculo.
 
 ### Classe `CalcAUYOutput` (Result)
-- `toMonetary()`, `toString()`, `toLaTeX()`, `toHTML()`, `toUnicode()`, `toImageBuffer()`
+- `toMonetary()`, `toStringNumber()`, `toLaTeX()`, `toHTML()`, `toUnicode()`, `toImageBuffer()`
 - **`toSlice()` / `toSliceByRatio()`**: Rateio exato de centavos (Algoritmo de Maior Resto).
 - `toVerbalA11y()`: Tradução humana da fórmula.
 - `toAuditTrace()`: Snapshot JSON completo com metadados e valores intermediários.
