@@ -1,6 +1,9 @@
 import { CalcAUYError } from "./errors.ts";
 import { PRECISION_BIGINT } from "./constants.ts";
 
+// Internal safety limits to avoid memory/stack exhaustion in explosive operations (like towers of powers)
+const MAX_BI_BITS = 1_000_000n; // ~300,000 decimal digits. Sufficient for any forensic audit.
+
 /**
  * Calculates the Greatest Common Divisor (GCD/MDC) of two bigints.
  */
@@ -44,6 +47,21 @@ export class RationalNumber {
     }
     get d(): bigint {
         return this.#d;
+    }
+
+    /**
+     * Checks if an operation result might exceed the safety limit of bits.
+     */
+    static #checkSafety(n: bigint, d: bigint): void {
+        // bitLength is efficient in V8 for BigInt
+        const nBits = BigInt(n.toString(2).length);
+        const dBits = BigInt(d.toString(2).length);
+        if (nBits > MAX_BI_BITS || dBits > MAX_BI_BITS) {
+            throw new CalcAUYError(
+                "math-overflow",
+                `O resultado da operação excede o limite de segurança de ${MAX_BI_BITS} bits.`,
+            );
+        }
     }
 
     /**
@@ -121,21 +139,29 @@ export class RationalNumber {
     add(other: RationalNumber): RationalNumber {
         const n = this.#n * other.#d + other.#n * this.#d;
         const d = this.#d * other.#d;
+        RationalNumber.#checkSafety(n, d);
         return new RationalNumber(n, d);
     }
 
     sub(other: RationalNumber): RationalNumber {
         const n = this.#n * other.#d - other.#n * this.#d;
         const d = this.#d * other.#d;
+        RationalNumber.#checkSafety(n, d);
         return new RationalNumber(n, d);
     }
 
     mul(other: RationalNumber): RationalNumber {
-        return new RationalNumber(this.#n * other.#n, this.#d * other.#d);
+        const n = this.#n * other.#n;
+        const d = this.#d * other.#d;
+        RationalNumber.#checkSafety(n, d);
+        return new RationalNumber(n, d);
     }
 
     div(other: RationalNumber): RationalNumber {
-        return new RationalNumber(this.#n * other.#d, this.#d * other.#n);
+        const n = this.#n * other.#d;
+        const d = this.#d * other.#n;
+        RationalNumber.#checkSafety(n, d);
+        return new RationalNumber(n, d);
     }
 
     /**
@@ -147,6 +173,22 @@ export class RationalNumber {
             if (exponent.#n === 0n) return RationalNumber.from(1n);
             if (exponent.#n > 0n) return RationalNumber.from(0n);
             throw new CalcAUYError("division-by-zero", "Zero elevado a um expoente negativo.");
+        }
+
+        // Check for potential overflow BEFORE executing power if exponent is integer
+        if (exponent.#d === 1n && exponent.#n > 0n) {
+            // Fast estimate: y * log2(x)
+            const baseNBits = BigInt(this.#n.toString(2).length);
+            const baseDBits = BigInt(this.#d.toString(2).length);
+            const estimatedNBits = exponent.#n * baseNBits;
+            const estimatedDBits = exponent.#n * baseDBits;
+
+            if (estimatedNBits > MAX_BI_BITS || estimatedDBits > MAX_BI_BITS) {
+                throw new CalcAUYError(
+                    "math-overflow",
+                    `O expoente resultaria em um número superior ao limite de segurança (${MAX_BI_BITS} bits).`,
+                );
+            }
         }
 
         // Optimization for integer power

@@ -44,4 +44,32 @@ describe("Reproduction of reported issues", () => {
         assertEquals(result.compare(RationalNumber.from(0)) > 0, true);
         assertEquals(dec.length > 0, true);
     });
+
+    it("should throw math-overflow for explosive towers of power", () => {
+        const base = RationalNumber.from(10);
+        const hugeExp = RationalNumber.from(1000000); // 10^1000000 is too big
+        
+        try {
+            base.pow(hugeExp);
+            assertEquals(true, false, "Should have thrown math-overflow");
+        } catch (err) {
+            assertEquals((err as any).type.includes("math-overflow"), true);
+        }
+    });
+
+    it("should throw math-overflow for very deep AST (recursion guard)", async () => {
+        // Create an AST with 501 nested groups
+        let node: any = { kind: "literal", value: { n: "1", d: "1" }, originalInput: "1" };
+        for (let i = 0; i < 505; i++) {
+            node = { kind: "group", child: node };
+        }
+
+        const { evaluate } = await import("../src/engine.ts");
+        try {
+            evaluate(node);
+            assertEquals(true, false, "Should have thrown math-overflow for depth");
+        } catch (err) {
+            assertEquals((err as any).type.includes("math-overflow"), true);
+        }
+    });
 });

@@ -5,22 +5,31 @@ import { getSubLogger } from "./logger.ts";
 
 const logger = getSubLogger("engine");
 
+const MAX_RECURSION_DEPTH = 500;
+
 /**
  * Collapses an AST node into a final RationalNumber.
  * This is the core of the "commit" phase.
  */
-export function evaluate(node: CalculationNode): RationalNumber {
-    logger.debug("Evaluating node", { kind: node.kind, label: node.label });
+export function evaluate(node: CalculationNode, depth = 0): RationalNumber {
+    if (depth > MAX_RECURSION_DEPTH) {
+        throw new CalcAUYError(
+            "math-overflow",
+            "A profundidade da expressão excedeu o limite de segurança (AST muito complexa).",
+        );
+    }
+
+    logger.debug("Evaluating node", { kind: node.kind, label: node.label, depth });
 
     switch (node.kind) {
         case "literal":
             return RationalNumber.from(`${node.value.n}/${node.value.d}`);
 
         case "group":
-            return evaluate(node.child);
+            return evaluate(node.child, depth + 1);
 
         case "operation":
-            return evaluateOperation(node.type, node.operands);
+            return evaluateOperation(node.type, node.operands, depth + 1);
 
         default:
             throw new CalcAUYError(
@@ -36,13 +45,14 @@ export function evaluate(node: CalculationNode): RationalNumber {
 function evaluateOperation(
     type: OperationType,
     operands: CalculationNode[],
+    depth: number,
 ): RationalNumber {
     if (operands.length === 0) {
         throw new CalcAUYError("corrupted-node", `Operação '${type}' sem operandos.`);
     }
 
     // Resolve all operands first
-    const values = operands.map((op) => evaluate(op));
+    const values = operands.map((op) => evaluate(op, depth));
 
     switch (type) {
         case "add":

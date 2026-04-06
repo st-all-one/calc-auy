@@ -9,7 +9,8 @@ export type ErrorCategory =
     | "division-by-zero"
     | "complex-result"
     | "invalid-precision"
-    | "corrupted-node";
+    | "corrupted-node"
+    | "math-overflow";
 
 export interface ErrorContext {
     operation?: string;
@@ -47,6 +48,7 @@ export class CalcAUYError extends Error {
             "complex-result": 422,
             "invalid-precision": 400,
             "corrupted-node": 500,
+            "math-overflow": 422,
         };
 
         const titleMap: Record<ErrorCategory, string> = {
@@ -56,6 +58,7 @@ export class CalcAUYError extends Error {
             "complex-result": "Resultado Matemático Não Suportado",
             "invalid-precision": "Precisão Inválida",
             "corrupted-node": "Estrutura AST Corrompida",
+            "math-overflow": "Transbordo de Capacidade Matemática",
         };
 
         this.status = statusMap[category];
