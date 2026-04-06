@@ -27,6 +27,9 @@
         "coverage": "deno task test --reporter=dot --coverage=./coverage",
         "test": "deno test --allow-all tests/"
     },
+    "workspace": [
+        "./demo"
+    ],
     "compilerOptions": {
         "lib": [
             "dom",

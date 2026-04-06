@@ -1,0 +1,24 @@
+{
+    "name": "@scope/demo",
+    "version": "1.0.0",
+    "exports": "./server.ts",
+    "license": "MPL-2.0",
+    "tasks": {
+        "demo": "deno serve --watch --allow-read server.ts",
+        "bundle": "deno run -A npm:esbuild editor_controller.js --bundle --format=iife --outfile=editor_controller.bundle.js"
+    },
+    "imports": {
+        "@calc-auy": "../mod.ts",
+        "codemirror": "npm:codemirror@^6.0.1",
+        "@codemirror/state": "npm:@codemirror/state@^6.4.1",
+        "@codemirror/view": "npm:@codemirror/view@^6.26.3",
+        "@codemirror/lang-javascript": "npm:@codemirror/lang-javascript@^6.2.2",
+        "@codemirror/autocomplete": "npm:@codemirror/autocomplete@^6.16.2",
+        "@codemirror/commands": "npm:@codemirror/commands@^6.6.0",
+        "@codemirror/language": "npm:@codemirror/language@^6.10.1",
+        "@codemirror/lint": "npm:@codemirror/lint@^6.8.0",
+        "@logtape": "jsr:@logtape/logtape@^2.0.4",
+        "@std/path": "jsr:@std/path@^1.1.4",
+        "@katex": "npm:katex@^0.16.40"
+    }
+}

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CalcAUY - Showcase & Auditoria</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico">
+</head>
+<body>
+    <div id="barra-acessibilidade">
+        <ul>
+            <li><a href="#" id="modo-escuro">☼ Modo Escuro</a></li>
+            <li><a href="#" id="alto-contraste">◐ Alto Contraste</a></li>
+        </ul>
+    </div>
+
+    <div class="page-container">
+        <header>
+            <h1>CalcAUY: Showcase</h1>
+            <p>Demonstração de precisão racional absoluta e auditabilidade forense.</p>
+        </header>
+
+        <main>
+            <section id="sec-interactive">
+                <h2>Simulador Interativo</h2>
+                <div class="interactive-container">
+                    <div class="editor-box">
+                        <iframe id="editor-iframe" src="editor.html" sandbox="allow-scripts" title="Editor"></iframe>
+                        <button id="btn-executar">Executar e Auditar</button>
+                    </div>
+                    
+                    <div id="res-box" class="interactive-results">
+                        <h3>Resultados</h3>
+                        <div class="output-grid" id="interactive-outputs">
+                            <!-- JS will populate this -->
+                            <div class="output-item full-width" data-type="toHTML">
+                                <strong>toHTML():</strong>
+                                <div class="val-html">--</div>
+                            </div>
+                            <div class="output-item" data-type="toStringNumber">
+                                <strong>toStringNumber():</strong>
+                                <span class="val">--</span>
+                            </div>
+                            <div class="output-item" data-type="toMonetary">
+                                <strong>toMonetary():</strong>
+                                <span class="val">--</span>
+                            </div>
+                            <div class="output-item" data-type="toLaTeX">
+                                <strong>toLaTeX():</strong>
+                                <span class="val">--</span>
+                            </div>
+                            <div class="output-item" data-type="toUnicode">
+                                <strong>toUnicode():</strong>
+                                <span class="val">--</span>
+                            </div>
+                            <div class="output-item full-width" data-type="toVerbalA11y">
+                                <strong>toVerbalA11y():</strong>
+                                <span class="val">--</span>
+                            </div>
+                            <div class="output-item full-width" data-type="toAuditTrace">
+                                <strong>toAuditTrace():</strong>
+                                <pre class="val-json">--</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="examples-gallery">
+                <h2>Galeria de Exemplos</h2>
+                <div id="categories-container">
+                    <p>Carregando exemplos...</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>CalcAUY - 2026 - Licença MPL-2.0</p>
+        </footer>
+    </div>
+
+    <script src="script.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+:root {
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --primary: #003366;
+    --accent: #d4a017;
+    --border: #ddd;
+    --item-bg: #f9f9f9;
+}
+
+[data-theme="dark"] {
+    --bg: #121212;
+    --text: #e0e0e0;
+    --primary: #4da3ff;
+    --accent: #fdd835;
+    --border: #333;
+    --item-bg: #1e1e1e;
+}
+
+body {
+    font-family: system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+}
+
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+header {
+    border-bottom: 4px solid var(--primary);
+    margin-bottom: 2rem;
+}
+
+#barra-acessibilidade {
+    background: var(--primary);
+    color: white;
+    padding: 0.5rem;
+}
+
+#barra-acessibilidade ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 1rem;
+}
+
+#barra-acessibilidade a {
+    color: white;
+    text-decoration: none;
+}
+
+.interactive-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.editor-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#editor-iframe {
+    width: 100%;
+    height: 400px;
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+}
+
+.output-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.output-item {
+    background: var(--item-bg);
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+}
+
+.output-item.full-width {
+    grid-column: span 2;
+}
+
+.val-json {
+    font-size: 0.8rem;
+    max-height: 200px;
+    overflow: auto;
+    background: #000;
+    color: #0f0;
+    padding: 0.5rem;
+}
+
+button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+button:hover {
+    filter: brightness(1.2);
+}
+
+.card {
+    border: 1px solid var(--border);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    background: var(--item-bg);
+}
+
+.card-code {
+    background: #222;
+    color: #fff;
+    padding: 0.5rem;
+    font-family: monospace;
+    margin: 0.5rem 0;
+}
+
+.alto-contraste {
+    --bg: #000 !important;
+    --text: #fff !important;
+    --primary: #ff0 !important;
+    --accent: #fff !important;
+    --border: #fff !important;
+    --item-bg: #000 !important;
+}

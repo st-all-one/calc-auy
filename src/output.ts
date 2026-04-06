@@ -221,14 +221,17 @@ export class CalcAUYOutput {
         ];
         const res: Record<string, unknown> = {};
         for (const key of keys) {
-            if (key === "toJSON" || key === "toCustomOutput") { continue; }
+            if (key === "toJSON" || key === "toCustomOutput") continue;
             const method = (this as any)[key];
             if (typeof method === "function") {
-                res[key] = method.call(this);
+                const val = method.call(this);
+                // Ensure BigInt is serialized as string
+                res[key] = typeof val === "bigint" ? val.toString() : val;
             }
         }
         return res;
     }
+
 
     toCustomOutput<T>(processor: ICalcAUYCustomOutput<T>): T {
         const context: ICalcAUYCustomOutputContext = {

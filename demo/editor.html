@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #fff; }
+        #editor-container { height: 100%; width: 100%; font-family: monospace; padding: 10px; box-sizing: border-box; }
+        textarea { width: 100%; height: 100%; border: none; outline: none; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div id="editor-container">
+        <textarea id="code-editor">CalcAUY.from("1000")
+  .mult(
+    CalcAUY.from(1).add("0.10").pow(12)
+  )
+  .setMetadata("op_type", "compound_interest")
+  .commit({ roundStrategy: "NBR5891" })</textarea>
+    </div>
+    <script>
+        // Simple editor for demo (could be upgraded to CodeMirror later if bundle is provided)
+        const textarea = document.getElementById("code-editor");
+        
+        window.setupEditor = () => {}; // Mock for compatibility with plan
+        window.getUserCode = () => textarea.value;
+
+        window.addEventListener("message", (event) => {
+            if (event.data.type === "GET_CODE") {
+                window.parent.postMessage({ type: "CODE_RESPONSE", code: textarea.value }, "*");
+            }
+        });
+
+        window.parent.postMessage({ type: "EDITOR_READY" }, "*");
+    </script>
+</body>
+</html>

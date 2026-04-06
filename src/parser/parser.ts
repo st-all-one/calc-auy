@@ -1,5 +1,5 @@
-import { Token, TokenType } from "./lexer.ts";
-import { CalculationNode, GroupNode, LiteralNode, OperationNode } from "../ast.ts";
+import type { Token, TokenType } from "./lexer.ts";
+import type { CalculationNode, GroupNode, LiteralNode, OperationNode } from "../ast.ts";
 import { RationalNumber } from "../rational.ts";
 import { CalcAUYError } from "../errors.ts";
 
@@ -9,7 +9,7 @@ import { CalcAUYError } from "../errors.ts";
  */
 export class Parser {
     private tokens: Token[];
-    private pos: number = 0;
+    private pos = 0;
 
     constructor(tokens: Token[]) {
         this.tokens = tokens;
@@ -51,7 +51,7 @@ export class Parser {
         while (this.match("STAR", "SLASH", "DOUBLE_SLASH", "PERCENT")) {
             const token = this.previous();
             const right = this.power();
-            let type: any;
+            let type: unknown;
             if (token.type === "STAR") { type = "mul"; }
             else if (token.type === "SLASH") { type = "div"; }
             else if (token.type === "DOUBLE_SLASH") { type = "divInt"; }
@@ -71,7 +71,7 @@ export class Parser {
      * power -> primary [ CARET power ]  (Right Associative)
      */
     private power(): CalculationNode {
-        let left = this.primary();
+        const left = this.primary();
 
         if (this.match("CARET")) {
             const right = this.power(); // Recursive call for right-associativity
