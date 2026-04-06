@@ -51,9 +51,11 @@ Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAU
 - **Descrição:** Reconstrói a fórmula matemática em sintaxe LaTeX a partir da AST.
 - **Exemplo:** `10 / (2 + 3)` -> `\frac{10}{\left( 2 + 3 \right)}`.
 
-### `toHTML(katexRenderer: (latex: string) => string): string`
-- **Descrição:** Gera um fragmento HTML acessível.
-- **Acessibilidade:** Deve incluir um `aria-label` contendo o retorno do `toVerbalA11y()`.
+### `toHTML(katex: any, options?: OutputOptions): string`
+- **Descrição:** Gera um fragmento HTML acessível utilizando o motor KaTeX.
+- **Inversão de Dependência:** O módulo `katex` deve ser passado como primeiro argumento.
+- **Acessibilidade:** Inclui automaticamente um `aria-label` contendo o retorno do `toVerbalA11y()`.
+- **Estilo:** Injeta automaticamente o CSS minificado do KaTeX (via cache estático) e estilos de responsividade (`overflow-x: auto`).
 
 ### `toVerbalA11y(options?: OutputOptions): string`
 - **Descrição:** Tradução humana e audível do cálculo.
@@ -64,8 +66,9 @@ Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAU
 - **Descrição:** Representação visual simples para logs e terminais.
 - **Exemplo:** `2³ + √(16)`.
 
-### `toImageBuffer(katexRenderer: (latex: string) => string, options?: OutputOptions): Promise<Uint8Array>`
+### `toImageBuffer(katex: any, options?: OutputOptions): Uint8Array`
 - **Descrição:** Gera um buffer binário de uma imagem SVG auto-contida da fórmula.
+- **Heurística:** Calcula automaticamente as dimensões da imagem baseadas na complexidade da fórmula LaTeX.
 
 ## Auditoria de Rastro e Estrutura
 

@@ -19,7 +19,7 @@ export async function mapAllOutputs(
     // KaTeX renderer mockup for server-side demo (since we don't have real KaTeX on server yet)
     // In a real scenario, we might use a JSR/NPM package for KaTeX
 
-    const buffer = await output.toImageBuffer(katex.renderToString);
+    const buffer = output.toImageBuffer(katex);
     const hex = Array.from(buffer).map((b) => b.toString(16).padStart(2, "0"))
         .join(" ");
     const base64 = btoa(String.fromCharCode(...buffer));
@@ -38,7 +38,7 @@ export async function mapAllOutputs(
         toCentsInBigInt: output.toCentsInBigInt().toString(),
         toMonetary: output.toMonetary(),
         toLaTeX: output.toLaTeX(),
-        toHTML: output.toHTML(katex.renderToString),
+        toHTML: output.toHTML(katex),
         toVerbalA11y: output.toVerbalA11y(),
         toUnicode: output.toUnicode(),
         toAuditTrace: JSON.parse(output.toAuditTrace()),

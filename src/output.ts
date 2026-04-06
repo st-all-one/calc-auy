@@ -1,6 +1,11 @@
 import { CalculationNode } from "./ast.ts";
 import { RationalNumber } from "./rational.ts";
-import { DEFAULT_DECIMAL_PRECISION, ROUNDING_IDS, RoundingStrategy } from "./constants.ts";
+import {
+    DEFAULT_DECIMAL_PRECISION,
+    KATEX_CSS_MINIFIED,
+    ROUNDING_IDS,
+    RoundingStrategy,
+} from "./constants.ts";
 import { applyRounding } from "./rounding.ts";
 import { getLocale, LocaleDefinition } from "./i18n.ts";
 import { CalcAUYError } from "./errors.ts";
@@ -38,6 +43,7 @@ export class CalcAUYOutput {
     readonly #ast: CalculationNode;
     readonly #strategy: RoundingStrategy;
     readonly #cache = new Map<number, RationalNumber>();
+    static #cachedKaTeXCSS: string | null = null;
 
     constructor(result: RationalNumber, ast: CalculationNode, strategy: RoundingStrategy) {
         this.#result = result;
@@ -103,34 +109,116 @@ export class CalcAUYOutput {
         return `round${subStrategy}(${base}, ${p}) = ${this.toStringNumber(options)}`;
     }
 
-    toHTML(katexRenderer: (latex: string) => string): string {
-        const latex = this.toLaTeX();
-        const verbal = this.toVerbalA11y();
-        const html = katexRenderer(latex);
-        // Encapsulamento com A11y
-        return `<div class="calc-auy-result" aria-label="${verbal}">${html}</div>`;
+    /**
+     * Gera o HTML para exibição da fórmula matemática utilizando o motor KaTeX.
+     * Requer a passagem do módulo 'katex' como parâmetro para inversão de dependência.
+     */
+    toHTML(katex: any, options?: OutputOptions): string {
+        if (!katex || typeof katex.renderToString !== "function") {
+            throw new CalcAUYError(
+                "invalid-syntax",
+                "O módulo 'katex' é obrigatório para toHTML e deve possuir a função renderToString.",
+            );
+        }
+
+        const baseLatex = this.toLaTeX();
+        const p = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
+        const roundedStr = this.toStringNumber(options);
+        const strategyId = ROUNDING_IDS[this.#strategy];
+        const verbal = this.toVerbalA11y(options);
+
+        // Audit Trail simplificado: round_{ESTRATÉGIA}(Expressão, Precisão) = Resultado
+        const fullLatex = `\\text{round}_{\\text{${strategyId}}}(${baseLatex}, ${p}) = ${roundedStr}`;
+
+        const rendered = katex.renderToString(fullLatex, {
+            displayMode: true,
+            throwOnError: false,
+        });
+
+        if (!CalcAUYOutput.#cachedKaTeXCSS) {
+            CalcAUYOutput.#cachedKaTeXCSS = KATEX_CSS_MINIFIED;
+        }
+
+        return `
+<div class="calc-auy-result" aria-label="${verbal}">
+  <style>
+    ${CalcAUYOutput.#cachedKaTeXCSS}
+    .calc-auy-result { margin: 1em 0; overflow-x: auto; }
+  </style>
+  ${rendered}
+</div>`.trim();
     }
 
+    /**
+     * Gera uma imagem (SVG) contendo a representação visual do cálculo.
+     */
     toImageBuffer(
-        katexRenderer: (latex: string) => string,
-        _options?: OutputOptions,
+        katex: any,
+        options?: OutputOptions,
     ): Uint8Array {
-        const html = this.toHTML(katexRenderer);
+        const html = this.toHTML(katex, options);
         const latex = this.toLaTeX();
+        const verbal = this.toVerbalA11y(options);
+        const roundedStr = this.toStringNumber(options);
+        const strategyId = ROUNDING_IDS[this.#strategy];
+        const p = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
 
-        // Heurística de dimensão baseada no comprimento do LaTeX
-        const width = Math.max(300, Math.min(2000, latex.length * 15));
-        const height = latex.includes("\\frac") ? 150 : 80;
+        // 1. Engenharia do Cálculo Heurístico do ViewBox
+        const scaleFactor = 1.3;
+        const averagePxPerChar = 8;
+        const paddingHorizontal = 16;
+        const paddingVertical = 16;
 
+        // Medimos o comprimento do rastro de auditoria simplificado para estimar a largura
+        const textToMeasure = `round_{${strategyId}}(${latex}, ${p}) = ${roundedStr}`;
+        const estimatedWidth = (textToMeasure.length * averagePxPerChar * scaleFactor) +
+            (paddingHorizontal * 2);
+        const finalWidth = Math.max(300, Math.min(2000, Math.ceil(estimatedWidth)));
+
+        // Expansão vertical baseada em frações e raízes
+        let verticalExpansion = 0;
+        const fracMatches = latex.match(/\\frac/g);
+        if (fracMatches) verticalExpansion += fracMatches.length * 15;
+        const sqrtMatches = latex.match(/\\sqrt/g);
+        if (sqrtMatches) verticalExpansion += sqrtMatches.length * 25;
+
+        const baseHeight = (24 * scaleFactor) + (paddingVertical * 2) + verticalExpansion;
+        const finalHeight = Math.max(80, Math.min(1000, Math.ceil(baseHeight)));
+
+        // 2. Construção do SVG com A11y
         const svg = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
-                <foreignObject width="100%" height="100%">
-                    <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100%;">
-                        ${html}
-                    </div>
-                </foreignObject>
-            </svg>
-        `.trim();
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 ${finalWidth} ${finalHeight}"
+  width="${finalWidth}"
+  height="${finalHeight}"
+  preserveAspectRatio="xMidYMid meet"
+  aria-label="${verbal}"
+  role="img"
+  style="background: white; border-radius: 8px; border: 1px solid #eee;"
+>
+  <title>${verbal}</title>
+  <foreignObject width="100%" height="100%">
+    <div
+      xmlns="http://www.w3.org/1999/xhtml"
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        padding: ${paddingVertical}px ${paddingHorizontal}px;
+        margin: 0;
+        font-family: sans-serif;
+      "
+    >
+      <div style="font-size: ${scaleFactor}em; margin: 0; color: #333;">
+        ${html}
+      </div>
+    </div>
+  </foreignObject>
+</svg>`.trim();
 
         return new TextEncoder().encode(svg);
     }
