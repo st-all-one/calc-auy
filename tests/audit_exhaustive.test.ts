@@ -3,14 +3,18 @@ import { assertEquals, assertThrows } from "@std/assert";
 import { CalcAUY } from "../mod.ts";
 
 describe("Auditoria Exaustiva - CalcAUY (Rigor Matemático e Fiscal)", () => {
-    
     describe("1. Aritmética Racional e Imunidade IEEE 754", () => {
         const precisionScenarios = [
             { a: "0.1", b: "0.2", op: "add", exp: "0.3000" },
             { a: "0.1", b: "0.2", op: "mult", exp: "0.0200" },
             { a: "1", b: "3", op: "div", exp: "0.3333" },
             { a: "10", b: "3", op: "div", exp: "3.3333" },
-            { a: "0.00000000000000000000000000000000000000000000000001", b: "0.00000000000000000000000000000000000000000000000001", op: "add", exp: "0.0000" }, // Fora da escala de output 4, mas interna 50
+            {
+                a: "0.00000000000000000000000000000000000000000000000001",
+                b: "0.00000000000000000000000000000000000000000000000001",
+                op: "add",
+                exp: "0.0000",
+            }, // Fora da escala de output 4, mas interna 50
         ];
 
         precisionScenarios.forEach(({ a, b, op, exp }) => {
@@ -127,7 +131,7 @@ describe("Auditoria Exaustiva - CalcAUY (Rigor Matemático e Fiscal)", () => {
         localeScenarios.forEach(({ loc, expr, exp }) => {
             it(`Verbalização ${loc}: '${expr}' deve começar com '${exp}'`, () => {
                 const res = CalcAUY.parseExpression(expr).commit();
-                const verbal = res.toVerbalA11y({ locale: loc });
+                const verbal = res.toVerbalA11y({ locale: loc as any });
                 assertEquals(verbal.includes(exp), true);
             });
         });

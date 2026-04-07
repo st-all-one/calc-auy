@@ -23,14 +23,14 @@ export interface ErrorContext {
  * Custom Error for CalcAUY following Problem Details for HTTP APIs (RFC 7807).
  */
 export class CalcAUYError extends Error {
-    readonly type: string;
-    readonly title: string;
-    readonly status: number;
-    readonly detail: string;
-    readonly instance: string;
-    readonly context: ErrorContext;
+    public readonly type: string;
+    public readonly title: string;
+    public readonly status: number;
+    public readonly detail: string;
+    public readonly instance: string;
+    public readonly context: ErrorContext;
 
-    constructor(
+    public constructor(
         category: ErrorCategory,
         detail: string,
         context: ErrorContext = {},
@@ -66,7 +66,7 @@ export class CalcAUYError extends Error {
         this.name = "CalcAUYError";
     }
 
-    toJSON() {
+    public toJSON(): Record<string, unknown> {
         return {
             type: this.type,
             title: this.title,

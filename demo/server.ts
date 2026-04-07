@@ -4,7 +4,7 @@
  */
 
 import { dirname, fromFileUrl, join } from "@std/path";
-import { CalcAUYError } from "../src/errors.ts";
+import { CalcAUYError } from "../src/core/errors.ts";
 import { isRateLimited } from "./logic/rate_limit.ts";
 import { executeExpression } from "./logic/execution.ts";
 import { mapAllOutputs } from "./logic/mapper.ts";
@@ -23,17 +23,19 @@ Deno.serve({ port: 8000 }, async (req) => {
     const url = new URL(req.url);
 
     // Static Files
-    if (url.pathname === "/") return serveFile(join(ROOT, "index.html"));
-    if (url.pathname === "/style.css") return serveFile(join(ROOT, "style.css"));
-    if (url.pathname === "/script.js") return serveFile(join(ROOT, "script.js"));
-    if (url.pathname === "/editor.html") return serveFile(join(ROOT, "editor.html"));
-    if (url.pathname === "/editor_controller.js") return serveFile(join(ROOT, "editor_controller.js"));
-    if (url.pathname === "/editor_controller.bundle.js") return serveFile(join(ROOT, "editor_controller.bundle.js"));
+    if (url.pathname === "/") { return serveFile(join(ROOT, "index.html")); }
+    if (url.pathname === "/style.css") { return serveFile(join(ROOT, "style.css")); }
+    if (url.pathname === "/script.js") { return serveFile(join(ROOT, "script.js")); }
+    if (url.pathname === "/editor.html") { return serveFile(join(ROOT, "editor.html")); }
+    if (url.pathname === "/editor_controller.js") { return serveFile(join(ROOT, "editor_controller.js")); }
+    if (url.pathname === "/editor_controller.bundle.js") {
+        return serveFile(join(ROOT, "editor_controller.bundle.js"));
+    }
 
     // Assets
-    if (url.pathname.startsWith("/assets/")) return serveFile(join(ROOT, url.pathname));
-    if (url.pathname.startsWith("/fonts/")) return serveFile(join(ROOT, "assets", url.pathname));
-    if (url.pathname === "/favicon.ico") return serveFile(join(ROOT, "assets", "favicon.ico"));
+    if (url.pathname.startsWith("/assets/")) { return serveFile(join(ROOT, url.pathname)); }
+    if (url.pathname.startsWith("/fonts/")) { return serveFile(join(ROOT, "assets", url.pathname)); }
+    if (url.pathname === "/favicon.ico") { return serveFile(join(ROOT, "assets", "favicon.ico")); }
 
     // API: Examples
     if (url.pathname === "/api/examples") {

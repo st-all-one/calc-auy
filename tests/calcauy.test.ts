@@ -87,7 +87,7 @@ describe("CalcAUY - Integração e Auditoria", () => {
         it("deve exportar múltiplos formatos via toJSON", () => {
             const res = CalcAUY.from(10).add(5).commit({ roundStrategy: "NBR5891" });
             const json: any = res.toJSON(["toStringNumber", "toLaTeX"]);
-            
+
             assertEquals(json["toStringNumber"], "15.0000");
             assertEquals(json["toLaTeX"], "10 + 5");
         });
@@ -113,7 +113,7 @@ describe("CalcAUY - Integração e Auditoria", () => {
 
             assertEquals(resFluent.toStringNumber(), expectedValue);
             assertEquals(resParser.toStringNumber(), expectedValue);
-            
+
             // O Fluent API terá parênteses extras apenas na raiz da instância injetada
             assertEquals(resFluent.toLaTeX(), "2 + 5 \\times 3 ^ \\left( 2 ^ 2 ^ 2 \\right)");
             assertEquals(resParser.toLaTeX(), "2 + 5 \\times 3 ^ 2 ^ 2 ^ 2");

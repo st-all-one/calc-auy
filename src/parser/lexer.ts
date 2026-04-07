@@ -23,17 +23,17 @@ export interface Token {
 }
 
 export class Lexer {
-    private input: string;
-    private pos: number = 0;
+    private readonly input: string;
+    private pos = 0;
 
-    constructor(input: string) {
+    public constructor(input: string) {
         this.input = input;
     }
 
-    tokenize(): Token[] {
+    public tokenize(): Token[] {
         const tokens: Token[] = [];
         while (this.pos < this.input.length) {
-            const char = this.input[this.pos];
+            const char: string = this.input[this.pos];
 
             if (/\s/.test(char)) {
                 this.pos++;
@@ -98,12 +98,12 @@ export class Lexer {
     }
 
     private readNumber(): Token {
-        const start = this.pos;
+        const start: number = this.pos;
         let hasDot = false;
         let hasE = false;
 
         while (this.pos < this.input.length) {
-            const char = this.input[this.pos].toLowerCase();
+            const char: string = this.input[this.pos].toLowerCase();
             if (/[0-9]/.test(char) || char === "_") {
                 this.pos++;
             } else if (char === "." && !hasDot && !hasE) {
@@ -120,8 +120,6 @@ export class Lexer {
             }
         }
 
-        // Support for fraction literals directly in lexer might be complex,
-        // we'll handle them as numbers or let the parser deal with SLASH.
         return {
             type: "NUMBER",
             value: this.input.substring(start, this.pos),

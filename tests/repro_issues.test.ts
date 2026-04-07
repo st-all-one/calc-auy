@@ -1,7 +1,7 @@
 import { describe, it } from "@std/testing/bdd";
 import { assertEquals } from "@std/assert";
-import { RationalNumber } from "../src/rational.ts";
-import { applyRounding } from "../src/rounding.ts";
+import { RationalNumber } from "../src/core/rational.ts";
+import { applyRounding } from "../src/rounding/rounding.ts";
 
 describe("Reproduction of reported issues", () => {
     it("CEIL rounding should not produce absurd results", () => {
@@ -15,7 +15,7 @@ describe("Reproduction of reported issues", () => {
         const base = RationalNumber.from("2");
         const exp = RationalNumber.from("0.5"); // sqrt(2)
         const result = base.pow(exp);
-        
+
         const decimal = result.toDecimalString(50);
         // Sqrt(2) is approx 1.41421356237309504880168872420969807856967187537694...
         const expectedPrefix = "1.41421356237309504880168872420969807856967187537694";
@@ -25,7 +25,7 @@ describe("Reproduction of reported issues", () => {
     it("toDecimalString should correctly handle padding for small numbers", () => {
         const val = RationalNumber.from("0.001");
         assertEquals(val.toDecimalString(4), "0.0010");
-        
+
         const zero = RationalNumber.from("0");
         assertEquals(zero.toDecimalString(4), "0.0000");
     });
@@ -35,7 +35,7 @@ describe("Reproduction of reported issues", () => {
         // Base = 21, Exponent = 4^(3/7) approx 1.811
         const base = RationalNumber.from(21);
         const innerExp = RationalNumber.from(4).pow(RationalNumber.from("3/7"));
-        
+
         // This should not throw RangeError
         const result = base.pow(innerExp);
         const dec = result.toDecimalString(10);
@@ -48,7 +48,7 @@ describe("Reproduction of reported issues", () => {
     it("should throw math-overflow for explosive towers of power", () => {
         const base = RationalNumber.from(10);
         const hugeExp = RationalNumber.from(1000000); // 10^1000000 is too big
-        
+
         try {
             base.pow(hugeExp);
             assertEquals(true, false, "Should have thrown math-overflow");
@@ -64,7 +64,7 @@ describe("Reproduction of reported issues", () => {
             node = { kind: "group", child: node };
         }
 
-        const { evaluate } = await import("../src/engine.ts");
+        const { evaluate } = await import("../src/ast/engine.ts");
         try {
             evaluate(node);
             assertEquals(true, false, "Should have thrown math-overflow for depth");

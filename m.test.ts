@@ -1,4 +1,22 @@
 import { CalcAUY } from "./mod.ts";
+import { configure, getConsoleSink, type LogRecord } from "@logtape";
+
+await configure({
+    sinks: {
+        console: getConsoleSink({
+            formatter(r: LogRecord): unknown[] {
+                return [r.properties];
+            },
+        }),
+    },
+    loggers: [
+        {
+            category: "calc-auy",
+            lowestLevel: "debug",
+            sinks: ["console"],
+        },
+    ],
+});
 
 const calc = CalcAUY.from(2).add(5).mult(3).pow(CalcAUY.from(2).pow(2).pow("3/7"));
 

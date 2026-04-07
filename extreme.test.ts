@@ -1,4 +1,22 @@
 import { CalcAUY } from "./mod.ts";
+import { configure, getConsoleSink, type LogRecord } from "@logtape";
+
+await configure({
+    sinks: {
+        console: getConsoleSink({
+            formatter(r: LogRecord): unknown[] {
+                return [r.properties];
+            },
+        }),
+    },
+    loggers: [
+        {
+            category: "calc-auy",
+            lowestLevel: "debug",
+            sinks: ["console"],
+        },
+    ],
+});
 
 const t = performance.now();
 

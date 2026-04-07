@@ -1,5 +1,9 @@
-import { DEFAULT_LOCALE } from "./constants.ts";
+import { DEFAULT_LOCALE } from "../core/constants.ts";
+import type { CalcAUYLocale } from "../core/types.ts";
 
+/**
+ * Definition of a localized strings and rules for calculation verbalization.
+ */
 export interface LocaleDefinition {
     locale: string;
     currency: string;
@@ -15,7 +19,10 @@ export interface LocaleDefinition {
     };
 }
 
-export const LOCALES: Record<string, LocaleDefinition> = {
+/**
+ * Map of supported locales.
+ */
+export const LOCALES: Record<CalcAUYLocale, LocaleDefinition> = {
     "pt-BR": {
         locale: "pt-BR",
         currency: "BRL",
@@ -181,7 +188,7 @@ export const LOCALES: Record<string, LocaleDefinition> = {
             isEqual: " равно ",
             rounding: "Округление",
             for: "до",
-            decimalPlaces: "знаков после запятой",
+            decimalPlaces: "знаков após запятой",
         },
     },
     "zh-CN": {
@@ -234,6 +241,9 @@ export const LOCALES: Record<string, LocaleDefinition> = {
     },
 };
 
-export function getLocale(code: string = DEFAULT_LOCALE): LocaleDefinition {
-    return LOCALES[code] || LOCALES[DEFAULT_LOCALE];
+/**
+ * Retrieves the locale definition for a given code.
+ */
+export function getLocale(code: CalcAUYLocale = DEFAULT_LOCALE as CalcAUYLocale): LocaleDefinition {
+    return LOCALES[code] || LOCALES[DEFAULT_LOCALE as CalcAUYLocale];
 }
