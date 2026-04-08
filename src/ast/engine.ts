@@ -5,11 +5,23 @@ import { getSubLogger, measureTime } from "../utils/logger.ts";
 
 const logger = getSubLogger("engine");
 
+/**
+ * Limite de profundidade da árvore para evitar estouro da pilha de chamadas (Stack Overflow).
+ * Em sistemas auditáveis, expressões extremamente profundas devem ser divididas em sub-cálculos.
+ */
 const MAX_RECURSION_DEPTH = 500;
 
 /**
- * Collapses an AST node into a final RationalNumber.
- * This is the core of the "commit" phase.
+ * Colapsa recursivamente um nó da AST em um resultado final (RationalNumber).
+ * 
+ * **Fase de Commit:**
+ * Esta função representa o momento da execução real do cálculo. Ela percorre a 
+ * árvore em profundidade (Post-order Traversal), resolvendo primeiro os operandos 
+ * e depois aplicando a operação correspondente.
+ * 
+ * @param node Nó raiz da expressão.
+ * @param depth Nível atual de recursão (usado para controle de segurança).
+ * @returns {RationalNumber} O resultado matemático puro e exato.
  */
 export function evaluate(node: CalculationNode, depth = 0): RationalNumber {
     if (depth > MAX_RECURSION_DEPTH) {
@@ -49,7 +61,7 @@ export function evaluate(node: CalculationNode, depth = 0): RationalNumber {
 }
 
 /**
- * Resolves a specific operation node.
+ * Resolve internamente uma operação específica entre múltiplos operandos.
  */
 function evaluateOperation(
     type: OperationType,
@@ -60,7 +72,7 @@ function evaluateOperation(
         throw new CalcAUYError("corrupted-node", `Operação '${type}' sem operandos.`);
     }
 
-    // Resolve all operands first
+    // Resolve todos os operandos recursivamente antes de aplicar o operador.
     const values: RationalNumber[] = operands.map((op) => evaluate(op, depth));
 
     switch (type) {

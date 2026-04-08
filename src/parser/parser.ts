@@ -11,8 +11,18 @@ import { RationalNumber } from "../core/rational.ts";
 import { CalcAUYError } from "../core/errors.ts";
 
 /**
- * Recursive Descent Parser for CalcAUY.
- * Implements PEMDAS with right-associativity for power.
+ * Parser de Descida Recursiva para a CalcAUY.
+ * 
+ * Implementa as regras de precedência (PEMDAS) através de camadas de métodos, 
+ * garantindo que a árvore seja construída com a hierarquia matemática correta.
+ * 
+ * Gramática EBNF suportada:
+ * ```ebnf
+ * expression -> term ( (PLUS | MINUS) term )*
+ * term       -> power ( (STAR | SLASH | DOUBLE_SLASH | PERCENT) power )*
+ * power      -> primary [ CARET power ]
+ * primary    -> NUMBER | LPAREN expression RPAREN
+ * ```
  */
 export class Parser {
     private readonly tokens: Token[];
@@ -22,6 +32,11 @@ export class Parser {
         this.tokens = tokens;
     }
 
+    /**
+     * Inicia a análise gramatical e gera a AST (Abstract Syntax Tree).
+     * @returns {CalculationNode} Raiz da árvore de cálculo.
+     * @throws {CalcAUYError} Se houver erro de sintaxe.
+     */
     public parse(): CalculationNode {
         const node: CalculationNode = this.expression();
         if (this.peek().type !== "EOF") {
@@ -31,7 +46,7 @@ export class Parser {
     }
 
     /**
-     * expression -> term ( (PLUS | MINUS) term )*
+     * Resolve Adição e Subtração (Menor prioridade).
      */
     private expression(): CalculationNode {
         let left: CalculationNode = this.term();
@@ -50,7 +65,7 @@ export class Parser {
     }
 
     /**
-     * term -> factor ( (STAR | SLASH | DOUBLE_SLASH | PERCENT) factor )*
+     * Resolve Multiplicação, Divisão, Divisão Inteira e Módulo.
      */
     private term(): CalculationNode {
         let left: CalculationNode = this.power();
@@ -77,13 +92,14 @@ export class Parser {
     }
 
     /**
-     * power -> primary [ CARET power ]  (Right Associative)
+     * Resolve Potenciação (Alta prioridade).
+     * **Engenharia:** Implementada com associatividade à direita (2^3^4 = 2^(3^4)).
      */
     private power(): CalculationNode {
         const left: CalculationNode = this.primary();
 
         if (this.match("CARET")) {
-            const right: CalculationNode = this.power(); // Recursive call for right-associativity
+            const right: CalculationNode = this.power(); // Chamada recursiva para associatividade à direita
             return {
                 kind: "operation",
                 type: "pow",
@@ -95,7 +111,7 @@ export class Parser {
     }
 
     /**
-     * primary -> NUMBER | LPAREN expression RPAREN
+     * Resolve Átomos: Números literais ou expressões entre parênteses.
      */
     private primary(): CalculationNode {
         if (this.match("NUMBER")) {

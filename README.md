@@ -1,109 +1,91 @@
-<header align="center">
+<div align="center">
 
 # CalcAUY (Audit + A11y)
 
-**Engine de Cálculo Baseada em AST para Engenharia Financeira e Acessibilidade Universal**
+**Engine de Cálculo Baseada em AST para Engenharia Financeira e Acessibilidade**
 
 [![JSR](https://jsr.io/badges/@st-all-one/calc-auy?logoColor=f7df1e&color=f7df1e&labelColor=083344)](https://jsr.io/@st-all-one/calc-auy)
 [![Deno](https://img.shields.io/badge/runtime-deno-black?logo=deno)](https://deno.land/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-</header>
+</div>
 
-A **CalcAUY** é uma infraestrutura de cálculo de alta precisão desenvolvida em **TypeScript**, projetada para neutralizar os riscos de imprecisão do padrão IEEE 754 em sistemas fiscais, jurídicos e bancários. Através de uma arquitetura baseada em **Árvore de Sintaxe Abstrata (AST)** e **Aritmética Racional (`n/d`)**, a biblioteca garante integridade matemática absoluta e rastro forense pleno para cada centavo processado.
+A **CalcAUY** é uma infraestrutura de cálculo de alta precisão, feita em typescript, focada em **Auditabilidade**, **Acessibilidade** e **Aritmética Racional**.
 
 ---
 
-## 🚀 Início Rápido
+### Documentação
 
-### Instalação (JSR)
+Veja a documentação completa no [Guia de Bolso.](./docs/_docs.md)
+
+---
+
+### Showcase
+
+Veja em execução no [Showcase Interativo](https://google.com)s
+
+---
+
+### 🚀 Quick-start
+
+#### Instalação:
 ```bash
-# Deno
-deno add jsr:@st-all-one/calc-auy
-
-# Node.js / Bun / Package Managers
-npx jsr add @st-all-one/calc-auy
-bunx jsr add @st-all-one/calc-auy
+deno    add jsr:@st-all-one/calc-auy
+pnpm      i jsr:@st-all-one/calc-auy
+yarn    add jsr:@st-all-one/calc-auy
+vlt install jsr:@st-all-one/calc-auy
+npx     jsr add @st-all-one/calc-auy
+bunx    jsr add @st-all-one/calc-auy
 ```
 
-### Exemplo: Engenharia de Juros e Impostos
+#### Execução:
 ```ts
 import { CalcAUY } from "@st-all-one/calc-auy";
 
-// 1. Construção do Cálculo (Build Phase)
-const fatura = CalcAUY.from("1250.50")
-  .add(
-    CalcAUY.from("50.00")
-      .setMetadata("desc", "Taxa de Logística") // Rastro forense
-  )
-  .mult(
-    CalcAUY.from(1).add("0.15").group() // (1 + 15%)
-  )
-  .setMetadata("rule", "reajuste_anual_2026");
+// ==== Cálculo de Juros Compostos M = C * (1 + i)^t ====
+// Parâmetros
+const capital = CalcAUY.from("1000.00");
+const taxaAnual = CalcAUY.from("0.10"); // 10% a.a.
+const anosDecorridos = 3;
 
-// 2. Colapso Matemático (Commit Phase)
-const resultado = fatura.commit({ roundStrategy: "NBR-5891" });
+// Cálculo matemático M = C * (1 + i)^t
+const calcMontante = capital.mult(
+    CalcAUY.from(1)
+        .add(taxaAnual)
+        .group()
+        .pow(anosDecorridos),
+);
 
-// 3. Extração Multimodal (Output Phase)
-console.log(resultado.toMonetary());        // "R$ 1.495,58"
-console.log(resultado.toUnicode());         // "roundₙᵦᵣ₋₅₈₉₁((1250.50 + 50.00) × (1 + 0.15), 4) = 1495.5750"
-console.log(resultado.toVerbalA11y());      // "mil quatrocentos e noventa e cinco reais e cinquenta e oito centavos..."
-console.log(resultado.toJSON());            // Snapshot JSON consolidado para APIs
+// Colapso da AST ==> realização do cálculo
+const resultado = calcMontante.commit({ roundStrategy: "NBR5891" });
+
+// Diferentes visualizaçõe do resultado
+const monetario = resultado.toMonetary();
+const centsInBigInt = resultado.toCentsInBigInt({ decimalPrecision: 2 });
+const unicode = resultado.toUnicode();
+const latex = resultado.toLaTeX();
+const verbalA11y = resultado.toVerbalA11y({ locale: "fr-FR" });
+const auditTrace = resultado.toAuditTrace();
+
+console.log(monetario);     // "R$ 1.331,0000"
+console.log(centsInBigInt); // 133100n
+
+console.log(unicode);       // "roundₙᵦᵣ₋₅₈₉₁(1000.00 × ((1 + (0.10))³), 4) = 1331.0000"
+console.log(latex);         // "\text{round}_{\text{NBR-5891}}(1000.00 \times \left( \left( 1 + \left( 0.10 \right) \right)^{3} \right), 4) = 1331.0000"
+
+console.log(verbalA11y);    // "1000.00 multiplié par ouvrir la parenthèse ouvrir la parenthèse 1 plus ouvrir la parenthèse 0.10 fermer la parenthèse fermer la parenthèse puissance 3 fermer la parenthèse est égal à 1331 virgule 0000 (Arrondi: NBR-5891 pour 4 décimales)."
+
+console.log(auditTrace);
+/*
+{"ast":{"kind":"operation","type":"mul","operands":[{"kind":"literal","value":{"n":"1000","d":"1"},"originalInput":"1000.00"},{"kind":"group","child":{"kind":"operation","type":"pow","operands":[{"kind":"group","child":{"kind":"operation","type":"add","operands":[{"kind":"literal","value":{"n":"1","d":"1"},"originalInput":"1"},{"kind":"group","child":{"kind":"literal","value":{"n":"1","d":"10"},"originalInput":"0.10"}}]}},{"kind":"literal","value":{"n":"3","d":"1"},"originalInput":"3"}]}}]},"finalResult":{"n":"1331","d":"1"},"strategy":"NBR5891"}
+*/
+
 ```
 
 ---
 
-## 🏛️ Pilares da Engenharia
+<div align="center">
 
-### 1. O Paradigma da AST (Abstract Syntax Tree)
-Diferente de calculadoras sequenciais que arredondam a cada passo, a CalcAUY constrói uma **Árvore de Sintaxe**. Isso permite:
-- **Postergação da Execução:** O cálculo real só ocorre no `commit()`, eliminando erros acumulados.
-- **Persistência (Hibernação):** Serialize um cálculo complexo via `.hibernate()` e transmita-o via rede para ser reidratado em outro serviço.
-- **Audit Trace:** A árvore preserva a "intenção" do programador, permitindo provar *como* um resultado foi obtido.
+**CalcAUY** é um projeto de código aberto sob licença **MPL-2.0**
 
-### 2. Precisão Racional Absoluta
-Substituímos o tipo `number` (float64) por uma estrutura de **Frações Racionais (`RationalNumber`)** baseada em `BigInt`.
-- **Precisão Interna:** 50 casas decimais garantidas.
-- **Imunidade IEEE 754:** Operações com dízimas (ex: 1/3) são mantidas como frações puras, evitando que `0.1 + 0.2` seja diferente de `0.3`.
-- **Simplificação Automática:** Aplicação de MDC (GCD) em cada operação para manter BigInts performáticos.
-
-### 3. Acessibilidade Radical (A11y)
-A CalcAUY trata a **acessibilidade como um requisito matemático**.
-- **Engine Fonética:** Gera descrições verbais inteligentes que respeitam a hierarquia de precedência.
-- **Internacionalização (i18n):** Suporte nativo a múltiplos locales e moedas utilizando a API `Intl` para formatação monetária forense.
-
-### 4. Rateio Exato (Slicing)
-Implementação do **Algoritmo de Maior Resto** para garantir que a soma das parcelas sempre bata com o total original.
-```ts
-// Dividindo 10.00 em 3 parcelas (sem perder centavos)
-const parcelas = total.toSlice(3); // ["3.34", "3.33", "3.33"]
-```
-
----
-
-## 🛡️ Qualidade e Rigor Normativo
-
-- **Conformidade NBR-5891:** Implementação rigorosa da norma brasileira de arredondamento.
-- **RFC 7807:** Sistema de erros baseado em "Problem Details" para APIs distribuídas.
-- **Telemetria:** Logs estruturados via LogTape 2.0 integrados ao ciclo de vida do cálculo.
-- **Strict TypeScript:** 100% de cobertura de tipos, garantindo segurança em tempo de compilação.
-
----
-
-## 🤝 Contribuição e Open Source
-
-Este é um projeto **comunitário e transparente**. Encorajamos a criação de novos **OutputProcessors** (ex: Excel, Protobuf, Blockchain Ledger).
-
-1. Faça o Fork do projeto.
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-saida`).
-3. Certifique-se de que os testes passam (`deno task test`).
-4. Abra um Pull Request detalhando a melhoria de engenharia.
-
----
-
-<footer align="center">
-
-**CalcAUY** — Porque a confiança no seu software começa pela integridade dos seus números.
-Desenvolvido sob a licença **MIT**.
-
-</footer>
+</div>

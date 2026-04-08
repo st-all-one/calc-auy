@@ -20,8 +20,16 @@ function gcd(a: bigint, b: bigint): bigint {
 }
 
 /**
- * RationalNumber represents a mathematical fraction (n/d) using BigInt.
- * It ensures absolute precision and automatic simplification via GCD.
+ * RationalNumber representa uma fração matemática exata (n/d) utilizando BigInt.
+ * 
+ * **Engenharia de Precisão:** 
+ * Diferente do tipo `number` (IEEE 754), que sofre de erros de arredondamento em 
+ * operações de ponto flutuante, esta classe mantém a relação exata entre numerador 
+ * e denominador. Todas as operações resultam em uma nova instância imutável.
+ * 
+ * **Simplificação Automática:** 
+ * O MDC (Máximo Divisor Comum) é aplicado em todas as operações para manter a 
+ * fração em sua forma irredutível, otimizando o uso de memória.
  */
 export class RationalNumber {
     readonly #n: bigint;
@@ -35,11 +43,13 @@ export class RationalNumber {
         let num: bigint = n;
         let den: bigint = d;
 
+        // Normalização do sinal: o denominador é sempre mantido positivo.
         if (den < 0n) {
             num = -num;
             den = -den;
         }
 
+        // Aplicação do Algoritmo de Euclides para simplificação.
         const common: bigint = gcd(num, den);
         this.#n = num / common;
         this.#d = den / common;
@@ -53,6 +63,12 @@ export class RationalNumber {
         return this.#d;
     }
 
+    /**
+     * Monitora o consumo de bits para evitar ataques de DoS ou estouro de memória.
+     * @param n Numerador a ser testado.
+     * @param d Denominador a ser testado.
+     * @throws {CalcAUYError} Se o número exceder 1 milhão de bits.
+     */
     private static checkSafety(n: bigint, d: bigint): void {
         const nBits = BigInt(n.toString(2).length);
         const dBits = BigInt(d.toString(2).length);
@@ -65,7 +81,8 @@ export class RationalNumber {
     }
 
     /**
-     * Factory method to create a RationalNumber from various inputs.
+     * Método Factory para criar instâncias de RationalNumber.
+     * Suporta strings, numbers, BigInts e outras instâncias de RationalNumber.
      */
     public static from(n: bigint, d: bigint): RationalNumber;
     public static from(value: string | number | bigint | RationalNumber): RationalNumber;
