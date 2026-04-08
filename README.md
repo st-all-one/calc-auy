@@ -2,7 +2,7 @@
 
 # CalcAUY
 
-**Motor de Cálculo Baseada em AST para Engenharia Financeira e Transparência Monetária**
+**Motor de Cálculo baseado em AST para Engenharia Financeira e Transparência Monetária**
 
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-2b3a42?style=for-the-badge)](https://opensource.org/licenses/MPL-2.0)
 [![JSR](https://img.shields.io/badge/JSR-F7DF1E?style=for-the-badge&logo=jsr&logoColor=000)](https://jsr.io/@seu-escopo/seu-pacote)
