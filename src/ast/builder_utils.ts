@@ -1,7 +1,8 @@
 import type { CalculationNode, OperationType } from "./types.ts";
 
 /**
- * Precedence mapping for mathematical operations (Lower value = Higher priority).
+ * Tabela de precedência para operações matemáticas. 
+ * Valores menores indicam prioridade superior (ex: Potência > Multiplicação > Adição).
  */
 export const PRECEDENCE: Record<OperationType, number> = {
     pow: 2,
@@ -14,7 +15,18 @@ export const PRECEDENCE: Record<OperationType, number> = {
 };
 
 /**
- * Recursively attaches a new operation to the tree respecting PEMDAS and Associativity.
+ * Anexa recursivamente uma nova operação à árvore, respeitando as regras de 
+ * precedência (PEMDAS) e associatividade.
+ * 
+ * **Engenharia de Construção:**
+ * Esta função permite que a Fluent API da CalcAUY (`.add(5).mult(2)`) 
+ * gere uma árvore semanticamente correta sem exigir parênteses manuais do usuário. 
+ * Ela "mergulha" a nova operação no operando à direita se a prioridade for maior.
+ * 
+ * @param target Nó raiz atual da árvore.
+ * @param type Tipo da nova operação (ex: 'add', 'mul').
+ * @param right Novo operando à direita.
+ * @returns {CalculationNode} Nova raiz da árvore reorganizada.
  */
 export function attachOp(target: CalculationNode, type: OperationType, right: CalculationNode): CalculationNode {
     if (target.kind !== "operation") {
@@ -24,14 +36,14 @@ export function attachOp(target: CalculationNode, type: OperationType, right: Ca
     const currentPrec: number = PRECEDENCE[target.type];
     const newPrec: number = PRECEDENCE[type];
 
-    // Golden Rule: If the new operation has higher precedence (smaller value),
-    // or if it's power (right-associative), it must "dive" into the right operand.
+    // Regra de Ouro: Se a nova operação tem precedência maior (valor menor),
+    // ou se é potência (associativa à direita), ela deve "mergulhar" no operando direito.
     if (newPrec < currentPrec || (type === "pow" && target.type === "pow")) {
         const lastIndex = target.operands.length - 1;
         const last = target.operands[lastIndex];
 
         if (!last) {
-            // Fallback safety (should not happen in valid AST)
+            // Segurança contra árvore corrompida.
             return { kind: "operation", type, operands: [target, right] };
         }
 
@@ -44,7 +56,7 @@ export function attachOp(target: CalculationNode, type: OperationType, right: Ca
         };
     }
 
-    // Otherwise, the entire current tree becomes the left operand of the new node.
+    // Caso contrário, a árvore atual inteira torna-se o operando esquerdo da nova operação.
     return {
         kind: "operation",
         type,

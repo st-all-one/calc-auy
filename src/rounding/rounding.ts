@@ -7,14 +7,18 @@ import { RationalNumber } from "../core/rational.ts";
 import type { RoundingStrategy } from "../core/constants.ts";
 
 /**
- * Handlers for different rounding strategies.
+ * Handlers para diferentes estratégias de arredondamento.
+ * 
+ * Cada estratégia possui um impacto diferente em cálculos de grande volume 
+ * (ex: folha de pagamento ou rateio de impostos).
  */
 export const RoundingHandlers: Record<
     RoundingStrategy,
     (val: RationalNumber, precision: number) => RationalNumber
 > = {
     /**
-     * "Truncate" rounding (Corte Seco).
+     * "Truncate" (Corte Seco): Remove as casas decimais excedentes sem ajuste.
+     * Útil em cenários onde não se pode "ganhar" centavos por arredondamento.
      */
     TRUNCATE: (val: RationalNumber, p: number): RationalNumber => {
         const pScale: bigint = 10n ** BigInt(p);
@@ -23,7 +27,8 @@ export const RoundingHandlers: Record<
     },
 
     /**
-     * "Ceil" rounding (Teto).
+     * "Ceil" (Teto): Sempre arredonda para cima se houver qualquer sobra.
+     * Comum em cálculos de frete ou cobranças mínimas.
      */
     CEIL: (val: RationalNumber, p: number): RationalNumber => {
         const pScale: bigint = 10n ** BigInt(p);
@@ -38,7 +43,8 @@ export const RoundingHandlers: Record<
     },
 
     /**
-     * "Half-Up" rounding (Commercial).
+     * "Half-Up" (Arredondamento Comercial): Se a sobra for >= 0.5, arredonda para cima.
+     * É o padrão mais comum em transações de consumo no varejo.
      */
     HALF_UP: (val: RationalNumber, p: number): RationalNumber => {
         const pScale: bigint = 10n ** BigInt(p);
@@ -55,7 +61,9 @@ export const RoundingHandlers: Record<
     },
 
     /**
-     * "Half-Even" rounding (Banker's).
+     * "Half-Even" (Banker's Rounding): Arredonda para o número par mais próximo.
+     * **Engenharia:** Reduz o viés estatístico em grandes somatórios, sendo 
+     * exigido em diversos sistemas financeiros internacionais.
      */
     HALF_EVEN: (val: RationalNumber, p: number): RationalNumber => {
         const pScale: bigint = 10n ** BigInt(p);
@@ -84,7 +92,9 @@ export const RoundingHandlers: Record<
     },
 
     /**
-     * ABNT NBR 5891:1977 Implementation.
+     * ABNT NBR 5891:1977.
+     * Norma brasileira que rege o arredondamento de números decimais.
+     * Mapeia tecnicamente para o comportamento do Half-Even.
      */
     NBR5891: (val: RationalNumber, p: number): RationalNumber => {
         return RoundingHandlers.HALF_EVEN(val, p);
