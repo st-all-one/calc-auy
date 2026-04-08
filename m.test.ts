@@ -27,10 +27,5 @@ const reanimate = CalcAUY.hydrate(tree).commit({ roundStrategy: "NBR5891" });
 console.log("String => ", reanimate.toStringNumber());
 console.log("Verbal => ", reanimate.toVerbalA11y());
 console.log("LaTeX => ", reanimate.toLaTeX());
-
+console.log("JSON => ", reanimate.toJSON());
 console.log("===============================================");
-
-const calc2 = CalcAUY.parseExpression("2 + 5 * 3 ^2^2^(3/7) ").commit({ roundStrategy: "HALF_UP" });
-console.log("String => ", calc2.toStringNumber());
-console.log("Verbal => ", calc2.toVerbalA11y());
-console.log("LaTeX => ", calc2.toLaTeX());

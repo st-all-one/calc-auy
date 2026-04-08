@@ -196,7 +196,6 @@ export class CalcAUYOutput {
                 "toLaTeX",
                 "toUnicode",
                 "toVerbalA11y",
-                "toAuditTrace",
             ];
         const res: Record<string, unknown> = {};
         for (const key of keys) {
