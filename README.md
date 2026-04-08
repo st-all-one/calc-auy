@@ -10,7 +10,7 @@
 
 </div>
 
-A **CalcAUY** é uma infraestrutura de cálculo de alta precisão, feita em typescript, focada em **Auditabilidade**, **Acessibilidade** e **Aritmética Racional**.
+A **CalcAUY** é uma solução de infraestrutura em **TypeScript**, concebida para neutralizar a imprecisão do padrão IEEE 754 em sistemas de missão crítica. É baseada em um paradigma de **imutabilidade estrita** e **AST**, assegurando a integridade atuaria e transformando cada operação em uma evidência matemática transparente e auditável.
 
 ---
 
