@@ -10,7 +10,7 @@
 
 </div>
 
-A **CalcAUY** é uma solução de infraestrutura em **TypeScript**, concebida para neutralizar a imprecisão do padrão IEEE 754 de maneira transparente, acessível e auditável. É baseada nos paradigmas de **imutabilidade estrita** e **Abstract Syntax Tree (AST)**, assegurando a integridade atuaria e transformando cada operação em uma evidência matemática transparente e auditável.
+A **CalcAUY** é uma infraestrutura em **TypeScript** projetada para neutralizar a imprecisão do padrão IEEE 754. Através de **imutabilidade estrita e Abstract Syntax Tree (AST)**, ela assegura a integridade atuária, transformando cada operação em uma evidência matemática transparente, acessível e auditável
 
 ---
 
