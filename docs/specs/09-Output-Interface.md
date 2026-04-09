@@ -15,7 +15,7 @@ Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAU
 - **Descrição:** Converte o resultado para o tipo `number` (float) do JavaScript.
 - **Risco:** Útil para compatibilidade com gráficos ou outras bibliotecas, mas sujeito às imprecisões do padrão IEEE 754 para valores muito grandes.
 
-### `toCentsInBigInt(options?: OutputOptions): bigint`
+### `toScaledBigInt(options?: OutputOptions): bigint`
 - **Descrição:** Retorna o valor inteiro escalado para a precisão informada.
 - **Caso de Uso:** Ideal para salvar em bancos de dados como "inteiro" para evitar problemas de float.
 - **Exemplo:** `10.50` com `decimalPrecision: 2` retorna `1050n`.
@@ -82,7 +82,7 @@ Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAU
 
 ### `toJSON(outputs?: OutputKey[]): Record<string, unknown>`
 - **Descrição:** Consolida múltiplos outputs em um único objeto.
-- **Padrão:** `["toStringNumber", "toCentsInBigInt", "toMonetary", "toLaTeX", "toUnicode", "toVerbalA11y", "toAuditTrace"]`.
+- **Padrão:** `["toStringNumber", "toScaledBigInt", "toMonetary", "toLaTeX", "toUnicode", "toVerbalA11y", "toAuditTrace"]`.
 
 ### `toCustomOutput<Toutput>(processor: ICalcAUYCustomOutput<Toutput>): Toutput`
 - **Descrição:** O ápice da extensibilidade da CalcAUY. Permite injetar um formatador externo que tem acesso total ao rastro de auditoria e ao valor racional.

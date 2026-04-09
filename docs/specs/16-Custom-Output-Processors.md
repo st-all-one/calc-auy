@@ -39,7 +39,7 @@ Diferente da versão anterior que passava apenas um BigInt escalado, o novo cont
 
 ```typescript
 const xmlExporter: ICalcAUYCustomOutput<string> = (ctx) => {
-  const cents = ctx.methods.toCentsInBigInt({ decimalPrecision: 2 });
+  const cents = ctx.methods.toScaledBigInt({ decimalPrecision: 2 });
   const valFormatado = ctx.methods.toString({ decimalPrecision: 2 });
   
   return `

@@ -35,7 +35,7 @@ export async function mapAllOutputs(
         toStringNumber: output.toStringNumber(),
         toFloatNumber: output.toFloatNumber(),
         toRawInternalBigInt: output.toRawInternalBigInt().toString(),
-        toCentsInBigInt: output.toCentsInBigInt().toString(),
+        toScaledBigInt: output.toScaledBigInt().toString(),
         toMonetary: output.toMonetary(),
         toLaTeX: output.toLaTeX(),
         toHTML: output.toHTML(katex),

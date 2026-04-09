@@ -110,20 +110,42 @@ export class RationalNumber {
     }
 
     private static fromString(input: string): RationalNumber {
-        const clean: string = input.replace(/_/g, "").trim();
+        const trimmed = input.trim();
 
-        if (clean.includes("/")) {
+        // 1. Definição de Formatos Estritos (Rigor specs/08)
+        const BIGINT_RE = /^[+-]?\d+(?:_\d+)*n?$/;
+        const FRACTION_RE = /^[+-]?\d+(?:_\d+)*\/[+-]?\d+(?:_\d+)*$/;
+        const DECIMAL_RE = /^[+-]?(?:\d+(?:_\d+)*(?:\.\d+(?:_\d+)*)?|\.\d+(?:_\d+)*)(?:[eE][+-]?\d+(?:_\d+)*)?$/;
+
+        // 2. Validação contra os formatos permitidos
+        const isBigInt = BIGINT_RE.test(trimmed);
+        const isFraction = FRACTION_RE.test(trimmed);
+        const isDecimal = DECIMAL_RE.test(trimmed);
+
+        if (!isBigInt && !isFraction && !isDecimal) {
+            throw new CalcAUYError("invalid-syntax", `String numérica inválida: "${input}"`);
+        }
+
+        // 3. Normalização (Remover underscores para BigInt/parseFloat)
+        const clean = trimmed.replace(/_/g, "");
+
+        // 4. Ingestão por Tipo
+        if (isFraction) {
             const [nStr, dStr] = clean.split("/");
             return new RationalNumber(BigInt(nStr), BigInt(dStr));
         }
 
-        if (clean.includes(".") || clean.toLowerCase().includes("e")) {
-            const val: number = parseFloat(clean);
-            if (isNaN(val)) { throw new CalcAUYError("invalid-syntax", `String numérica inválida: ${input}`); }
+        if (isBigInt) {
+            const val = clean.endsWith("n") ? clean.slice(0, -1) : clean;
+            return new RationalNumber(BigInt(val), 1n);
+        }
 
-            const parts: string[] = clean.split(/[eE]/);
+        // Caso Decimal/Scientific
+        const lower = clean.toLowerCase();
+        if (lower.includes(".") || lower.includes("e")) {
+            const parts: string[] = lower.split("e");
             const baseStr: string = parts[0];
-            const exponent: number = parts.length > 1 ? parseInt(parts[1]) : 0;
+            const scientificExp: number = parts.length > 1 ? parseInt(parts[1]) : 0;
 
             const dotIndex: number = baseStr.indexOf(".");
             let n: bigint;
@@ -135,14 +157,14 @@ export class RationalNumber {
             } else {
                 const integerPart: string = baseStr.replace(".", "");
                 const fractionalLength: number = baseStr.length - dotIndex - 1;
-                n = BigInt(integerPart);
+                n = BigInt(integerPart || "0");
                 d = 10n ** BigInt(fractionalLength);
             }
 
-            if (exponent >= 0) {
-                n *= 10n ** BigInt(exponent);
+            if (scientificExp >= 0) {
+                n *= 10n ** BigInt(scientificExp);
             } else {
-                d *= 10n ** BigInt(-exponent);
+                d *= 10n ** BigInt(-scientificExp);
             }
 
             return new RationalNumber(n, d);

@@ -18,13 +18,13 @@ import { CalcAUY } from "./mod.ts";
 //     ],
 // });
 
-const calc = CalcAUY.from(100).pow(2).commit();
+const calc = CalcAUY.from(100).pow("3/7").commit();
 
 console.log("String => ", calc.toStringNumber());
-console.log("MOnetary => ", calc.toMonetary({ locale: "de-DE" }));
-console.log("MOnetary => ", calc.toMonetary({ locale: "en-EU" }));
-console.log("MOnetary => ", calc.toMonetary({ locale: "fr-FR" }));
-console.log("MOnetary => ", calc.toMonetary({ locale: "ja-JP" }));
-console.log("MOnetary => ", calc.toMonetary({ locale: "pt-BR" }));
-console.log("MOnetary => ", calc.toMonetary({ locale: "zh-CN" }));
+console.log("MOnetary => ", calc.toVerbalA11y({ locale: "de-DE" }));
+console.log("MOnetary => ", calc.toVerbalA11y({ locale: "en-EU" }));
+console.log("MOnetary => ", calc.toVerbalA11y({ locale: "fr-FR" }));
+console.log("MOnetary => ", calc.toVerbalA11y({ locale: "ja-JP" }));
+console.log("MOnetary => ", calc.toVerbalA11y({ locale: "pt-BR" }));
+console.log("MOnetary => ", calc.toVerbalA11y({ locale: "zh-CN" }));
 console.log("===============================================");

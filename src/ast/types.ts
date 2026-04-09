@@ -1,10 +1,10 @@
 /**
  * CalcAUY - Estrutura da Árvore de Sintaxe Abstrata (AST)
- * 
- * A AST é o coração da auditabilidade da CalcAUY. Diferente de uma execução 
- * imediata, a árvore preserva a estrutura original da fórmula, permitindo 
+ *
+ * A AST é o coração da auditabilidade da CalcAUY. Diferente de uma execução
+ * imediata, a árvore preserva a estrutura original da fórmula, permitindo
  * reconstruir o "rastro de pensamento" do cálculo para fins legais e técnicos.
- * 
+ *
  * @module
  */
 
@@ -27,13 +27,24 @@ export interface RationalValue {
     d: string;
 }
 
+/**
+ * Tipos permitidos para metadados de auditoria.
+ * Restrito a tipos serializáveis para garantir a integridade do rastro JSON.
+ */
+export type MetadataValue =
+    | string
+    | number
+    | boolean
+    | MetadataValue[]
+    | { [key: string]: MetadataValue };
+
 /** Interface base para todos os nós, garantindo rastreabilidade. */
 export interface BaseNode {
     kind: NodeKind;
     /** Nome amigável do nó para relatórios de auditoria. */
     label?: string;
     /** Dados customizados (ex: ID de uma parcela, nome de um imposto). */
-    metadata?: Record<string, unknown>;
+    metadata?: Record<string, MetadataValue>;
 }
 
 /** Representa um valor fixo (ex: "10", "3.14"). Mantém o input original para precisão visual. */

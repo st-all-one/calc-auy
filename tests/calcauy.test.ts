@@ -45,6 +45,17 @@ describe("CalcAUY - Integração e Auditoria", () => {
             const trace = JSON.parse(res.toAuditTrace());
             assertEquals(trace.ast.metadata.user, "admin");
         });
+
+        it("deve permitir a reidratação a partir de um rastro de auditoria (toAuditTrace)", () => {
+            const resOriginal = CalcAUY.from(100).add(50).commit();
+            const auditTrace = resOriginal.toAuditTrace(); // String JSON com { ast, finalResult, strategy }
+
+            // Hidratamos a partir do log de auditoria
+            // Usamos .group() para garantir que a soma anterior seja tratada como um bloco: (100 + 50) * 2
+            const retomado = CalcAUY.hydrate(auditTrace).group().mult(2).commit();
+            
+            assertEquals(retomado.toStringNumber(), "300.0000");
+        });
     });
 
     describe("Rateio e Slicing (Maior Resto)", () => {

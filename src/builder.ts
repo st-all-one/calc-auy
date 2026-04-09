@@ -1,5 +1,13 @@
-import type { CalculationNode, GroupNode, LiteralNode, OperationType, RationalValue } from "./ast/types.ts";
+import type {
+    CalculationNode,
+    GroupNode,
+    LiteralNode,
+    MetadataValue,
+    OperationType,
+    RationalValue,
+} from "./ast/types.ts";
 import { RationalNumber } from "./core/rational.ts";
+import { validateMetadata } from "./core/metadata.ts";
 import type { RoundingStrategy } from "./core/constants.ts";
 import { evaluate } from "./ast/engine.ts";
 import { CalcAUYOutput } from "./output.ts";
@@ -115,39 +123,33 @@ export class CalcAUY {
     /**
      * Reconstrói um cálculo a partir de um estado salvo (JSON).
      * 
-     * **Engenharia:** Permite a "hibernação" de cálculos complexos entre sessões ou 
-     * transferências de rede, preservando toda a estrutura da AST e metadados.
+     * **Engenharia:** Suporta tanto a árvore pura (AST) quanto o objeto completo 
+     * gerado pelo `toAuditTrace()`. Se um snapshot de auditoria for detectado, 
+     * o método extrai automaticamente a árvore original, ignorando os resultados 
+     * consolidados e permitindo a continuidade do cálculo.
      * 
-     * @param ast - Objeto CalculationNode ou string JSON da AST.
+     * @param ast - Objeto CalculationNode, Snapshot de Auditoria ou string JSON.
      * @returns Instância hidratada pronta para novas operações.
      * 
-     * @example Exemplo Simples
+     * @example Exemplo Simples (AST Pura)
      * ```ts
-     * const calc = CalcAUY.hydrate('{"kind":"literal","value":{"n":"10","d":"1"},"originalInput":"10"}');
+     * const calc = CalcAUY.hydrate(node);
      * ```
      * 
-     * @example Operações Aninhadas
+     * @example Hidratação via Rastro de Auditoria (Audit Trace)
      * ```ts
-     * const savedState = calcOriginal.hibernate();
-     * const restored = CalcAUY.hydrate(savedState).add(5);
-     * ```
-     * 
-     * @example Cenário Real: Retomada de Fluxo de Caixa
-     * ```ts
-     * // Busca o estado parcial do cálculo salvo no banco de dados
-     * const astDoBanco = await db.calculations.findUnique({ id: 123 });
-     * const calc = CalcAUY.hydrate(astDoBanco.payload);
-     * ```
-     * 
-     * @example Cenário Real Complexo: Auditoria Distribuída
-     * ```ts
-     * // Um serviço A monta a árvore e um serviço B realiza o commit/output
-     * const payload = req.body.calculationAST;
-     * const result = CalcAUY.hydrate(payload).commit();
+     * const audit = res.toAuditTrace(); // { ast: {...}, finalResult: ..., strategy: ... }
+     * const calc = CalcAUY.hydrate(audit).add(50); // Retoma o cálculo
      * ```
      */
-    public static hydrate(ast: CalculationNode | string): CalcAUY {
-        const node: CalculationNode = typeof ast === "string" ? JSON.parse(ast) : ast;
+    public static hydrate(ast: CalculationNode | string | object): CalcAUY {
+        const data = typeof ast === "string" ? JSON.parse(ast) : ast;
+        
+        // Se for um snapshot de auditoria (contém a chave 'ast'), extraímos apenas a árvore.
+        const node: CalculationNode = (data && typeof data === "object" && "ast" in data)
+            ? data.ast
+            : data;
+
         return new CalcAUY(node);
     }
 
@@ -200,7 +202,8 @@ export class CalcAUY {
      *   .setMetadata("process_id", "2026-04-07-payroll");
      * ```
      */
-    public setMetadata(key: string, value: unknown): CalcAUY {
+    public setMetadata(key: string, value: MetadataValue): CalcAUY {
+        validateMetadata(value);
         const newAST: CalculationNode = {
             ...this.#ast,
             metadata: { ...(this.#ast.metadata || {}), [key]: value },
