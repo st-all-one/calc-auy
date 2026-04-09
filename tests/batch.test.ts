@@ -15,10 +15,10 @@ describe("CalcAUY - Batch Processing", () => {
     it("deve reportar o progresso corretamente", async () => {
         const items = Array.from({ length: 10 }).map((_, i) => i);
         const progressReports: number[] = [];
-        
+
         await CalcAUY.processBatch(items, (val) => val, {
             batchSize: 2,
-            onProgress: (p) => progressReports.push(p)
+            onProgress: (p) => progressReports.push(p),
         });
 
         // Com batchSize 2 e 10 itens, deve reportar a cada 2 itens (20%, 40%, 60%, 80%) + final (100%)

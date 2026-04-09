@@ -16,17 +16,17 @@ const literalCache = new Map<string, RationalNumber>();
 
 /**
  * Binary GCD (Stein's Algorithm) otimizado para BigInt.
- * 
- * **Engenharia:** Milhares de vezes mais rápido que o algoritmo de Euclides 
- * tradicional para BigInts grandes, pois evita operações de divisão/módulo 
+ *
+ * **Engenharia:** Milhares de vezes mais rápido que o algoritmo de Euclides
+ * tradicional para BigInts grandes, pois evita operações de divisão/módulo
  * dispendiosas em favor de bit-shifts e subtrações.
  */
 function gcd(a: bigint, b: bigint): bigint {
     let u = a < 0n ? -a : a;
     let v = b < 0n ? -b : b;
 
-    if (u === 0n) return v;
-    if (v === 0n) return u;
+    if (u === 0n) { return v; }
+    if (v === 0n) { return u; }
 
     let shift = 0n;
 
@@ -37,10 +37,10 @@ function gcd(a: bigint, b: bigint): bigint {
         shift++;
     }
 
-    while ((u & 1n) === 0n) u >>= 1n;
+    while ((u & 1n) === 0n) { u >>= 1n; }
 
     do {
-        while ((v & 1n) === 0n) v >>= 1n;
+        while ((v & 1n) === 0n) { v >>= 1n; }
 
         if (u > v) {
             const t = v;
@@ -56,14 +56,14 @@ function gcd(a: bigint, b: bigint): bigint {
 
 /**
  * RationalNumber representa uma fração matemática exata (n/d) utilizando BigInt.
- * 
- * **Engenharia de Precisão:** 
- * Diferente do tipo `number` (IEEE 754), que sofre de erros de arredondamento em 
- * operações de ponto flutuante, esta classe mantém a relação exata entre numerador 
+ *
+ * **Engenharia de Precisão:**
+ * Diferente do tipo `number` (IEEE 754), que sofre de erros de arredondamento em
+ * operações de ponto flutuante, esta classe mantém a relação exata entre numerador
  * e denominador. Todas as operações resultam em uma nova instância imutável.
- * 
- * **Simplificação Automática:** 
- * O MDC (Máximo Divisor Comum) é aplicado em todas as operações para manter a 
+ *
+ * **Simplificação Automática:**
+ * O MDC (Máximo Divisor Comum) é aplicado em todas as operações para manter a
  * fração em sua forma irredutível, otimizando o uso de memória.
  */
 export class RationalNumber {
@@ -130,11 +130,11 @@ export class RationalNumber {
 
         const value: string | number | bigint | RationalNumber = arg1;
         if (value instanceof RationalNumber) { return value; }
-        
-        if (typeof value === "bigint") { 
+
+        if (typeof value === "bigint") {
             const cached = literalCache.get(value.toString());
-            if (cached) return cached;
-            
+            if (cached) { return cached; }
+
             const res = new RationalNumber(value, 1n);
             if (literalCache.size < MAX_CACHE_SIZE) {
                 literalCache.set(value.toString(), res);
@@ -162,7 +162,7 @@ export class RationalNumber {
         // Camada de Otimização: Cache de Literais Estáticos (Memoization)
         // Reduz drasticamente o overhead de parsing para valores financeiros recorrentes.
         const cached = literalCache.get(trimmed);
-        if (cached) return cached;
+        if (cached) { return cached; }
 
         // 1. Definição de Formatos Estritos (Rigor specs/08)
         const BIGINT_RE = /^[+-]?\d+(?:_\d+)*n?$/;

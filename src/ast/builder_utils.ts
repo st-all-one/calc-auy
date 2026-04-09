@@ -2,7 +2,7 @@ import type { CalculationNode, OperationType } from "./types.ts";
 import { CalcAUYError } from "../core/errors.ts";
 
 /**
- * Tabela de precedência para operações matemáticas. 
+ * Tabela de precedência para operações matemáticas.
  * Valores menores indicam prioridade superior (ex: Potência > Multiplicação > Adição).
  */
 export const PRECEDENCE: Record<OperationType, number> = {
@@ -24,7 +24,7 @@ const MAX_HYDRATE_NODES = 1000;
 /**
  * Valida recursivamente a estrutura de um nó da AST.
  * Lança um erro se encontrar inconsistências ou propriedades faltando.
- * 
+ *
  * @param node O objeto a ser validado.
  * @param depth Nível atual de recursão (interno).
  * @param state Estado compartilhado para contagem de nós (interno).
@@ -59,7 +59,10 @@ export function validateASTNode(
         }
         const v = n.value as Record<string, unknown>;
         if (typeof v.n !== "string" || typeof v.d !== "string") {
-            throw new CalcAUYError("corrupted-node", "Valor racional malformado (numerador/denominador devem ser strings).");
+            throw new CalcAUYError(
+                "corrupted-node",
+                "Valor racional malformado (numerador/denominador devem ser strings).",
+            );
         }
     } else if (n.kind === "group") {
         if (!n.child) {
@@ -80,14 +83,14 @@ export function validateASTNode(
 }
 
 /**
- * Anexa recursivamente uma nova operação à árvore, respeitando as regras de 
+ * Anexa recursivamente uma nova operação à árvore, respeitando as regras de
  * precedência (PEMDAS) e associatividade.
- * 
+ *
  * **Engenharia de Construção:**
- * Esta função permite que a Fluent API da CalcAUY (`.add(5).mult(2)`) 
- * gere uma árvore semanticamente correta sem exigir parênteses manuais do usuário. 
+ * Esta função permite que a Fluent API da CalcAUY (`.add(5).mult(2)`)
+ * gere uma árvore semanticamente correta sem exigir parênteses manuais do usuário.
  * Ela "mergulha" a nova operação no operando à direita se a prioridade for maior.
- * 
+ *
  * @param target Nó raiz atual da árvore.
  * @param type Tipo da nova operação (ex: 'add', 'mul').
  * @param right Novo operando à direita.

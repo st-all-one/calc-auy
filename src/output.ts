@@ -192,30 +192,30 @@ export class CalcAUYOutput {
 
     /**
      * Retorna o valor escalado para a precisão informada como um BigInt.
-     * 
-     * **Engenharia:** Útil para persistência em bancos de dados que armazenam 
-     * valores monetários como "inteiros escalados" (scaled integers) para 
+     *
+     * **Engenharia:** Útil para persistência em bancos de dados que armazenam
+     * valores monetários como "inteiros escalados" (scaled integers) para
      * eliminar completamente o risco de imprecisão em consultas SQL SUM/AVG.
-     * 
+     *
      * @param options - A `decimalPrecision` define a escala (ex: 2 para centavos).
      * @returns BigInt escalado (ex: 15.50 com precisão 2 retorna 1550n).
-     * 
+     *
      * @example Exemplo Simples (Centavos)
      * ```ts
      * const scaled = output.toScaledBigInt({ decimalPrecision: 2 }); // 1500n
      * ```
-     * 
+     *
      * @example Escala para Alta Precisão (Milésimos)
      * ```ts
      * const mil = output.toScaledBigInt({ decimalPrecision: 3 }); // 15000n
      * ```
-     * 
+     *
      * @example Cenário Real: Persistência em PostgreSQL (BIGINT)
      * ```ts
      * // Armazenando 150.50 como 15050 no banco de dados.
      * await prisma.transaction.create({ data: { amount: res.toScaledBigInt({ decimalPrecision: 2 }) } });
      * ```
-     * 
+     *
      * @example Cenário Real Complexo: Reconciliação Bancária
      * ```ts
      * // Comparações exatas entre BigInts evitarem erros de '0.1 + 0.2 !== 0.3'
@@ -524,31 +524,31 @@ export class CalcAUYOutput {
 
     /**
      * Divide o valor final baseado em um array de proporções (ratios).
-     * 
-     * **Engenharia:** Semelhante ao `toSlice`, mas utiliza pesos customizados. 
-     * As proporções podem ser informadas como porcentagens ("30%"), decimais (0.3) 
-     * ou frações. O algoritmo normaliza os pesos e distribui centavos remanescentes 
+     *
+     * **Engenharia:** Semelhante ao `toSlice`, mas utiliza pesos customizados.
+     * As proporções podem ser informadas como porcentagens ("30%"), decimais (0.3)
+     * ou frações. O algoritmo normaliza os pesos e distribui centavos remanescentes
      * priorizando os maiores restos decimais.
-     * 
+     *
      * @param ratios - Array de pesos (ex: ["0.1", "0.2", "0.7"] ou ["33.33%", "66.67%"]).
      * @param options - Opções de precisão e localidade.
      * @returns Array de strings numéricas proporcionais.
-     * 
+     *
      * @example Exemplo Simples
      * ```ts
      * const partes = res.toSliceByRatio([0.5, 0.5]); // Metade para cada
      * ```
-     * 
+     *
      * @example Uso de Porcentagens
      * ```ts
      * const partes = res.toSliceByRatio(["30%", "70%"]);
      * ```
-     * 
+     *
      * @example Cenário Real: Divisão de Impostos (Federal / Estadual / Municipal)
      * ```ts
      * const impostos = total.toSliceByRatio(["60%", "30%", "10%"]);
      * ```
-     * 
+     *
      * @example Cenário Real Complexo: Rateio de Custos de Importação
      * ```ts
      * // Rateando custo de frete baseado no peso/valor de cada item do container.

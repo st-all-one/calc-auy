@@ -8,8 +8,8 @@ import type { RoundingStrategy } from "../core/constants.ts";
 
 /**
  * Handlers para diferentes estratégias de arredondamento.
- * 
- * Cada estratégia possui um impacto diferente em cálculos de grande volume 
+ *
+ * Cada estratégia possui um impacto diferente em cálculos de grande volume
  * (ex: folha de pagamento ou rateio de impostos).
  */
 export const RoundingHandlers: Record<
@@ -62,7 +62,7 @@ export const RoundingHandlers: Record<
 
     /**
      * "Half-Even" (Banker's Rounding): Arredonda para o número par mais próximo.
-     * **Engenharia:** Reduz o viés estatístico em grandes somatórios, sendo 
+     * **Engenharia:** Reduz o viés estatístico em grandes somatórios, sendo
      * exigido em diversos sistemas financeiros internacionais.
      */
     HALF_EVEN: (val: RationalNumber, p: number): RationalNumber => {

@@ -24,12 +24,12 @@ export type InputValue = string | number | bigint | CalcAUY;
 
 /**
  * CalcAUY - Builder Fluído para Construção de Árvores de Cálculo (AST).
- * 
+ *
  * Esta classe é o ponto de partida para qualquer operação matemática na biblioteca.
  * Ela utiliza o padrão Builder para acumular operações em uma estrutura de árvore
  * imutável, permitindo que a avaliação matemática real seja postergada até o momento
  * do `commit()`.
- * 
+ *
  * @class
  */
 export class CalcAUY {
@@ -41,11 +41,11 @@ export class CalcAUY {
 
     /**
      * Define a política global de logging para a proteção de PII.
-     * 
-     * **Engenharia:** Atua na 1ª camada de controle. Quando ativado (sensitive: true, padrão), 
-     * os dados são considerados sensíveis e serão OCULTADOS nos logs, a menos que um nó 
+     *
+     * **Engenharia:** Atua na 1ª camada de controle. Quando ativado (sensitive: true, padrão),
+     * os dados são considerados sensíveis e serão OCULTADOS nos logs, a menos que um nó
      * tenha sido explicitamente marcado com pii: false via metadata.
-     * 
+     *
      * @param policy Configuração da política (ex: { sensitive: false } para mostrar dados).
      * @returns A classe CalcAUY para encadeamento.
      */
@@ -66,30 +66,30 @@ export class CalcAUY {
 
     /**
      * Cria uma nova instância de CalcAUY a partir de um valor inicial.
-     * 
+     *
      * **Engenharia:** O valor de entrada é imediatamente convertido em um `RationalNumber`
      * (fração n/d) para garantir que a precisão seja preservada desde o primeiro nó da árvore.
-     * 
+     *
      * @param value - Aceita string (recomendado), number, bigint ou outra instância de CalcAUY.
      * @returns Uma nova instância de CalcAUY (Nó Literal).
-     * 
+     *
      * @example Exemplo Simples
      * ```ts
      * const calc = CalcAUY.from(100);
      * ```
-     * 
+     *
      * @example Operações Aninhadas
      * ```ts
      * const subCalc = CalcAUY.from(50).add(20);
      * const main = CalcAUY.from(subCalc).mult(2);
      * ```
-     * 
+     *
      * @example Cenário Real: Início de Fatura
      * ```ts
      * // Ingestão segura de valor vindo de um banco de dados ou input de usuário
      * const valorBase = CalcAUY.from("1250.50");
      * ```
-     * 
+     *
      * @example Cenário Real Complexo: Composição de Impostos
      * ```ts
      * const icms = CalcAUY.from("0.18");
@@ -118,29 +118,29 @@ export class CalcAUY {
 
     /**
      * Analisa uma string contendo uma expressão matemática complexa e a transforma em uma AST.
-     * 
-     * **Engenharia:** Utiliza um Parser de Descida Recursiva que respeita a precedência 
+     *
+     * **Engenharia:** Utiliza um Parser de Descida Recursiva que respeita a precedência
      * matemática padrão (PEMDAS). A expressão é tokenizada e validada antes de ser convertida em nós.
-     * 
+     *
      * @param expression - String como "(10 + 5) * 2 / 3".
      * @returns Instância de CalcAUY representando a árvore da expressão.
-     * 
+     *
      * @example Exemplo Simples
      * ```ts
      * const calc = CalcAUY.parseExpression("1 + 1");
      * ```
-     * 
+     *
      * @example Operações Aninhadas
      * ```ts
      * const calc = CalcAUY.parseExpression("(10 + 5) * (2 ^ 3)");
      * ```
-     * 
+     *
      * @example Cenário Real: Fórmula de Desconto Progressivo
      * ```ts
      * const formula = "1000 * (1 - 0.15) + 50"; // Valor * (1 - Desc) + Taxa
      * const calc = CalcAUY.parseExpression(formula);
      * ```
-     * 
+     *
      * @example Cenário Real Complexo: Juros Compostos
      * ```ts
      * // M = P * (1 + i) ^ n
@@ -157,20 +157,20 @@ export class CalcAUY {
 
     /**
      * Reconstrói um cálculo a partir de um estado salvo (JSON).
-     * 
-     * **Engenharia:** Suporta tanto a árvore pura (AST) quanto o objeto completo 
-     * gerado pelo `toAuditTrace()`. Se um snapshot de auditoria for detectado, 
-     * o método extrai automaticamente a árvore original, ignorando os resultados 
+     *
+     * **Engenharia:** Suporta tanto a árvore pura (AST) quanto o objeto completo
+     * gerado pelo `toAuditTrace()`. Se um snapshot de auditoria for detectado,
+     * o método extrai automaticamente a árvore original, ignorando os resultados
      * consolidados e permitindo a continuidade do cálculo.
-     * 
+     *
      * @param ast - Objeto CalculationNode, Snapshot de Auditoria ou string JSON.
      * @returns Instância hidratada pronta para novas operações.
-     * 
+     *
      * @example Exemplo Simples (AST Pura)
      * ```ts
      * const calc = CalcAUY.hydrate(node);
      * ```
-     * 
+     *
      * @example Hidratação via Rastro de Auditoria (Audit Trace)
      * ```ts
      * const audit = res.toAuditTrace(); // { ast: {...}, finalResult: ..., strategy: ... }
@@ -179,11 +179,9 @@ export class CalcAUY {
      */
     public static hydrate(ast: CalculationNode | string | object): CalcAUY {
         const data = typeof ast === "string" ? JSON.parse(ast) : ast;
-        
+
         // Se for um snapshot de auditoria (contém a chave 'ast'), extraímos apenas a árvore.
-        const node: CalculationNode = (data && typeof data === "object" && "ast" in data)
-            ? data.ast
-            : data;
+        const node: CalculationNode = (data && typeof data === "object" && "ast" in data) ? data.ast : data;
 
         validateASTNode(node);
 
@@ -192,10 +190,10 @@ export class CalcAUY {
 
     /**
      * Processa um array de itens de forma assíncrona e em lotes (Yielding).
-     * 
-     * **Engenharia:** Evita o bloqueio do Event Loop em cálculos massivos, cedendo a CPU 
+     *
+     * **Engenharia:** Evita o bloqueio do Event Loop em cálculos massivos, cedendo a CPU
      * periodicamente para que o servidor possa atender outras requisições ou I/O.
-     * 
+     *
      * @param items Array de dados.
      * @param task Função de transformação/cálculo.
      * @param options Configuração do lote (batchSize e onProgress).
@@ -224,31 +222,31 @@ export class CalcAUY {
 
     /**
      * Anexa metadados de negócio ao nó atual da árvore.
-     * 
-     * **Engenharia:** Fundamental para auditoria forense. Permite justificar cada 
+     *
+     * **Engenharia:** Fundamental para auditoria forense. Permite justificar cada
      * operação (ex: "ID da regra de imposto", "nome do operador", "timestamp").
-     * 
+     *
      * @param key - Chave do metadado.
      * @param value - Valor (deve ser serializável).
      * @returns Nova instância enriquecida.
-     * 
+     *
      * @example Exemplo Simples
      * ```ts
      * const calc = CalcAUY.from(100).setMetadata("owner", "user_1");
      * ```
-     * 
+     *
      * @example Operações Aninhadas
      * ```ts
      * const calc = CalcAUY.from(10).add(5).setMetadata("step", 1).mult(2).setMetadata("step", 2);
      * ```
-     * 
+     *
      * @example Cenário Real: Marcação de Tributo
      * ```ts
      * const calc = CalcAUY.from("500.00").mult("0.05")
      *   .setMetadata("tax_name", "ISS")
      *   .setMetadata("law_reference", "Artigo 123");
      * ```
-     * 
+     *
      * @example Cenário Real Complexo: Auditoria de Payroll
      * ```ts
      * const salario = CalcAUY.from(5000)
@@ -276,31 +274,31 @@ export class CalcAUY {
 
     /**
      * Envolve a expressão atual em um grupo (parênteses).
-     * 
-     * **Engenharia:** Força a precedência matemática. Útil quando você quer isolar 
+     *
+     * **Engenharia:** Força a precedência matemática. Útil quando você quer isolar
      * um bloco de cálculo antes de aplicar uma nova operação multiplicativa.
-     * 
+     *
      * @returns Nova instância com Nó de Agrupamento.
-     * 
+     *
      * @example Exemplo Simples
      * ```ts
      * // Resulta em (10 + 5)
      * const calc = CalcAUY.from(10).add(5).group();
      * ```
-     * 
+     *
      * @example Operações Aninhadas
      * ```ts
      * // Sem group: 10 + 5 * 2 = 20
      * // Com group: (10 + 5) * 2 = 30
      * const calc = CalcAUY.from(10).add(5).group().mult(2);
      * ```
-     * 
+     *
      * @example Cenário Real: Cálculo de Base com Adicional
      * ```ts
      * // (Salário + Bônus) * Alíquota
      * const base = CalcAUY.from(3000).add(500).group().mult("0.15");
      * ```
-     * 
+     *
      * @example Cenário Real Complexo: Proporcionalidade de Multa
      * ```ts
      * // (Valor_Total / Dias_Mes) * Dias_Atraso * Taxa_Multa
@@ -386,29 +384,29 @@ export class CalcAUY {
 
     /**
      * Finaliza a construção da árvore e inicia a fase de avaliação.
-     * 
+     *
      * **Engenharia:** Esta é a fase de transição. A AST é percorrida recursivamente,
-     * colapsando frações racionais até chegar no resultado final. O arredondamento 
+     * colapsando frações racionais até chegar no resultado final. O arredondamento
      * só é aplicado aqui ou nos outputs, nunca durante a construção.
-     * 
+     *
      * @param options - Configurações de arredondamento.
      * @returns Uma instância de CalcAUYOutput contendo o resultado final e a AST.
-     * 
+     *
      * @example Exemplo Simples
      * ```ts
      * const res = CalcAUY.from(10).add(5).commit();
      * ```
-     * 
+     *
      * @example Estratégia Customizada
      * ```ts
      * const res = CalcAUY.from("1.255").commit({ roundStrategy: "HALF_EVEN" });
      * ```
-     * 
+     *
      * @example Cenário Real: Fechamento de Venda
      * ```ts
      * const total = CalcAUY.from("99.90").mult(3).commit({ roundStrategy: "NBR5891" });
      * ```
-     * 
+     *
      * @example Cenário Real Complexo: Cálculo Fiscal com Truncagem
      * ```ts
      * // Muitos cálculos fiscais exigem TRUNCATE para não favorecer o contribuinte

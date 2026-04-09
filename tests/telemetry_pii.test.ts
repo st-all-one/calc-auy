@@ -16,7 +16,7 @@ describe("Telemetria e Proteção de PII (Security by Default)", () => {
         const calc = CalcAUY.from(100);
         const sanitized = sanitizeAST(calc.getAST()) as any;
         expect(sanitized.value.n).toBe("100");
-        
+
         // Reset para padrão seguro
         CalcAUY.setLoggingPolicy({ sensitive: true });
     });
@@ -26,7 +26,7 @@ describe("Telemetria e Proteção de PII (Security by Default)", () => {
         const calc = CalcAUY.from(100).setMetadata("pii", true);
         const sanitized = sanitizeAST(calc.getAST()) as any;
         expect(sanitized.value).toBe("[PII]");
-        
+
         CalcAUY.setLoggingPolicy({ sensitive: true });
     });
 
@@ -39,7 +39,7 @@ describe("Telemetria e Proteção de PII (Security by Default)", () => {
 
     it("deve permitir controle fluente de política no output", () => {
         const output = CalcAUY.from(10).add(5).commit();
-        
+
         // Ativando exibição (sensitive: false -> não é sensível)
         output.setLoggingPolicy({ sensitive: false });
         const context = { value: 100 };
@@ -57,7 +57,7 @@ describe("Telemetria e Proteção de PII (Security by Default)", () => {
 
         CalcAUY.setLoggingPolicy({ sensitive: false });
         expect(sanitizeObject(context)).toEqual({ rawInput: "123.45" });
-        
+
         CalcAUY.setLoggingPolicy({ sensitive: true });
     });
 });
