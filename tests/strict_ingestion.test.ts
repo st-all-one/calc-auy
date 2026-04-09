@@ -8,7 +8,7 @@ describe("Rigor de Ingestão - RationalNumber", () => {
         assertThrows(
             () => RationalNumber.from("10.5abc"),
             CalcAUYError,
-            "String numérica inválida"
+            "String numérica inválida",
         );
     });
 
@@ -16,7 +16,7 @@ describe("Rigor de Ingestão - RationalNumber", () => {
         assertThrows(
             () => RationalNumber.from("10.5.5"),
             CalcAUYError,
-            "String numérica inválida"
+            "String numérica inválida",
         );
     });
 
@@ -24,7 +24,7 @@ describe("Rigor de Ingestão - RationalNumber", () => {
         assertThrows(
             () => RationalNumber.from("1/2/3"),
             CalcAUYError,
-            "String numérica inválida"
+            "String numérica inválida",
         );
     });
 
@@ -32,7 +32,7 @@ describe("Rigor de Ingestão - RationalNumber", () => {
         assertThrows(
             () => RationalNumber.from("10 000"),
             CalcAUYError,
-            "String numérica inválida"
+            "String numérica inválida",
         );
     });
 

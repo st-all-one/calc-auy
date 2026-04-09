@@ -370,9 +370,7 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@logtape/logtape@^2.0.4",
-      "jsr:@std/assert@^1.0.19",
-      "jsr:@std/testing@^1.0.17"
+      "jsr:@logtape/logtape@^2.0.4"
     ],
     "members": {
       "demo": {

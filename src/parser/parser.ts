@@ -12,10 +12,10 @@ import { CalcAUYError } from "../core/errors.ts";
 
 /**
  * Parser de Descida Recursiva para a CalcAUY.
- * 
- * Implementa as regras de precedência (PEMDAS) através de camadas de métodos, 
+ *
+ * Implementa as regras de precedência (PEMDAS) através de camadas de métodos,
  * garantindo que a árvore seja construída com a hierarquia matemática correta.
- * 
+ *
  * Gramática EBNF suportada:
  * ```ebnf
  * expression -> term ( (PLUS | MINUS) term )*

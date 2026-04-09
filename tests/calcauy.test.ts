@@ -53,7 +53,7 @@ describe("CalcAUY - Integração e Auditoria", () => {
             // Hidratamos a partir do log de auditoria
             // Usamos .group() para garantir que a soma anterior seja tratada como um bloco: (100 + 50) * 2
             const retomado = CalcAUY.hydrate(auditTrace).group().mult(2).commit();
-            
+
             assertEquals(retomado.toStringNumber(), "300.0000");
         });
     });

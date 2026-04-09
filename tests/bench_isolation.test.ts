@@ -27,7 +27,7 @@ const d2 = performance.now() - t2;
 console.log(`\n--- Benchmark de Isolamento (${ITERATIONS} iterações) ---`);
 console.log(`1. RationalNumber (Puro): ${d1.toFixed(2)}ms`);
 console.log(`2. CalcAUY (Fluxo Completo): ${d2.toFixed(2)}ms`);
-console.log(`Overhead da Engine/Telemetria: ${((d2 / d1)).toFixed(2)}x`);
+console.log(`Overhead da Engine/Telemetria: ${(d2 / d1).toFixed(2)}x`);
 
 if (d2 > d1 * 10) {
     console.warn("\nAVISO: Overhead massivo detectado na telemetria (> 10x).");

@@ -14,12 +14,12 @@ const MAX_RECURSION_DEPTH = 500;
 
 /**
  * Colapsa recursivamente um nó da AST em um resultado final (RationalNumber).
- * 
+ *
  * **Fase de Commit:**
- * Esta função representa o momento da execução real do cálculo. Ela percorre a 
- * árvore em profundidade (Post-order Traversal), resolvendo primeiro os operandos 
+ * Esta função representa o momento da execução real do cálculo. Ela percorre a
+ * árvore em profundidade (Post-order Traversal), resolvendo primeiro os operandos
  * e depois aplicando a operação correspondente.
- * 
+ *
  * @param node Nó raiz da expressão.
  * @param depth Nível atual de recursão (usado para controle de segurança).
  * @returns {RationalNumber} O resultado matemático puro e exato.

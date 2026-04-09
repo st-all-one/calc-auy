@@ -28,12 +28,12 @@ export interface ErrorContext {
 
 /**
  * Erro customizado da CalcAUY seguindo o padrão RFC 7807 (Problem Details).
- * 
- * **Engenharia:** Diferente de um erro genérico, o CalcAUYError é serializável e 
+ *
+ * **Engenharia:** Diferente de um erro genérico, o CalcAUYError é serializável e
  * projetado para transporte via APIs HTTP. Ele inclui um contexto técnico detalhado
- * que pode conter a AST parcial ou o input que causou a falha, facilitando a 
+ * que pode conter a AST parcial ou o input que causou a falha, facilitando a
  * depuração forense.
- * 
+ *
  * @class
  */
 export class CalcAUYError extends Error {
@@ -99,7 +99,7 @@ export class CalcAUYError extends Error {
 
     /**
      * Converte o erro para um objeto plano pronto para serialização JSON.
-     * 
+     *
      * @example Exemplo Simples: Captura de Erro
      * ```ts
      * try {
@@ -110,7 +110,7 @@ export class CalcAUYError extends Error {
      *   }
      * }
      * ```
-     * 
+     *
      * @example Resposta de API com Detalhes
      * ```ts
      * app.onError((err) => {
@@ -119,17 +119,17 @@ export class CalcAUYError extends Error {
      *   }
      * });
      * ```
-     * 
+     *
      * @example Cenário Real: Validação de Input de Usuário
      * ```ts
      * // Erro ao tentar processar string malformada como "10..5"
      * try {
      *   CalcAUY.parseExpression(userInput);
      * } catch (err) {
-     *   showUIFeedback(err.detail); 
+     *   showUIFeedback(err.detail);
      * }
      * ```
-     * 
+     *
      * @example Cenário Real Complexo: Debug em Produção via Sentry
      * ```ts
      * Sentry.captureException(err, {
