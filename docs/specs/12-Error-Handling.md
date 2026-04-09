@@ -35,8 +35,8 @@ Para cada erro disparado, o motor deve anexar o máximo de informações possív
 ## Handler de Captura e Telemetria
 A biblioteca deve fornecer um utilitário interno de tratamento:
 1. **Interceptação:** Captura erros nativos (como `BigInt` division by zero) e os encapsula em `CalcAUYError`.
-2. **Log Automático:** Dispara imediatamente o `getLogger(["calc-auy", "error"]).error()` conforme definido no `specs/11`.
-3. **Anonimização:** Remove dados sensíveis do `ErrorContext` antes de enviar para logs públicos, se configurado.
+2. **Sanitização Obrigatória:** Antes de qualquer log, o `ErrorContext` deve ser processado para remover ou redigir (`[REDACTED]`) valores literais e metadados sensíveis.
+3. **Log Automático:** Dispara imediatamente o `getLogger(["calc-auy", "error"]).error()` com dados sanitizados, conforme definido no `specs/11`.
 
 ## Exemplo de JSON de Erro (Serializado)
 ```json

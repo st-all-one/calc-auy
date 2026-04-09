@@ -15,16 +15,18 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
     - **Hibernação:** `.hibernate()` (ou `.getAST()`) extrai o estado atual para armazenamento persistente.
 4.  **Precedência e Execução (`specs/07`, `specs/13`):** O `commit()` aplica regras como **NBR-5891**.
 5.  **Saída e Acessibilidade (`specs/09`, `specs/14`):** Geração de multiformatos com rastro forense.
-6.  **Qualidade e Rigor (`specs/15`):** Padrões de tipagem estrita e performance.
-7.  **Extensibilidade (`specs/16`):** Processadores de saída customizados e injeção de lógica.
+6.  **Proteção de Dados e Telemetria (`specs/11`, `specs/17`):** Sistema de proteção de PII (*Security by Default*) com controle global e granular de logs.
+7.  **Qualidade e Rigor (`specs/15`):** Padrões de tipagem estrita e performance.
+8.  **Extensibilidade (`specs/16`):** Processadores de saída customizados e injeção de lógica.
 
 ## Resumo de Métodos Principais
 
 ### Classe `CalcAUY` (Builder)
 - `add()`, `sub()`, `mult()`, `div()`, `pow()`, `mod()`, `divInt()`
 - `group()`: Agrupamento manual.
+- **`setLoggingPolicy({sensitive})`**: Controle global de PII nos logs (1ª camada).
 - **`parseExpression(str)`**: Parser de strings matemáticas complexas (com auto-agrupamento).
-- **`setMetadata(key, val)`**: O pilar da auditoria.
+- **`setMetadata(key, val)`**: O pilar da auditoria. Use `pii: true|false` para controle granular (2ª camada).
 - **`hibernate()`**: Serializa a árvore atual (**string JSON**).
 - **`getAST()`**: Retorna o objeto da árvore atual (**CalculationNode**).
 - **`static hydrate(ast)`**: Reconstrói a instância (aceita string ou objeto).
@@ -37,4 +39,4 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 - `toAuditTrace()`: Snapshot JSON completo com metadados e valores intermediários.
 
 ---
-*Para detalhes de implementação, consulte os arquivos numerados de 01 a 14 neste diretório.*
+*Para detalhes de implementação, consulte os arquivos numerados de 01 a 17 neste diretório.*

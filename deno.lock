@@ -6,9 +6,11 @@
     "jsr:@std/assert@^1.0.19": "1.0.19",
     "jsr:@std/async@^1.1.0": "1.2.0",
     "jsr:@std/data-structures@^1.0.10": "1.0.10",
+    "jsr:@std/expect@*": "1.0.18",
     "jsr:@std/fs@^1.0.22": "1.0.23",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/path@^1.1.4": "1.1.4",
+    "jsr:@std/testing@*": "1.0.17",
     "jsr:@std/testing@^1.0.17": "1.0.17",
     "npm:@codemirror/autocomplete@^6.16.2": "6.20.1",
     "npm:@codemirror/commands@^6.6.0": "6.10.3",
@@ -36,6 +38,14 @@
     },
     "@std/data-structures@1.0.10": {
       "integrity": "f574f86b0e07c69b9edc555fcc814b57d29258bad39fd5a34ba8a80ecf033cfe"
+    },
+    "@std/expect@1.0.18": {
+      "integrity": "8566eab35200466f8609eb7e7aed062ed0db314e9a258d5d201b1b8997ce801a",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.19",
+        "jsr:@std/internal",
+        "jsr:@std/path"
+      ]
     },
     "@std/fs@1.0.23": {
       "integrity": "3ecbae4ce4fee03b180fa710caff36bb5adb66631c46a6460aaad49515565a37",

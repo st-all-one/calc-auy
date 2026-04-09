@@ -15,6 +15,7 @@ import { performSlice, performSliceByRatio } from "./output_internal/slicer.ts";
 import { generateSVG } from "./output_internal/image_utils.ts";
 import type { IKatex, OutputOptions } from "./core/types.ts";
 import { getSubLogger, measureTime } from "./utils/logger.ts";
+import { setGlobalLoggingPolicy } from "./utils/sanitizer.ts";
 
 const logger = getSubLogger("output");
 
@@ -92,6 +93,14 @@ export class CalcAUYOutput {
         this.#result = result;
         this.#ast = ast;
         this.#strategy = strategy;
+    }
+
+    /**
+     * Define a política global de logging para a liberação de PII (versão fluente no output).
+     */
+    public setLoggingPolicy(policy: { sensitive: boolean }): CalcAUYOutput {
+        setGlobalLoggingPolicy(policy);
+        return this;
     }
 
     private getRounded(precision: number): RationalNumber {
@@ -732,7 +741,6 @@ export class CalcAUYOutput {
             output_method: method,
             duration,
             options,
-            internal_value: this.#result.toJSON(),
         });
         return result;
     }

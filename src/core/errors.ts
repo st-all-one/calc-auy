@@ -1,8 +1,14 @@
 /**
- * CalcAUY - Error Handling System (RFC 7807)
+ * CalcAUY - Sistema de Erros e Diagnósticos (RFC 7807)
  * @module
  */
 
+import { getSubLogger } from "../utils/logger.ts";
+import { sanitizeObject } from "../utils/sanitizer.ts";
+
+const logger = getSubLogger("error");
+
+/** Categorias de erro suportadas pela engine. */
 export type ErrorCategory =
     | "invalid-syntax"
     | "unsupported-type"
@@ -12,6 +18,7 @@ export type ErrorCategory =
     | "corrupted-node"
     | "math-overflow";
 
+/** Contexto técnico da falha para auditoria. */
 export interface ErrorContext {
     operation?: string;
     rawInput?: unknown;
@@ -77,6 +84,15 @@ export class CalcAUYError extends Error {
         this.status = statusMap[category];
         this.title = titleMap[category];
         this.name = "CalcAUYError";
+
+        // Telemetria Automática Sanitizada (Rigor specs/11 e specs/12)
+        logger.error("CalcAUY Exception Triggered", {
+            error_type: this.type,
+            instance: this.instance,
+            status: this.status,
+            detail: this.detail,
+            context: sanitizeObject(this.context),
+        });
     }
 
     /**

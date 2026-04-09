@@ -15,6 +15,7 @@ import { Lexer } from "./parser/lexer.ts";
 import { Parser } from "./parser/parser.ts";
 import { attachOp } from "./ast/builder_utils.ts";
 import { getSubLogger } from "./utils/logger.ts";
+import { sanitizeAST, setGlobalLoggingPolicy } from "./utils/sanitizer.ts";
 
 const logger = getSubLogger("engine");
 
@@ -35,6 +36,31 @@ export class CalcAUY {
 
     private constructor(ast: CalculationNode) {
         this.#ast = ast;
+    }
+
+    /**
+     * Define a política global de logging para a proteção de PII.
+     * 
+     * **Engenharia:** Atua na 1ª camada de controle. Quando ativado (sensitive: true, padrão), 
+     * os dados são considerados sensíveis e serão OCULTADOS nos logs, a menos que um nó 
+     * tenha sido explicitamente marcado com pii: false via metadata.
+     * 
+     * @param policy Configuração da política (ex: { sensitive: false } para mostrar dados).
+     * @returns A classe CalcAUY para encadeamento.
+     */
+    public static setLoggingPolicy(policy: { sensitive: boolean }): typeof CalcAUY {
+        setGlobalLoggingPolicy(policy);
+        return CalcAUY;
+    }
+
+    /**
+     * Define a política global de logging (versão de instância fluente).
+     * @param policy Configuração da política.
+     * @returns A instância atual para continuidade do builder.
+     */
+    public setLoggingPolicy(policy: { sensitive: boolean }): CalcAUY {
+        setGlobalLoggingPolicy(policy);
+        return this;
     }
 
     /**
@@ -78,6 +104,12 @@ export class CalcAUY {
             value: r.toJSON() as RationalValue,
             originalInput: value.toString(),
         };
+
+        logger.debug("CalcAUY Instance Created", {
+            input_type: typeof value,
+            structure: sanitizeAST(node),
+        });
+
         return new CalcAUY(node);
     }
 
@@ -208,6 +240,12 @@ export class CalcAUY {
             ...this.#ast,
             metadata: { ...(this.#ast.metadata || {}), [key]: value },
         } as CalculationNode;
+
+        logger.debug("Metadata Attached", {
+            key,
+            structure: sanitizeAST(newAST),
+        });
+
         return new CalcAUY(newAST);
     }
 
@@ -249,6 +287,11 @@ export class CalcAUY {
             kind: "group",
             child: this.#ast,
         };
+
+        logger.debug("Grouping Applied", {
+            structure: sanitizeAST(node),
+        });
+
         return new CalcAUY(node);
     }
 
@@ -306,7 +349,7 @@ export class CalcAUY {
         logger.debug("Node appended to AST", {
             operation: type,
             input_type: inputType,
-            ast_state: newAST,
+            structure: sanitizeAST(newAST),
         });
 
         return new CalcAUY(newAST);

@@ -18,32 +18,31 @@ A biblioteca utiliza o LogTape 2.0 de forma agnóstica.
 - **Gatilho:** Cada operação de anexação na AST (`add`, `sub`, `pow`, etc.).
 - **Conteúdo Requerido:**
   - `operation`: Nome da operação (ex: "add").
-  - `ast_state`: Representação serializada da AST no estado atual (após a operação).
+  - `ast_structure`: Representação estrutural da AST (tipos de nós e hierarquia, **sem valores literais ou metadados**).
   - `input_type`: Tipo do valor de entrada (string, number, CalcAUY).
-- **Exemplo:** `getLogger(["calc-auy", "engine", "add"]).debug("Node appended to AST", { ast: currentAST })`
+- **Restrição de PII:** É proibido logar o conteúdo de `RationalValue` ou `MetadataValue`.
+- **Exemplo:** `getLogger(["calc-auy", "engine", "add"]).debug("Node appended to AST", { structure: getSanitizedAST(currentAST) })`
 
 ### 2. Fase de Saída (Output)
 - **Nível:** `Info`
 - **Gatilho:** Chamada de qualquer método de exportação em `CalcAUYOutput`.
 - **Conteúdo Requerido:**
   - `output_method`: O método chamado (ex: "toMonetary").
-  - `final_ast`: A árvore AST completa e finalizada.
-  - `internal_value`: O valor `RationalNumber` consolidado (numerador/denominador).
   - `options`: Parâmetros passados ao método (ex: `decimalPrecision`).
-- **Exemplo:** `getLogger(["calc-auy", "output", "monetary"]).info("Output generated", { method: "toMonetary", value: finalValue })`
+- **Restrição de PII:** Não deve logar o `final_ast` completo nem o `internal_value` real. O log serve apenas para métricas de uso e performance.
 
 ### 3. Fase de Erro
 - **Nível:** `Error` ou `Warn`
 - **Gatilho:** Exceções disparadas (`CalcAUYError`).
 - **Conteúdo Requerido:**
   - `error_type`: Categoria do erro (ex: "division-by-zero").
-  - `partial_ast`: O estado da árvore no momento da falha.
-  - `operation_context`: Dados que causaram o erro.
+  - `partial_ast_structure`: Estrutura da árvore no momento da falha (sanitizada).
+  - `operation_context`: Dados técnicos da falha (sanitizados).
 
 ## Segurança e Anonimização (PII)
-Para garantir conformidade com LGPD/GDPR e proteger dados sensíveis que possam estar nos metadados:
-1. **Anonimização de Metadados:** Logs não devem imprimir valores de `metadata` se estes forem marcados como sensíveis.
-2. **Máscara de Valores:** Embora o rastro matemático seja público por definição na lib, o sistema de logs deve permitir a configuração de um "PII Masker" para ocultar valores monetários reais em ambientes de produção, se solicitado pelo usuário.
+Para garantir conformidade com LGPD/GDPR e proteger dados sensíveis:
+1. **Redação Obrigatória:** Todos os logs devem passar por um utilitário de sanitização que substitui valores numéricos e metadados por `[REDACTED]`.
+2. **Máscara de Valores:** Embora o rastro matemático seja público no output da lib para o usuário, nos logs de infraestrutura ele deve ser ocultado.
 
 ## Estrutura Visual do Log no Console
 ```text
