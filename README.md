@@ -14,20 +14,16 @@ A **CalcAUY** é uma infraestrutura em **TypeScript** projetada para neutralizar
 
 ---
 
-### Documentação
+## 📖 Documentação
 
 - [Entendendo a CalcAUY](./docs/start.md)
 - [Exemplos de uso](./docs/examples.md)
 - [Especificações](./docs/specs.md)
 - [Segurança e Auditabilidade](./docs/audit.md)
 
-### Showcase
+## 🚀 Quick-start
 
-Veja em execução no [Showcase Interativo](https://google.com)
-
-### Quick-start
-
-#### Instalação:
+### Instalação:
 ```bash
 deno    add jsr:@st-all-one/calc-auy
 pnpm      i jsr:@st-all-one/calc-auy
@@ -37,7 +33,7 @@ npx     jsr add @st-all-one/calc-auy
 bunx    jsr add @st-all-one/calc-auy
 ```
 
-#### Execução:
+### Execução:
 ```ts
 import { CalcAUY } from "@st-all-one/calc-auy";
 
@@ -78,12 +74,13 @@ console.log(auditTrace);
 /*
 {"ast":{"kind":"operation","type":"mul","operands":[{"kind":"literal","value":{"n":"1000","d":"1"},"originalInput":"1000.00"},{"kind":"group","child":{"kind":"operation","type":"pow","operands":[{"kind":"group","child":{"kind":"operation","type":"add","operands":[{"kind":"literal","value":{"n":"1","d":"1"},"originalInput":"1"},{"kind":"group","child":{"kind":"literal","value":{"n":"1","d":"10"},"originalInput":"0.10"}}]}},{"kind":"literal","value":{"n":"3","d":"1"},"originalInput":"3"}]}}]},"finalResult":{"n":"1331","d":"1"},"strategy":"NBR5891"}
 */
-
 ```
 
----
+### Showcase
 
-### Por que essa lib existe?
+Veja em execução no [Showcase Interativo](https://google.com)
+
+## 🎯 Por que essa lib existe?
 
 No desenvolvimento de software financeiro moderno, o uso de `number` (float) é um risco. Erros de arredondamento inerentes ao padrão IEEE 754 (ex: `0.1 + 0.2 !== 0.3`) podem causar prejuízos acumulados e falhas em auditorias fiscais.
 
