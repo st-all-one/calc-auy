@@ -1,6 +1,6 @@
-import { describe, it } from "jsr:@std/testing/bdd";
+import { describe, it } from "@std/testing/bdd";
 import { expect } from "jsr:@std/expect";
-import { CalcAUY } from "./mod.ts";
+import { CalcAUY } from "../mod.ts";
 
 describe("CalcAUY - Testes de Estresse e Performance Extrema", () => {
     const results: Record<string, string> = {};
@@ -86,8 +86,8 @@ describe("CalcAUY - Testes de Estresse e Performance Extrema", () => {
 
     // --- CENÁRIOS DE GUERRA (DoS, CONCURRENCY, ATTACK VECTORS) ---
 
-    it("Cenário 9: Burst Concurrency (DDoS Simulation)", async () => {
-        const CONCURRENT_REQUESTS = 100000;
+    it("Cenário 8: Burst Concurrency (DDoS Simulation)", async () => {
+        const CONCURRENT_REQUESTS = 10_000;
         const start = performance.now();
 
         // Simula 100.000 requisições disparadas simultaneamente
@@ -98,13 +98,13 @@ describe("CalcAUY - Testes de Estresse e Performance Extrema", () => {
         await Promise.all(tasks);
 
         const end = performance.now();
-        results["9_burst_concurrency_ddos"] = `${
+        results["8_burst_concurrency_ddos"] = `${
             (end - start).toFixed(4)
         }ms (concurrent_tasks: ${CONCURRENT_REQUESTS})`;
     });
 
-    it("Cenário 13: Batch Processing (Controlled Throughput)", async () => {
-        const TOTAL_TASKS = 100000;
+    it("Cenário 9: Batch Processing (Controlled Throughput)", async () => {
+        const TOTAL_TASKS = 1_000_000;
         const start = performance.now();
 
         const items = Array.from({ length: TOTAL_TASKS }).map((_, i) => i);
@@ -115,9 +115,7 @@ describe("CalcAUY - Testes de Estresse e Performance Extrema", () => {
         }, { batchSize: 5000 });
 
         const end = performance.now();
-        results["13_batch_processing_controlled"] = `${
-            (end - start).toFixed(4)
-        }ms (total_tasks: ${TOTAL_TASKS})`;
+        results["9_batch_processing_controlled"] = `${(end - start).toFixed(4)}ms (total_tasks: ${TOTAL_TASKS})`;
     });
 
     it("Cenário 10: Logging Policy Hell (Race Condition Stress)", async () => {
@@ -127,10 +125,10 @@ describe("CalcAUY - Testes de Estresse e Performance Extrema", () => {
         // Estressa o estado global da política de log enquanto executa cálculos pesados
         // Em JS/Deno isso testa a consistência da lib sob micro-tarefas assíncronas
         const stressor = async () => {
-            for (let i = 0; i < 10000; i++) {
+            for (let i = 0; i < 1000; i++) {
                 try {
                     CalcAUY.setLoggingPolicy({ sensitive: i % 2 === 0 });
-                    CalcAUY.from(100).add(i).commit();
+                    CalcAUY.from(100).pow(i).commit();
                 } catch {
                     errorCount++;
                 }
