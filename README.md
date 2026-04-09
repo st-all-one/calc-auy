@@ -90,11 +90,13 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 
 - **Precisão Racional**: Baseada em `BigInts`, a lib opera puramente com frações exatas `(n/d)`. Executando simplificação via **Algoritmo de Stein** (Binary GCD) em cada etapa, garantindo que a memória seja otimizada sem sacrificar o rigor matemático.
 
+- **Precedência Rigorosa**: Implementa o padrão `PEMDAS/BODMAS`, tratando a exponenciação com **Associatividade à Direita** e garantindo que o agrupamento léxico proteja a ordem das operações conforme a intenção do cálculo.
+
 - **Auditabilidade Forense via AST**: Toda operação constrói uma `Árvore de Sintaxe Abstrata (AST) imutável`. Isso permite "hibernar" cálculos complexos em JSON e reidratá-los sem perda de contexto, preservando a intenção original do cálculo.
 
-- **Segurança por Design**: Opera sob o dogma de `Security by Default`, com redação automática de dados sensíveis (`PII`) em logs estruturados. A engine é protegida por gatekeepers estruturais que validam a profundidade cada input, neutralizando vetores de ataque como `JSON Bombs` e `Stack Overflow`.
+- **Segurança por Design**: Opera sob o dogma de `Security by Default`, com redação automática de dados sensíveis (`PII`) em logs estruturados. A engine é protegida por gatekeepers estruturais que validam **estritamente** cada input, neutralizando vetores de ataque como `JSON Bombs` e `Stack Overflow`.
 
-- **Integridade Atuária**: Implementação estrita de `NBR 5891` e algoritmos de `Resto de divisão Euclidiana` e `Maior Resto` para rateios monetários exatos, garantindo que nenhum centavo seja perdido ou tendenciado.
+- **Integridade Atuária**: Implementação estrita da `NBR 5891` e algoritmos de `Resto de divisão Euclidiana` e `Maior Resto` para rateios monetários exatos, garantindo que nenhum centavo seja perdido ou tendenciado.
 
 ### Developer Experience (DX), Portabilidade e Escalabilidade
 
@@ -114,10 +116,34 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 
 <div align="center">
 
-**A CalcAUY é a ferramenta para o engenheiro que não aceita resultados sem provas auditáveis.**
+**A CalcAUY é a ferramenta para o engenheiro que não aceita resultados sem provas auditáveis**
+
+<details>
+<summary><b>🔍 Testes </b></summary>
+
+<div align="left">
+    
+**📊 Code Coverage**
+> IMG
+> 
+> Link, 2026-04-xx
+
+**🛡️ Code Quality (SonarQube)**
+> IMG
+> 
+> Link, 2026-04-xx
+
+**📛 Stress Test**
+> IMG
+> 
+> Link, 2026-04-xx
+
+</div>
+
+</details>
 
 ---
 
-Este é um projeto de código aberto sob a licença **MPL-2.0**
+-- A **CalcAUY** é um projeto de código aberto sob a licença **MPL-2.0** --
 
 </div>
