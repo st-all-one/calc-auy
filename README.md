@@ -125,21 +125,21 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
     
 **📊 Code Coverage**
 > ```bash
-> // 2026-04-09
-> deno task coverage:report
->
-> ok | 17 passed (228 steps) | 0 failed (40s)
+> // 2026-04-10
+> ❯ deno task coverage:dev
+> 
+> ok | 16 passed (215 steps) | 0 failed (12s)
 > 
 > | File                               | Branch % | Function % | Line % |
 > | ---------------------------------- | -------- | ---------- | ------ |
 > | mod.ts                             |    100.0 |      100.0 |  100.0 |
-> | src/ast/builder_utils.ts           |    100.0 |      100.0 |  100.0 |
-> | src/ast/engine.ts                  |     97.6 |      100.0 |   97.5 |
-> | src/builder.ts                     |     95.8 |      100.0 |   96.6 |
+> | src/ast/builder_utils.ts           |     95.2 |      100.0 |   88.2 |
+> | src/ast/engine.ts                  |     97.6 |      100.0 |   97.7 |
+> | src/builder.ts                     |     94.1 |      100.0 |   95.4 |
 > | src/core/constants.ts              |    100.0 |      100.0 |  100.0 |
 > | src/core/errors.ts                 |    100.0 |      100.0 |  100.0 |
 > | src/core/metadata.ts               |    100.0 |      100.0 |  100.0 |
-> | src/core/rational.ts               |     92.0 |      100.0 |   94.6 |
+> | src/core/rational.ts               |     92.4 |      100.0 |   96.8 |
 > | src/i18n/i18n.ts                   |     50.0 |      100.0 |  100.0 |
 > | src/output.ts                      |     93.0 |      100.0 |   98.2 |
 > | src/output_internal/image_utils.ts |     75.0 |      100.0 |   96.6 |
@@ -147,12 +147,12 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 > | src/output_internal/slicer.ts      |     69.2 |      100.0 |   87.8 |
 > | src/parser/lexer.ts                |     83.7 |      100.0 |   81.8 |
 > | src/parser/parser.ts               |     90.2 |      100.0 |   93.6 |
-> | src/rounding/rounding.ts           |     88.9 |      100.0 |   90.5 |
+> | src/rounding/rounding.ts           |     86.2 |      100.0 |   87.3 |
 > | src/utils/batch.ts                 |     77.8 |      100.0 |   88.5 |
 > | src/utils/logger.ts                |    100.0 |      100.0 |  100.0 |
-> | src/utils/sanitizer.ts             |    100.0 |      100.0 |  100.0 |
+> | src/utils/sanitizer.ts             |     98.6 |      100.0 |   98.9 |
 > | src/utils/unicode.ts               |     75.0 |      100.0 |  100.0 |
-> | All files                          |     92.7 |      100.0 |   95.4 |
+> | All files                          |     92.3 |      100.0 |   95.0 |
 > ```
 
 **🛡️ Code Quality (SonarQube)**
@@ -162,27 +162,74 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 
 **📛 Stress Test**
 > ```bash
-> // 2026-04-09
-> deno test tests/stress.test.ts
+> // 2026-04-10
+> ❯ deno test tests/stress.test.ts
 > 
-> ┌───────────────────────────────┬──────────────────────────────────────────┐
-> │ (idx)                         │ Values                                   │
-> ├───────────────────────────────┼──────────────────────────────────────────┤
-> │ 1_cpu_limit_complex_root      │ "4.5216ms"                               │
-> │ 2_extensive_ast_depth         │ "9.6443ms"                               │
-> │ 3_costly_repeated_pow         │ "6515.6680ms (iterations: 100000)"       │
-> │ 4_simple_real_repeated        │ "3560.0605ms (iterations: 100000)"       │
-> │ 5_metadata_cloning_stress     │ "76.7173ms (metadata_keys: 1000)"        │
-> │ 6_rational_explosion_gcd      │ "0.7545ms"                               │
-> │ 7_slicing_massacre            │ "66.1110ms (slices: 100000)"             │
-> │ 8_burst_concurrency_ddos      │ "4139.5395ms (concurrent_tasks: 100000)" │
-> │ 9_batch_processing_controlled │ "4058.4680ms (total_tasks: 100000)"      │
-> │ 10_logging_policy_race_stress │ "1166.6012ms (errors: 0)"                │
-> │ 11_bigint_limit_torture       │ "0.7607ms (caught_overflow: true)"       │
-> │ 12_malicious_json_hydration   │ "1.2498ms (deflected: true)"             │
-> └───────────────────────────────┴──────────────────────────────────────────┘
+> ┌───────────────────────────────┬─────────────────────────────────────────┐
+> │ (idx)                         │ Values                                  │
+> ├───────────────────────────────┼─────────────────────────────────────────┤
+> │ 1_cpu_limit_complex_root      │ "5.1747ms"                              │
+> │ 2_extensive_ast_depth         │ "3.1388ms"                              │
+> │ 3_costly_repeated_pow         │ "1656.2201ms (iterations: 100000)"      │
+> │ 4_simple_real_repeated        │ "453.0635ms (iterations: 100000)"       │
+> │ 5_metadata_cloning_stress     │ "67.5408ms (metadata_keys: 1000)"       │
+> │ 6_rational_explosion_gcd      │ "0.2900ms"                              │
+> │ 7_slicing_massacre            │ "70.4730ms (slices: 100000)"            │
+> │ 8_burst_concurrency_ddos      │ "836.7753ms (concurrent_tasks: 100000)" │
+> │ 9_batch_processing_controlled │ "796.4584ms (total_tasks: 100000)"      │
+> │ 10_logging_policy_race_stress │ "979.5450ms (errors: 0)"                │
+> │ 11_bigint_limit_torture       │ "0.8179ms (caught_overflow: true)"      │
+> │ 12_malicious_json_hydration   │ "1.2533ms (deflected: true)"            │
+> └───────────────────────────────┴─────────────────────────────────────────┘
 > ```
+<details>
+<summary><b>🔍 Detalhes do Hardware </b></summary>
 
+```bash
+❯ deno --version
+deno 2.7.7 (stable, release, x86_64-unknown-linux-gnu)
+v8 14.6.202.9-rusty
+typescript 5.9.2
+
+❯ inxi -Fzx
+System:
+  Kernel: 6.19.11-200.fc43.x86_64 arch: x86_64 bits: 64 compiler: gcc
+    v: 15.2.1
+  Desktop: GNOME v: 49.5 Distro: Fedora Linux 43 (Workstation Edition)
+Machine:
+  Type: Laptop System: LENOVO product: 83MM v: IdeaPad Slim 3 15ARP10
+  Mobo: LENOVO model: LNVNB161216
+    Firmware: UEFI vendor: LENOVO
+CPU:
+  Info: 8-core model: AMD Ryzen 7 7735HS with Radeon Graphics bits: 64
+    type: MT MCP arch: Zen 3+ rev: 1 cache: L1: 512 KiB L2: 4 MiB L3: 16 MiB
+  Speed (MHz): avg: 3115 min/max: 407/4831 boost: enabled cores: 1: 3115
+    2: 3115 3: 3115 4: 3115 5: 3115 6: 3115 7: 3115 8: 3115 9: 3115 10: 3115
+    11: 3115 12: 3115 13: 3115 14: 3115 15: 3115 16: 3115 bogomips: 102200
+  Flags-basic: avx avx2 ht lm nx pae sse sse2 sse3 sse4_1 sse4_2 sse4a
+    ssse3 svm
+Graphics:
+  Device-1: Advanced Micro Devices [AMD/ATI] Rembrandt [Radeon 680M]
+    vendor: Lenovo driver: amdgpu v: kernel arch: RDNA-2 bus-ID: 04:00.0
+    temp: 44.0 C
+  Display: wayland server: X.Org v: 24.1.9 with: Xwayland v: 24.1.9
+    compositor: gnome-shell driver: dri: radeonsi
+  API: OpenGL v: 4.6 vendor: amd mesa v: 25.3.6 glx-v: 1.4
+    direct-render: yes renderer: AMD Radeon 680M (radeonsi rembrandt LLVM
+    21.1.8 DRM 3.64 6.19.11-200.fc43.x86_64)
+  Info: Tools: api: glxinfo x11: xdriinfo, xdpyinfo, xprop, xrandr
+Drives:
+  ID-1: /dev/nvme0n1 vendor: Western Digital model: WD PC SN5000S
+Partition:
+  ID-1: / size: 474.34 GiB fs: btrfs dev: /dev/dm-0
+Info:
+  Memory: total: 8 GiB
+  Processes: 517 Uptime: 20m Init: systemd
+  Packages: gcc: 15.2.1 Shell: Zsh v: 5.9
+    inxi: 3.3.40
+```
+</details>
+    
 </div>
 
 </details>
