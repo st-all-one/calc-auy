@@ -10,7 +10,7 @@
 
 </div>
 
-A **CalcAUY** é uma infraestrutura em **TypeScript** projetada para neutralizar a imprecisão do padrão IEEE 754. Através de **imutabilidade estrita e Árvore de Sintaxe Abstrata (AST)**, ela assegura a integridade atuária, transformando cada operação em uma evidência matemática transparente, acessível e auditável
+A **CalcAUY** é uma infraestrutura em **TypeScript** projetada para neutralizar a imprecisão do padrão IEEE 754. Através de **imutabilidade estrita e Árvore de Sintaxe Abstrata (AST)**, ela assegura a integridade atuária, transformando cada operação em uma evidência matemática transparente, acessível e auditável.
 
 ---
 
@@ -88,7 +88,7 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 
 ### Engenharia Matemática
 
-- **Precisão Racional**: Baseada em `BigInts`, a lib opera puramente com frações exatas `(n/d)`. Executando simplificação via **Algoritmo de Stein** (Binary GCD) em cada etapa, garantindo que a memória seja otimizada sem sacrificar o rigor matemático.
+- **Precisão Racional**: Baseada em `BigInts`, a lib opera puramente com frações exatas `(n/d)`. Executando simplificação via **Algoritmo de Euclides** (MCD) em cada etapa, garantindo que a memória seja otimizada sem sacrificar o rigor matemático.
 
 - **Precedência Rigorosa**: Implementa o padrão `PEMDAS/BODMAS`, tratando a exponenciação com **Associatividade à Direita** e garantindo que o agrupamento léxico proteja a ordem das operações conforme a intenção do cálculo.
 
@@ -112,16 +112,7 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 
 - **Matemática Acessível**: A `CalcAUY` transforma a AST em diferentes representações visuais e integrativas, como narrações verbais em 8 idiomas (`toVerbalA11y`), unicode para CLIs (`toUnicode`), LaTeX para relatórios (`toLaTeX`), HTML via KaTeX (`toHTML`), AST serializada para auditoria profunda (`toAuditTrace`) e diversos outros outputs, garantindo que cada cálculo possa ser lido por pessoas, máquinas e leitores de tela.
 
----
-
-<div align="center">
-
-**A CalcAUY é a ferramenta para o engenheiro que não aceita resultados sem provas auditáveis**
-
-<details>
-<summary><b>🔍 Testes </b></summary>
-
-<div align="left">
+## 🔍 Testes
 
 **📊 Code Coverage**
 > ```bash
@@ -167,35 +158,36 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 > ┌───────────────────────────────┬─────────────────────────────────────────┐
 > │ (idx)                         │ Values                                  │
 > ├───────────────────────────────┼─────────────────────────────────────────┤
-> │ 1_cpu_limit_complex_root      │ "4.8378ms"                              │
-> │ 2_extensive_ast_depth         │ "1.9384ms"                              │
-> │ 3_costly_repeated_pow         │ "709.2422ms (iterations: 100000)"       │
-> │ 4_simple_real_repeated        │ "249.1500ms (iterations: 100000)"       │
-> │ 5_metadata_cloning_stress     │ "67.2424ms (metadata_keys: 1000)"       │
-> │ 6_rational_explosion_gcd      │ "0.2247ms"                              │
-> │ 7_slicing_massacre            │ "39.0339ms (slices: 100000)"            │
-> │ 8_burst_concurrency_ddos      │ "556.6375ms (concurrent_tasks: 100000)" │
-> │ 9_batch_processing_controlled │ "530.2699ms (total_tasks: 100000)"      │
-> │ 10_logging_policy_race_stress │ "16.5692ms (errors: 0)"                 │
-> │ 11_bigint_limit_torture       │ "0.7201ms (caught_overflow: true)"      │
-> │ 12_malicious_json_hydration   │ "1.2668ms (deflected: true)"            │
+> │ 1_cpu_limit_complex_root      │ "5.3429ms"                              │
+> │ 2_extensive_ast_depth         │ "1.8433ms"                              │
+> │ 3_costly_repeated_pow         │ "718.7615ms (iterations: 100000)"       │
+> │ 4_simple_real_repeated        │ "257.6571ms (iterations: 100000)"       │
+> │ 5_metadata_cloning_stress     │ "70.0454ms (metadata_keys: 1000)"       │
+> │ 6_rational_explosion_gcd      │ "0.2047ms"                              │
+> │ 7_slicing_massacre            │ "39.2240ms (slices: 100000)"            │
+> │ 8_burst_concurrency_ddos      │ "546.0134ms (concurrent_tasks: 100000)" │
+> │ 9_batch_processing_controlled │ "525.6754ms (total_tasks: 100000)"      │
+> │ 10_logging_policy_race_stress │ "16.5213ms (errors: 0)"                 │
+> │ 11_bigint_limit_torture       │ "0.7574ms (caught_overflow: true)"      │
+> │ 12_malicious_json_hydration   │ "1.2569ms (deflected: true)"            │
 > └───────────────────────────────┴─────────────────────────────────────────┘
 >
 > ❯ deno test tests/output_stress.test.ts
-> ┌────────────────────────────┬──────────────────────────────┐
-> │ (idx)                      │ Values                       │
-> ├────────────────────────────┼──────────────────────────────┤
-> │ 1_monetary_cache_hit_rate  │ "149.2624ms (iters: 100000)" │
-> │ 2_verbal_a11y_deep_ast     │ "0.3610ms (chars: 4578)"     │
-> │ 3_render_complexity_nested │ "0.3189ms (latex_len: 1495)" │
-> │ 4_html_generation_burst    │ "3.6706ms (iters: 1000)"     │
-> │ 5_high_precision_slicing   │ "28.3279ms (slices: 50000)"  │
-> │ 6_to_json_consolidation    │ "13.0110ms (iters: 1000)"    │
-> │ 7_locale_switching_burst   │ "3.1189ms (switches: 900)"   │
-> │ 8_custom_processor_stress  │ "35.1137ms (iters: 10000)"   │
-> │ 9_image_buffer_svg_stress  │ "3.7314ms (iters: 100)"      │
-> └────────────────────────────┴──────────────────────────────┘
+> ┌────────────────────────────┬────────────────────────────────┐
+> │ (idx)                      │ Values                         │
+> ├────────────────────────────┼────────────────────────────────┤
+> │ 1_monetary_cache_hit_rate  │ "147.2271ms (iters: 100000)"   │
+> │ 2_verbal_a11y_deep_ast     │ "0.6755ms (chars: 9079)"       │
+> │ 3_render_complexity_nested │ "1.4826ms (latex_len: 4395)"   │
+> │ 4_html_generation_burst    │ "201.1733ms (iters: 100000)"   │
+> │ 5_high_precision_slicing   │ "59.2784ms (slices: 100000)"   │
+> │ 6_to_json_consolidation    │ "809.4350ms (iters: 100000)"   │
+> │ 7_locale_switching_burst   │ "172.1136ms (switches: 90000)" │
+> │ 8_custom_processor_stress  │ "292.1440ms (iters: 100000)"   │
+> │ 9_image_buffer_svg_stress  │ "1147.7605ms (iters: 100000)"  │
+> └────────────────────────────┴────────────────────────────────┘
 > ```
+
 <details>
 <summary><b>🔍 Detalhes do Hardware </b></summary>
 
@@ -244,12 +236,14 @@ Info:
 ```
 </details>
 
-</div>
+---
 
-</details>
+<div align="center">
+
+**A CalcAUY é a ferramenta para o engenheiro que não aceita resultados sem provas auditáveis**
 
 ---
 
--- A **CalcAUY** é um projeto de código aberto sob a licença **MPL-2.0** --
+-- Este projeto é Open Source e distribuído sob a licença **MPL-2.0** --
 
 </div>
