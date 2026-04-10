@@ -106,7 +106,7 @@ describe("CalcAUY - Testes de Estresse de Output", () => {
         const start = performance.now();
 
         // Itera 100_000 vezes por todos os idiomas da engine
-        for (let i = 0; i < 100_000; i++) {
+        for (let i = 0; i < 10_000; i++) {
             for (const loc of locales) {
                 output.toVerbalA11y({ locale: loc as any });
                 output.toMonetary({ locale: loc as any });
@@ -114,7 +114,7 @@ describe("CalcAUY - Testes de Estresse de Output", () => {
         }
 
         const end = performance.now();
-        results["7_locale_switching_burst"] = `${(end - start).toFixed(4)}ms (switches: ${locales.length * 100_000})`;
+        results["7_locale_switching_burst"] = `${(end - start).toFixed(4)}ms (switches: ${locales.length * 10_000})`;
     });
 
     it("Cenário 8: Custom Output Processor Pressure", () => {

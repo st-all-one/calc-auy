@@ -20,11 +20,11 @@ const FRACTION_RE = /^[+-]?\d+(?:_\d+)*\/[+-]?\d+(?:_\d+)*$/;
 const DECIMAL_RE = /^[+-]?(?:\d+(?:_\d+)*(?:\.\d+(?:_\d+)*)?|\.\d+(?:_\d+)*)(?:[eE][+-]?\d+(?:_\d+)*)?$/;
 
 /**
- * Binary GCD (Stein's Algorithm) otimizado para BigInt.
+ * Algoritmo de Euclides Iterativo otimizado para BigInt.
  *
- * **Engenharia:** Milhares de vezes mais rápido que o algoritmo de Euclides
- * tradicional para BigInts grandes, pois evita operações de divisão/módulo
- * dispendiosas em favor de bit-shifts e subtrações.
+ * **Engenharia:** Utiliza o operador de módulo nativo da engine V8, que é
+ * implementado em C++ e altamente otimizado para operações de BigInt.
+ * Mantém a complexidade O(log(min(a, b))) com baixo overhead de memória.
  */
 function gcd(a: bigint, b: bigint): bigint {
     let u = a < 0n ? -a : a;
