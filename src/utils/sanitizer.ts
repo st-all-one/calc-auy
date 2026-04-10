@@ -32,19 +32,31 @@ export function setGlobalLoggingPolicy(policy: { sensitive: boolean }): void {
 
 /**
  * Determina se um nó deve ter seus dados ocultados com base na política
- * global e na sobreposição específica do nó via metadados.
+ * global, na sobreposição específica do nó via metadados e na herança do pai.
  *
  * @param node Nó a ser verificado.
+ * @param parentHide Estado de ocultação herdado do pai (opcional).
  * @returns true se deve ocultar, false se deve mostrar.
  */
-function shouldHide(node: CalculationNode): boolean {
+function shouldHide(node: CalculationNode, parentHide?: boolean): boolean {
     const nodeOverride = node.metadata?.pii;
 
-    // Se o nó tem uma sobreposição específica (pii: true|false)
+    // Se o nó tem uma sobreposição específica (pii: true|false), ela manda.
     if (typeof nodeOverride === "boolean") {
-        // pii: true -> identifica que É PII, portanto OCULTA (true)
-        // pii: false -> identifica que NÃO é PII, portanto MOSTRA (false)
         return nodeOverride;
+    }
+
+    // Se o pai definiu explicitamente que É sensível (parentHide: true), herdamos.
+    if (parentHide === true) {
+        return true;
+    }
+
+    // Se o pai definiu explicitamente que NÃO é sensível (parentHide: false),
+    // herdamos a visibilidade apenas para nós "terminais" (literais) ou
+    // "transparentes" (grupos). Operações complexas devem ter sua própria
+    // marcação pii: false para serem reveladas.
+    if (parentHide === false && (node.kind === "literal" || node.kind === "group")) {
+        return false;
     }
 
     // Caso contrário, segue a política global (sensitive: true oculta, false mostra)
@@ -57,12 +69,13 @@ function shouldHide(node: CalculationNode): boolean {
  * ou o nó permitam a liberação.
  *
  * @param node Nó da AST a ser sanitizado.
+ * @param parentHide Estado de ocultação herdado do pai (interno).
  * @returns Objeto sanitizado pronto para log.
  */
-export function sanitizeAST(node: CalculationNode): object {
+export function sanitizeAST(node: CalculationNode, parentHide?: boolean): object {
     if (!node) { return { kind: "null" }; }
 
-    const hide = shouldHide(node);
+    const hide = shouldHide(node, parentHide);
 
     const sanitized: Record<string, unknown> = {
         kind: node.kind,
@@ -72,10 +85,11 @@ export function sanitizeAST(node: CalculationNode): object {
         sanitized.value = hide ? { n: REDACTED, d: REDACTED } : node.value;
         sanitized.originalInput = hide ? REDACTED : node.originalInput;
     } else if (node.kind === "group") {
-        sanitized.child = sanitizeAST(node.child);
+        sanitized.child = sanitizeAST(node.child, hide);
     } else if (node.kind === "operation") {
-        sanitized.type = node.type;
-        sanitized.operands = node.operands.map(sanitizeAST);
+        // Se o nó de operação deve ser oculto, ocultamos também o seu tipo e operandos
+        sanitized.type = hide ? REDACTED : node.type;
+        sanitized.operands = hide ? REDACTED : node.operands.map((op) => sanitizeAST(op, hide));
     }
 
     if (node.metadata) {

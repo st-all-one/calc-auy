@@ -231,6 +231,7 @@ export class CalcAUYOutput {
             return (rounded.n * pScale) / rounded.d;
         });
     }
+
     public toRawInternalBigInt(): bigint {
         return this.instrument("toRawInternalBigInt", "", () => {
             return this.#result.n;
