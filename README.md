@@ -10,7 +10,7 @@
 
 </div>
 
-A **CalcAUY** é uma infraestrutura em **TypeScript** projetada para neutralizar a imprecisão do padrão IEEE 754. Através de **imutabilidade estrita e Árvore de Sintaxe Abstrata (AST)**, ela assegura a integridade atuária, transformando cada operação em uma evidência matemática transparente, acessível e auditável.
+A **CalcAUY** é uma infraestrutura em **TypeScript** projetada para neutralizar a imprecisão do padrão IEEE 754, enquanto assegura integridade atuária através de **Imutabilidade estrita e Árvore de Sintaxe Abstrata (AST)**, transformando cada operação matemática em uma evidência confiável, transparente, acessível e auditável.
 
 ---
 
@@ -20,6 +20,10 @@ A **CalcAUY** é uma infraestrutura em **TypeScript** projetada para neutralizar
 - [Exemplos de uso](./docs/examples.md)
 - [Especificações](./docs/specs.md)
 - [Segurança e Auditabilidade](./docs/audit.md)
+
+## Showcase
+
+Veja em execução no [Showcase Interativo](https://google.com)
 
 ## 🚀 Quick-start
 
@@ -37,7 +41,7 @@ bunx    jsr add @st-all-one/calc-auy
 ```ts
 import { CalcAUY } from "@st-all-one/calc-auy";
 
-// ==== Cálculo de Juros Compostos M = C * (1 + i)^t ====
+// ==== Cálculo de Juros Compostos ====
 // Parâmetros
 const capital = CalcAUY.from("1000.00");
 const taxaAnual = CalcAUY.from("0.10"); // 10% a.a.
@@ -51,10 +55,10 @@ const calcMontante = capital.mult(
         .pow(anosDecorridos),
 );
 
-// Colapso da AST ==> realização do cálculo
+// Colapso da AST e definição estratégia de arredondamento final
 const resultado = calcMontante.commit({ roundStrategy: "NBR5891" });
 
-// Diferentes visualizaçõe do resultado
+// Captura das diferentes visualizações do resultado
 const monetario = resultado.toMonetary();
 const scaledBigInt = resultado.toScaledBigInt({ decimalPrecision: 2 });
 const unicode = resultado.toUnicode();
@@ -75,10 +79,6 @@ console.log(auditTrace);
 {"ast":{"kind":"operation","type":"mul","operands":[{"kind":"literal","value":{"n":"1000","d":"1"},"originalInput":"1000.00"},{"kind":"group","child":{"kind":"operation","type":"pow","operands":[{"kind":"group","child":{"kind":"operation","type":"add","operands":[{"kind":"literal","value":{"n":"1","d":"1"},"originalInput":"1"},{"kind":"group","child":{"kind":"literal","value":{"n":"1","d":"10"},"originalInput":"0.10"}}]}},{"kind":"literal","value":{"n":"3","d":"1"},"originalInput":"3"}]}}]},"finalResult":{"n":"1331","d":"1"},"strategy":"NBR5891"}
 */
 ```
-
-### Showcase
-
-Veja em execução no [Showcase Interativo](https://google.com)
 
 ## 🎯 Por que a CalcAUY existe?
 
