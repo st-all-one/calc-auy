@@ -1,0 +1,9 @@
+{
+    "imports": {
+        "@calc-auy": "../mod.ts",
+        "@std/encoding": "jsr:@std/encoding@^1.0.5",
+        "@std/path": "jsr:@std/path@^1.0.8",
+        "puppeteer": "npm:puppeteer@^22.15.0",
+        "katex": "npm:katex@^0.16.40"
+    }
+}

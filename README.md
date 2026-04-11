@@ -244,6 +244,6 @@ Info:
 
 ---
 
--- Este projeto é Open Source e distribuído sob a licença **MPL-2.0** --
+-- Este projeto é Open Source e Licenciado através da **Mozilla Public License v2.0** --
 
 </div>
