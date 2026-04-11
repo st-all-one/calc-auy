@@ -112,57 +112,8 @@ function renderCategory(method, examples, groupType, container) {
         const article = document.createElement("article");
         article.className = "card";
 
-        let resultView = "";
-        if (groupType === "operations") {
-            resultView = `
-                        <div class="result-label">toString():</div>
-                        <div class="card-result-text">${ex.outputs.toString}</div>
-                        <div class="result-label" style="margin-top: 10px;">toMonetary():</div>
-                        <div class="card-result-text">${ex.outputs.toMonetary}</div>
-                        <div class="result-label" style="margin-top: 10px;">toHTML():</div>
-                        <div class="card-math-render">${ex.outputs.toHTML}</div>
-                    `;
-        } else if (method === "toCustomOutput") {
-            resultView =
-                `<div class="card-result-text" style="font-family: monospace; font-size: 0.85em; background: #eee; padding: 10px; border-radius: 4px; color: #555;">${ex.outputs.toCustomOutput}</div>`;
-        } else if (method === "toImageBuffer") {
-            resultView = `
-                        <div class="image-output-wrapper">
-                          <div class="binary-view-small">${ex.outputs.toImageBufferHex}</div>
-                          <img src="${ex.outputs.toImageDataBase64}" alt="Image Result" class="image-result">
-                        </div>
-                    `;
-        } else if (method === "toHTML") {
-            resultView = `<div class="card-math-render">${ex.outputs.toHTML}</div>
-                                  <div class="result-label">Resultado numérico:</div>
-                                  <div class="card-result-text">${ex.outputs.toString}</div>`;
-        } else if (method === "toJson") {
-            try {
-                const jsonValue = ex.outputs.toJson;
-                const parsed = typeof jsonValue === 'string' ? JSON.parse(jsonValue) : jsonValue;
-                resultView = `<div class="json-view">${JSON.stringify(parsed, null, 2)}</div>`;
-            } catch (e) {
-                console.error("Erro ao renderizar JSON:", e);
-                resultView = `<div class="json-view error">Erro no formato JSON</div>`;
-            }
-        } else if (method === "verbalMonetary" || method === "currencyOptions") {
-            resultView = `
-                        <div class="result-label">Monetary:</div>
-                        <div class="card-result-text">${ex.outputs.toMonetary}</div>
-                        <div class="result-label" style="margin-top: 10px;">Verbal (A11y):</div>
-                        <div class="card-result-text" style="font-size: 0.9em; font-style: italic;">${ex.outputs.toVerbalA11y}</div>
-                    `;
-        } else if (method === "roundingShowcase" || method === "strategyShowcase") {
-            resultView = `
-                        <div class="card-math-render">${ex.outputs.toHTML}</div>
-                        <div class="result-label">LaTeX Source:</div>
-                        <div class="card-code" style="font-size: 0.75em;">${ex.outputs.toLaTeX}</div>
-                        <div class="result-label" style="margin-top: 5px;">Result:</div>
-                        <div class="card-result-text">${ex.outputs.toString}</div>
-                    `;
-        } else {
-            resultView = `<div class="card-result-text">${ex.outputs[method]}</div>`;
-        }
+        // Injeta o resultado diretamente (Texto ou HTML)
+        const resultView = `<div class="card-result-text">${ex.result}</div>`;
 
         article.innerHTML = `
                   <h3>${ex.title}</h3>
@@ -185,26 +136,38 @@ async function loadExamples() {
 
     try {
         const response = await fetch("/api/examples");
-        const categoriesGrouped = await response.json();
+        const data = await response.json();
+        
+        // 1. Injeta o CSS comum do KaTeX apenas UMA vez para todos os cards
+        if (data.common_css) {
+            let styleTag = document.getElementById("katex-common-styles");
+            if (!styleTag) {
+                styleTag = document.createElement("style");
+                styleTag.id = "katex-common-styles";
+                document.head.appendChild(styleTag);
+            }
+            styleTag.textContent = data.common_css;
+        }
+
         container.innerHTML = "";
 
-        // 1. Renderiza Grupo OPERAÇÕES
+        // 2. Renderiza Grupo OPERAÇÕES
         const operationsHeader = document.createElement("h1");
         operationsHeader.className = "group-main-header";
         operationsHeader.textContent = "Operações";
         container.appendChild(operationsHeader);
 
-        for (const [method, examples] of Object.entries(categoriesGrouped.operations)) {
+        for (const [method, examples] of Object.entries(data.operations)) {
             renderCategory(method, examples, "operations", container);
         }
 
-        // 2. Renderiza Grupo OUTPUTS
+        // 3. Renderiza Grupo OUTPUTS
         const outputHeader = document.createElement("h1");
         outputHeader.className = "group-main-header";
         outputHeader.textContent = "Outputs";
         container.appendChild(outputHeader);
 
-        for (const [method, examples] of Object.entries(categoriesGrouped.outputs)) {
+        for (const [method, examples] of Object.entries(data.outputs)) {
             renderCategory(method, examples, "outputs", container);
         }
     } catch (err) {

@@ -38,12 +38,21 @@ export default Deno.serve({ port: 8087 }, async (req) => {
     }
 
     if (url.pathname === "/api/examples") {
-        return new Response(JSON.stringify(getCategorizedExamples()), {
-            headers: {
-                "content-type": "application/json",
-                "cache-control": "no-store",
-            },
-        });
+        try {
+            const jsonPath = join(ROOT, "data", "precalculated_examples.json");
+            const data = await Deno.readTextFile(jsonPath);
+            return new Response(data, {
+                headers: {
+                    "content-type": "application/json",
+                    "cache-control": "no-store",
+                },
+            });
+        } catch (e) {
+            return new Response(JSON.stringify({ error: "Exemplos pré-calculados não encontrados. Rode o script de geração." }), {
+                status: 500,
+                headers: { "content-type": "application/json" },
+            });
+        }
     }
 
     if (url.pathname === "/api/calculate") {
