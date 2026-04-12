@@ -116,6 +116,20 @@ export class Parser {
     private primary(): CalculationNode {
         if (this.match("NUMBER")) {
             const token: Token = this.previous();
+
+            // Suporte a percentual como sufixo (ex: 10% ou 10% + 5)
+            // Desambiguação: se o % for seguido de um operando (número ou parênteses), 
+            // ele deve ser tratado como operador de Módulo (infix) no método term().
+            if (this.check("PERCENT") && !this.checkNext("NUMBER", "LPAREN")) {
+                this.advance(); // Consome o PERCENT como sufixo
+                const val: RationalNumber = RationalNumber.from(`${token.value}%`);
+                return {
+                    kind: "literal",
+                    value: val.toJSON() as RationalValue,
+                    originalInput: `${token.value.replaceAll("_", "")}/100`,
+                } as LiteralNode;
+            }
+
             const val: RationalNumber = RationalNumber.from(token.value);
             return {
                 kind: "literal",
@@ -156,6 +170,12 @@ export class Parser {
     private check(type: TokenType): boolean {
         if (this.isAtEnd()) { return false; }
         return this.peek().type === type;
+    }
+
+    private checkNext(...types: TokenType[]): boolean {
+        const nextPos = this.pos + 1;
+        if (nextPos >= this.tokens.length) { return false; }
+        return types.includes(this.tokens[nextPos].type);
     }
 
     private advance(): Token {

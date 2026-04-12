@@ -19,6 +19,20 @@ function getRootInfo(node: CalculationNode): { num: string; den: string } | null
 }
 
 /**
+ * Normaliza a string de input original para garantir legibilidade matemática.
+ * Ex: ".5" -> "0.5", "-.5" -> "-0.5"
+ */
+function normalizeInput(input: string): string {
+    if (input.startsWith(".")) {
+        return "0" + input;
+    }
+    if (input.startsWith("-.")) {
+        return "-0" + input.slice(1);
+    }
+    return input;
+}
+
+/**
  * Recursively renders an AST node into a specific format.
  */
 export function renderAST(
@@ -28,11 +42,12 @@ export function renderAST(
     forceCaret = false,
 ): string {
     if (node.kind === "literal") {
-        if (format === "latex" && node.originalInput.includes("/")) {
-            const [n, d] = node.originalInput.split("/");
+        const input = normalizeInput(node.originalInput);
+        if (format === "latex" && input.includes("/")) {
+            const [n, d] = input.split("/");
             return String.raw`\frac{${n}}{${d}}`;
         }
-        return node.originalInput;
+        return input;
     }
 
     if (node.kind === "group") {
