@@ -112,6 +112,7 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 ## Por que a CalcAUY foi criada?
 
 > Em linhas gerais, porque não achei nenhuma outra maneira (sem gambiarras colossais) de fazer o que essa lib faz.
+> Stallone L.S., 2026-04-11
 
 ## 🔍 Testes
 
