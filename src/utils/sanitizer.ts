@@ -10,8 +10,8 @@ const REDACTED = "[PII]";
 /** Chaves de objetos que são conhecidas por conter dados sensíveis (PII). */
 const SENSITIVE_KEYS = new Set(["n", "d", "rawInput", "metadata", "label", "value", "originalInput"]);
 
-/** Regex otimizado e seguro para identificar strings que representam números (evita backtracking). */
-const NUMERIC_RE = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
+/** Regex otimizado e seguro para identificar strings que representam números ou percentuais (evita backtracking). */
+const NUMERIC_RE = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?%?$/;
 
 /** Política global de logging. */
 export const loggingPolicy = {

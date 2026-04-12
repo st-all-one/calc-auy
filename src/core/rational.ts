@@ -163,14 +163,16 @@ export class RationalNumber {
         // 1. Validação contra os formatos permitidos (Rigor specs/08)
         const isBigInt = BIGINT_RE.test(trimmed);
         const isFraction = FRACTION_RE.test(trimmed);
-        const isDecimal = DECIMAL_RE.test(trimmed);
+        const isPercent = trimmed.endsWith("%");
+        const valToTest = isPercent ? trimmed.slice(0, -1) : trimmed;
+        const isDecimal = DECIMAL_RE.test(valToTest);
 
         if (!isBigInt && !isFraction && !isDecimal) {
             throw new CalcAUYError("invalid-syntax", `String numérica inválida: "${input}"`);
         }
 
         // 3. Normalização (Remover underscores para BigInt/Number.parseFloat)
-        const clean = trimmed.replaceAll("_", "");
+        const clean = valToTest.replaceAll("_", "");
         let result: RationalNumber;
 
         // 4. Ingestão por Tipo
@@ -208,6 +210,11 @@ export class RationalNumber {
             }
 
             result = new RationalNumber(n, d);
+        }
+
+        // Se for percentual, divide o resultado por 100
+        if (isPercent) {
+            result = result.div(RationalNumber.from(100n));
         }
 
         // Armazenamento no cache com limite de segurança para evitar vazamento de memória.

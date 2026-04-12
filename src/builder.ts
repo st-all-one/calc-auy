@@ -103,7 +103,14 @@ export class CalcAUY {
     public static from(value: InputValue): CalcAUY {
         if (value instanceof CalcAUY) { return value; }
 
-        const inputStr = value.toString();
+        let inputStr = value.toString();
+
+        // Normalização de percentual para originalInput (evita otimizações indesejadas e mantém rastro claro)
+        if (typeof value === "string" && value.trim().endsWith("%")) {
+            const cleanVal = value.trim().slice(0, -1).replaceAll("_", "");
+            inputStr = `${cleanVal}/100`;
+        }
+
         const cached = literalNodeCache.get(inputStr);
         if (cached) {
             if (logger.isEnabledFor("debug")) {
