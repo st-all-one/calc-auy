@@ -116,7 +116,7 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 
 **📊 Code Coverage**
 > ```bash
-> // 2026-04-10
+> // 2026-04-11
 > ❯ deno task coverage:dev
 >
 > ok | 21 passed (247 steps) | 0 failed (50s)
@@ -153,38 +153,38 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 
 **📛 Stress Test**
 > ```bash
-> // 2026-04-10
+> // 2026-04-11
 > ❯ deno test tests/stress.test.ts
-> ┌───────────────────────────────┬─────────────────────────────────────────┐
-> │ (idx)                         │ Values                                  │
-> ├───────────────────────────────┼─────────────────────────────────────────┤
-> │ 1_cpu_limit_complex_root      │ "5.3429ms"                              │
-> │ 2_extensive_ast_depth         │ "1.8433ms"                              │
-> │ 3_costly_repeated_pow         │ "718.7615ms (iterations: 100000)"       │
-> │ 4_simple_real_repeated        │ "257.6571ms (iterations: 100000)"       │
-> │ 5_metadata_cloning_stress     │ "70.0454ms (metadata_keys: 1000)"       │
-> │ 6_rational_explosion_gcd      │ "0.2047ms"                              │
-> │ 7_slicing_massacre            │ "39.2240ms (slices: 100000)"            │
-> │ 8_burst_concurrency_ddos      │ "546.0134ms (concurrent_tasks: 100000)" │
-> │ 9_batch_processing_controlled │ "525.6754ms (total_tasks: 100000)"      │
-> │ 10_logging_policy_race_stress │ "16.5213ms (errors: 0)"                 │
-> │ 11_bigint_limit_torture       │ "0.7574ms (caught_overflow: true)"      │
-> │ 12_malicious_json_hydration   │ "1.2569ms (deflected: true)"            │
-> └───────────────────────────────┴─────────────────────────────────────────┘
+> ┌───────────────────────────────┬──────────────────────────────────────────┐
+> │ (idx)                         │ Values                                   │
+> ├───────────────────────────────┼──────────────────────────────────────────┤
+> │ 1_cpu_limit_complex_root      │ "13.7199ms"                              │
+> │ 2_extensive_ast_depth         │ "6.6828ms"                               │
+> │ 3_costly_repeated_pow         │ "2094.4682ms (iterations: 100000)"       │
+> │ 4_simple_real_repeated        │ "950.7305ms (iterations: 100000)"        │
+> │ 5_metadata_cloning_stress     │ "268.3413ms (metadata_keys: 1000)"       │
+> │ 6_rational_explosion_gcd      │ "0.5983ms"                               │
+> │ 7_slicing_massacre            │ "137.7803ms (slices: 100000)"            │
+> │ 8_burst_concurrency_ddos      │ "1591.3037ms (concurrent_tasks: 100000)" │
+> │ 9_batch_processing_controlled │ "1518.0846ms (total_tasks: 100000)"      │
+> │ 10_logging_policy_race_stress │ "48.5323ms (errors: 0)"                  │
+> │ 11_bigint_limit_torture       │ "1.7954ms (caught_overflow: true)"       │
+> │ 12_malicious_json_hydration   │ "4.0073ms (deflected: true)"             │
+> └───────────────────────────────┴──────────────────────────────────────────┘
 >
 > ❯ deno test tests/output_stress.test.ts
 > ┌────────────────────────────┬────────────────────────────────┐
 > │ (idx)                      │ Values                         │
 > ├────────────────────────────┼────────────────────────────────┤
-> │ 1_monetary_cache_hit_rate  │ "147.2271ms (iters: 100000)"   │
-> │ 2_verbal_a11y_deep_ast     │ "0.6755ms (chars: 9079)"       │
-> │ 3_render_complexity_nested │ "1.4826ms (latex_len: 4395)"   │
-> │ 4_html_generation_burst    │ "201.1733ms (iters: 100000)"   │
-> │ 5_high_precision_slicing   │ "59.2784ms (slices: 100000)"   │
-> │ 6_to_json_consolidation    │ "809.4350ms (iters: 100000)"   │
-> │ 7_locale_switching_burst   │ "172.1136ms (switches: 90000)" │
-> │ 8_custom_processor_stress  │ "292.1440ms (iters: 100000)"   │
-> │ 9_image_buffer_svg_stress  │ "1147.7605ms (iters: 100000)"  │
+> │ 1_monetary_cache_hit_rate  │ "596.3240ms (iters: 100000)"   │
+> │ 2_verbal_a11y_deep_ast     │ "1.4227ms (chars: 9079)"       │
+> │ 3_render_complexity_nested │ "2.4287ms (latex_len: 4395)"   │
+> │ 4_html_generation_burst    │ "1144.7103ms (iters: 100000)"  │
+> │ 5_high_precision_slicing   │ "186.8159ms (slices: 100000)"  │
+> │ 6_to_json_consolidation    │ "3477.5152ms (iters: 100000)"  │
+> │ 7_locale_switching_burst   │ "666.1079ms (switches: 90000)" │
+> │ 8_custom_processor_stress  │ "1387.2218ms (iters: 100000)"  │
+> │ 9_image_buffer_svg_stress  │ "13741.4414ms (iters: 100000)" │
 > └────────────────────────────┴────────────────────────────────┘
 > ```
 
@@ -193,8 +193,8 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 
 ```bash
 ❯ deno --version
-deno 2.7.7 (stable, release, x86_64-unknown-linux-gnu)
-v8 14.6.202.9-rusty
+deno 2.7.11 (stable, release, x86_64-unknown-linux-gnu)
+v8 14.7.173.7-rusty
 typescript 5.9.2
 
 ❯ inxi -Fzx
@@ -203,35 +203,37 @@ System:
     v: 15.2.1
   Desktop: GNOME v: 49.5 Distro: Fedora Linux 43 (Workstation Edition)
 Machine:
-  Type: Laptop System: LENOVO product: 83MM v: IdeaPad Slim 3 15ARP10
-  Mobo: LENOVO model: LNVNB161216
-    Firmware: UEFI vendor: LENOVO
+  Type: Laptop System: LENOVO product: 82MF v: IdeaPad 3 15ALC6
+  Mobo: LENOVO model: LNVNB161216 v: NO DPK
+    Firmware: UEFI vendor: LENOVO v: GLCN68WW date: 03/19/2025
 CPU:
-  Info: 8-core model: AMD Ryzen 7 7735HS with Radeon Graphics bits: 64
-    type: MT MCP arch: Zen 3+ rev: 1 cache: L1: 512 KiB L2: 4 MiB L3: 16 MiB
-  Speed (MHz): avg: 3115 min/max: 407/4831 boost: enabled cores: 1: 3115
-    2: 3115 3: 3115 4: 3115 5: 3115 6: 3115 7: 3115 8: 3115 9: 3115 10: 3115
-    11: 3115 12: 3115 13: 3115 14: 3115 15: 3115 16: 3115 bogomips: 102200
+  Info: 6-core model: AMD Ryzen 5 5500U with Radeon Graphics bits: 64
+    type: MT MCP arch: Zen 2 rev: 1 cache: L1: 384 KiB L2: 3 MiB L3: 8 MiB
+  Speed (MHz): avg: 1400 min/max: 1400/2100 boost: disabled cores: 1: 1400
+    2: 1400 3: 1400 4: 1400 5: 1400 6: 1400 7: 1400 8: 1400 9: 1400 10: 1400
+    11: 1400 12: 1400 bogomips: 50303
   Flags-basic: avx avx2 ht lm nx pae sse sse2 sse3 sse4_1 sse4_2 sse4a
     ssse3 svm
 Graphics:
-  Device-1: Advanced Micro Devices [AMD/ATI] Rembrandt [Radeon 680M]
-    vendor: Lenovo driver: amdgpu v: kernel arch: RDNA-2 bus-ID: 04:00.0
-    temp: 44.0 C
   Display: wayland server: X.Org v: 24.1.9 with: Xwayland v: 24.1.9
-    compositor: gnome-shell driver: dri: radeonsi
+    compositor: gnome-shell driver: dri: radeonsi gpu: amdgpu
+    resolution: 1920x1080~144Hz
   API: OpenGL v: 4.6 vendor: amd mesa v: 25.3.6 glx-v: 1.4
-    direct-render: yes renderer: AMD Radeon 680M (radeonsi rembrandt LLVM
-    21.1.8 DRM 3.64 6.19.11-200.fc43.x86_64)
+    direct-render: yes renderer: AMD Radeon Graphics (radeonsi renoir ACO DRM
+    3.64 6.19.11-200.fc43.x86_64)
+  API: EGL Message: EGL data requires eglinfo. Check --recommends.
   Info: Tools: api: glxinfo x11: xdriinfo, xdpyinfo, xprop, xrandr
 Drives:
-  ID-1: /dev/nvme0n1 vendor: Western Digital model: WD PC SN5000S
+  ID-1: /dev/nvme0n1 vendor: Crucial model: CT500P3SSD8 size: 465.76 GiB
+    temp: 33.9 C
 Partition:
-  ID-1: / size: 474.34 GiB fs: btrfs dev: /dev/dm-0
+  ID-1: / size: 463.17 GiB fs: btrfs
+Swap:
+  ID-1: swap-1 type: zram size: 6 GiB
 Info:
-  Memory: total: 8 GiB
-  Processes: 517 Uptime: 20m Init: systemd
-  Packages: gcc: 15.2.1 Shell: Zsh v: 5.9
+  Memory: total: 20 GiB
+  Processes: 526 Uptime: 5m Init: systemd
+  Packages: 22 note: see --rpm Compilers: gcc: 15.2.1 Shell: Zsh v: 5.9
     inxi: 3.3.40
 ```
 </details>
