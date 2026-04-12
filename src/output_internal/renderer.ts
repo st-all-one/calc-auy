@@ -30,14 +30,14 @@ export function renderAST(
     if (node.kind === "literal") {
         if (format === "latex" && node.originalInput.includes("/")) {
             const [n, d] = node.originalInput.split("/");
-            return `\\frac{${n}}{${d}}`;
+            return String.raw`\frac{${n}}{${d}}`;
         }
         return node.originalInput;
     }
 
     if (node.kind === "group") {
         const inner: string = renderAST(node.child, format, loc, forceCaret);
-        if (format === "latex") { return `\\left( ${inner} \\right)`; }
+        if (format === "latex") { return String.raw`\left( ${inner} \right)`; }
         if (format === "verbal" && loc) { return `${loc.operators.group_start} ${inner} ${loc.operators.group_end}`; }
         return `(${inner})`;
     }
@@ -53,8 +53,8 @@ export function renderAST(
         if (root) {
             const { num, den } = root;
             if (format === "latex") {
-                const inner = num === "1" ? ops[0] : `{${ops[0]}}^{${num}}`;
-                return den === "2" ? `\\sqrt{${inner}}` : `\\sqrt[${den}]{${inner}}`;
+                const inner = num === "1" ? ops[0] : String.raw`{${ops[0]}}^{${num}}`;
+                return den === "2" ? String.raw`\sqrt{${inner}}` : String.raw`\sqrt[${den}]{${inner}}`;
             }
             if (format === "unicode") {
                 let baseWithPow: string;
@@ -83,13 +83,13 @@ export function renderAST(
     }
 
     if (format === "latex") {
-        if (node.type === "div") { return `\\frac{${ops[0]}}{${ops[1]}}`; }
-        if (node.type === "pow") { return `${ops[0]}^{${ops[1]}}`; }
+        if (node.type === "div") { return String.raw`\frac{${ops[0]}}{${ops[1]}}`; }
+        if (node.type === "pow") { return String.raw`${ops[0]}^{${ops[1]}}`; }
         const symbols: Record<string, string> = {
             add: "+",
             sub: "-",
-            mul: "\\times",
-            mod: "\\bmod",
+            mul: String.raw`\times`,
+            mod: String.raw`\bmod`,
             divInt: "//",
         };
         return ops.join(` ${symbols[node.type]} `);

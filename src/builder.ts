@@ -63,7 +63,7 @@ export class CalcAUY {
      * @param policy Configuração da política.
      * @returns A instância atual para continuidade do builder.
      */
-    public setLoggingPolicy(policy: { sensitive: boolean }): CalcAUY {
+    public setLoggingPolicy(policy: { sensitive: boolean }): this {
         setGlobalLoggingPolicy(policy);
         return this;
     }
@@ -115,7 +115,7 @@ export class CalcAUY {
             return new CalcAUY(cached);
         }
 
-        const r: RationalNumber = RationalNumber.from(value as string | number | bigint);
+        const r: RationalNumber = RationalNumber.from(value);
         const node: LiteralNode = {
             kind: "literal",
             value: r.toJSON() as RationalValue,
@@ -279,7 +279,7 @@ export class CalcAUY {
         validateMetadata(value);
         const newAST: CalculationNode = {
             ...this.#ast,
-            metadata: { ...(this.#ast.metadata || {}), [key]: value },
+            metadata: { ...(this.#ast.metadata), [key]: value },
         } as CalculationNode;
 
         if (logger.isEnabledFor("debug")) {
@@ -394,7 +394,7 @@ export class CalcAUY {
             }
             inputType = "CalcAUY";
         } else {
-            const r: RationalNumber = RationalNumber.from(value as string | number | bigint);
+            const r: RationalNumber = RationalNumber.from(value);
             rightNode = { kind: "literal", value: r.toJSON() as RationalValue, originalInput: value.toString() };
             inputType = typeof value;
         }

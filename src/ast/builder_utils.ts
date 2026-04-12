@@ -22,6 +22,13 @@ const MAX_HYDRATE_DEPTH = 500;
 const MAX_HYDRATE_NODES = 1000;
 
 /**
+ * Estado compartilhado para validação recursiva da AST.
+ */
+interface ValidationState {
+    nodeCount: number;
+}
+
+/**
  * Valida recursivamente a estrutura de um nó da AST.
  * Lança um erro se encontrar inconsistências ou propriedades faltando.
  *
@@ -31,9 +38,12 @@ const MAX_HYDRATE_NODES = 1000;
  */
 export function validateASTNode(
     node: unknown,
+    // deno-lint-ignore default-param-last
     depth = 0,
-    state = { nodeCount: 0 },
+    state?: ValidationState,
 ): asserts node is CalculationNode {
+    const s = state ?? { nodeCount: 0 };
+
     if (!node || typeof node !== "object") {
         throw new CalcAUYError("corrupted-node", "O nó da AST deve ser um objeto válido.");
     }
@@ -42,18 +52,21 @@ export function validateASTNode(
         throw new CalcAUYError("corrupted-node", "Profundidade máxima da AST excedida na hidratação.");
     }
 
-    state.nodeCount++;
-    if (state.nodeCount > MAX_HYDRATE_NODES) {
+    s.nodeCount++;
+    if (s.nodeCount > MAX_HYDRATE_NODES) {
         throw new CalcAUYError("corrupted-node", "Número máximo de nós excedido na hidratação.");
     }
 
     const n = node as Record<string, unknown>;
+    const kind = n.kind as string;
+    const type = n.type as OperationType;
+    const kindStr = String(kind);
 
-    if (!["literal", "group", "operation"].includes(n.kind as string)) {
-        throw new CalcAUYError("corrupted-node", `Tipo de nó desconhecido: ${n.kind}`);
+    if (!["literal", "group", "operation"].includes(kind)) {
+        throw new CalcAUYError("corrupted-node", `Tipo de nó desconhecido: ${kindStr}`);
     }
 
-    if (n.kind === "literal") {
+    if (kind === "literal") {
         if (!n.value || typeof n.value !== "object") {
             throw new CalcAUYError("corrupted-node", "Nó literal sem valor racional.");
         }
@@ -64,20 +77,21 @@ export function validateASTNode(
                 "Valor racional malformado (numerador/denominador devem ser strings).",
             );
         }
-    } else if (n.kind === "group") {
+    } else if (kind === "group") {
         if (!n.child) {
             throw new CalcAUYError("corrupted-node", "Nó de grupo sem nó filho.");
         }
-        validateASTNode(n.child, depth + 1, state);
-    } else if (n.kind === "operation") {
-        if (!n.type || !PRECEDENCE[n.type as OperationType]) {
-            throw new CalcAUYError("corrupted-node", `Tipo de operação inválido: ${n.type}`);
+        validateASTNode(n.child, depth + 1, s);
+    } else if (kind === "operation") {
+        const typeStr = String(type);
+        if (!type || !PRECEDENCE[type]) {
+            throw new CalcAUYError("corrupted-node", `Tipo de operação inválido: ${typeStr}`);
         }
         if (!Array.isArray(n.operands) || n.operands.length === 0) {
-            throw new CalcAUYError("corrupted-node", `Operação '${n.type}' deve ter ao menos um operando.`);
+            throw new CalcAUYError("corrupted-node", `Operação '${typeStr}' deve ter ao menos um operando.`);
         }
         for (const op of n.operands) {
-            validateASTNode(op, depth + 1, state);
+            validateASTNode(op, depth + 1, s);
         }
     }
 }

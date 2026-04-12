@@ -74,6 +74,29 @@ export interface ICalcAUYCustomOutputContext {
 }
 
 /**
+ * Chaves de saída suportadas pelo método toJSON.
+ */
+export type OutputKey =
+    | "toStringNumber"
+    | "toFloatNumber"
+    | "toScaledBigInt"
+    | "toRawInternalBigInt"
+    | "toMonetary"
+    | "toLaTeX"
+    | "toUnicode"
+    | "toHTML"
+    | "toImageBuffer"
+    | "toVerbalA11y"
+    | "toSlice"
+    | "toSliceByRatio"
+    | "toAuditTrace";
+
+/**
+ * Chaves que obrigatoriamente exigem a instância do KaTeX.
+ */
+type KatexDependentKey = "toHTML" | "toImageBuffer";
+
+/**
  * CalcAUYOutput - Container imutável para resultados de cálculo e múltiplos formatos de exportação.
  *
  * Esta classe é gerada pelo método `CalcAUY.commit()`. Ela encapsula o resultado final
@@ -99,7 +122,7 @@ export class CalcAUYOutput {
     /**
      * Define a política global de logging para a liberação de PII (versão fluente no output).
      */
-    public setLoggingPolicy(policy: { sensitive: boolean }): CalcAUYOutput {
+    public setLoggingPolicy(policy: { sensitive: boolean }): this {
         setGlobalLoggingPolicy(policy);
         return this;
     }
@@ -109,7 +132,8 @@ export class CalcAUYOutput {
             const rounded: RationalNumber = applyRounding(this.#result, this.#strategy, precision);
             this.#cache.set(precision, rounded);
         }
-        return this.#cache.get(precision) as RationalNumber;
+        // deno-lint-ignore no-non-null-assertion
+        return this.#cache.get(precision)!;
     }
 
     /**
@@ -187,7 +211,7 @@ export class CalcAUYOutput {
      */
     public toFloatNumber(options?: OutputOptions): number {
         return this.instrument("toFloatNumber", options, () => {
-            return parseFloat(this.toStringNumber(options));
+            return Number.parseFloat(this.toStringNumber(options));
         });
     }
 
@@ -278,7 +302,7 @@ export class CalcAUYOutput {
             const currency: string = options?.currency ?? loc.currency;
             const val: string = this.toStringNumber(options);
 
-            const numberValue = parseFloat(val);
+            const numberValue = Number.parseFloat(val);
             if (Number.isNaN(numberValue)) { return val; }
 
             const cacheKey = `${loc.locale}:${currency}:${p}`;
@@ -335,7 +359,7 @@ export class CalcAUYOutput {
             const p: number = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
             const roundedStr: string = this.toStringNumber(options);
             const strategyName: string = ROUNDING_IDS[this.#strategy];
-            return `\\text{round}_{\\text{${strategyName}}}(${base}, ${p}) = ${roundedStr}`;
+            return String.raw`\text{round}_{\text{${strategyName}}}(${base}, ${p}) = ${roundedStr}`;
         });
     }
 
@@ -633,9 +657,10 @@ export class CalcAUYOutput {
      * `options` globais e organiza tudo em um dicionário. Útil para APIs que
      * precisam entregar várias representações do mesmo dado em uma única resposta.
      *
-     * @param outputs - Lista de nomes dos métodos (ex: ["toMonetary", "toLaTeX"]).
-     * @param options - Opções de precisão e localidade aplicadas a todos os campos.
-     * @returns String JSON consolidada.
+     * @param outputs - List of method names (e.g., ["toMonetary", "toLaTeX"]).
+     * @param katex - KaTeX library instance (required ONLY if toHTML or toImageBuffer are requested).
+     * @param options - Precision and locale options applied to all fields.
+     * @returns Consolidated JSON string.
      *
      * @example Exemplo Simples
      * ```ts
@@ -659,9 +684,13 @@ export class CalcAUYOutput {
      * const b2bPayload = res.toJSON(["toStringNumber", "toLaTeX"], { decimalPrecision: 10 });
      * ```
      */
-    public toJSON(outputs?: string[], options?: OutputOptions): string {
+    public toJSON<T extends OutputKey>(
+        outputs?: T[],
+        katex?: T extends KatexDependentKey ? IKatex : IKatex | undefined,
+        options?: OutputOptions,
+    ): string {
         return this.instrument("toJSON", { outputs, options }, () => {
-            const keys: string[] = outputs
+            const keys: OutputKey[] = (outputs as OutputKey[])
                 ?? [
                     "toStringNumber",
                     "toScaledBigInt",
@@ -673,16 +702,28 @@ export class CalcAUYOutput {
                 ];
             const res: Record<string, unknown> = {};
             for (const key of keys) {
-                if (key === "toJSON" || key === "toCustomOutput" || key === "toHTML" || key === "toImageBuffer") {
+                if (key === ("toJSON" as OutputKey) || key === ("toCustomOutput" as OutputKey)) {
                     continue;
                 }
-                const method = (this as Record<string, unknown>)[key];
+
+                // Validação em tempo de execução
+                if ((key === "toHTML" || key === "toImageBuffer") && !katex) {
+                    throw new CalcAUYError(
+                        "invalid-syntax",
+                        `O parâmetro 'katex' é obrigatório para o método ${key} no toJSON.`,
+                    );
+                }
+
+                const method = (this as Record<OutputKey, unknown>)[key];
                 if (typeof method === "function") {
-                    const val = method.call(this, options);
+                    const val = (key === "toHTML" || key === "toImageBuffer")
+                        ? method.call(this, katex as IKatex, options)
+                        : method.call(this, options);
+
                     res[key] = typeof val === "bigint" ? val.toString() : val;
                 }
             }
-            return JSON.stringify(res);
+            return JSON.stringify(res, (_key, value) => typeof value === "bigint" ? value.toString() : value);
         });
     }
 

@@ -10,8 +10,8 @@ const REDACTED = "[PII]";
 /** Chaves de objetos que são conhecidas por conter dados sensíveis (PII). */
 const SENSITIVE_KEYS = new Set(["n", "d", "rawInput", "metadata", "label", "value", "originalInput"]);
 
-/** Regex otimizado para identificar strings que representam números. */
-const NUMERIC_RE = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/;
+/** Regex otimizado e seguro para identificar strings que representam números (evita backtracking). */
+const NUMERIC_RE = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 
 /** Política global de logging. */
 export const loggingPolicy = {
@@ -123,8 +123,8 @@ export function sanitizeObject(obj: unknown, seen = new WeakSet<object>()): unkn
 
     if (typeof obj === "object") {
         // Proteção contra referências circulares (evita trava de CPU)
-        if (seen.has(obj as object)) { return "[CIRCULAR]"; }
-        seen.add(obj as object);
+        if (seen.has(obj)) { return "[CIRCULAR]"; }
+        seen.add(obj);
 
         if (Array.isArray(obj)) {
             return obj.map((item) => sanitizeObject(item, seen));

@@ -35,9 +35,9 @@ export function performSliceByRatio(
 
     const normalized: number[] = ratios.map((r) => {
         if (typeof r === "string" && r.endsWith("%")) {
-            return parseFloat(r) / 100;
+            return Number.parseFloat(r) / 100;
         }
-        return typeof r === "string" ? parseFloat(r) : r;
+        return typeof r === "string" ? Number.parseFloat(r) : r;
     });
 
     const ratioSum: number = normalized.reduce((a, b) => a + b, 0);

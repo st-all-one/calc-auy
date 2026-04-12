@@ -92,23 +92,26 @@ function evaluateOperation(
     const values: RationalNumber[] = operands.map((op) => evaluate(op, depth));
 
     try {
+        const first = values[0];
+        const rest = values.slice(1);
+
         switch (type) {
             case "add":
-                return values.reduce((acc, val) => acc.add(val));
+                return rest.reduce((acc, val) => acc.add(val), first);
             case "sub":
-                return values.reduce((acc, val) => acc.sub(val));
+                return rest.reduce((acc, val) => acc.sub(val), first);
             case "mul":
-                return values.reduce((acc, val) => acc.mul(val));
+                return rest.reduce((acc, val) => acc.mul(val), first);
             case "div":
-                return values.reduce((acc, val) => acc.div(val));
+                return rest.reduce((acc, val) => acc.div(val), first);
             case "pow":
-                return values.reduce((acc, val) => acc.pow(val));
+                return rest.reduce((acc, val) => acc.pow(val), first);
             case "mod":
-                return values.reduce((acc, val) => acc.mod(val));
+                return rest.reduce((acc, val) => acc.mod(val), first);
             case "divInt":
-                return values.reduce((acc, val) => acc.divInt(val));
+                return rest.reduce((acc, val) => acc.divInt(val), first);
             default: {
-                const unsupported: never = type as never;
+                const unsupported: never = type;
                 throw new CalcAUYError("corrupted-node", `Operação não suportada: ${unsupported}`, {
                     partialAST: parentNode,
                 });

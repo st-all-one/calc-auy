@@ -37,7 +37,7 @@ describe("CalcAUYOutput - HTML & Image Generation", () => {
         assertStringIncludes(html, '<div class="calc-auy-result"');
         assertStringIncludes(html, 'aria-label="10 mais 5 é igual a 15 vírgula 00');
         assertStringIncludes(html, "<style>");
-        assertStringIncludes(html, ".calc-auy-result { display: inline-block; }");
+        assertStringIncludes(html, ".calc-auy-result { margin: 1em 0; overflow-x: auto; }");
         // Check audit trail in LaTeX with full name
         assertStringIncludes(html, "\\text{round}_{\\text{NBR-5891}}(10 + 5, 2) = 15.00");
     });

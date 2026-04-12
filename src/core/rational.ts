@@ -40,6 +40,11 @@ function gcd(a: bigint, b: bigint): bigint {
 }
 
 /**
+ * Tipos de entrada aceitos para a criação de um RationalNumber.
+ */
+export type RationalInput = string | number | bigint | RationalNumber;
+
+/**
  * RationalNumber representa uma fração matemática exata (n/d) utilizando BigInt.
  *
  * **Engenharia de Precisão:**
@@ -107,13 +112,13 @@ export class RationalNumber {
      * Suporta strings, numbers, BigInts e outras instâncias de RationalNumber.
      */
     public static from(n: bigint, d: bigint): RationalNumber;
-    public static from(value: string | number | bigint | RationalNumber): RationalNumber;
-    public static from(arg1: string | number | bigint | RationalNumber, arg2?: bigint): RationalNumber {
+    public static from(value: RationalInput): RationalNumber;
+    public static from(arg1: RationalInput | bigint, arg2?: bigint): RationalNumber {
         if (arg2 !== undefined && typeof arg1 === "bigint") {
             return new RationalNumber(arg1, arg2);
         }
 
-        const value: string | number | bigint | RationalNumber = arg1;
+        const value: RationalInput = arg1;
         if (value instanceof RationalNumber) { return value; }
 
         if (typeof value === "bigint") {
@@ -164,8 +169,8 @@ export class RationalNumber {
             throw new CalcAUYError("invalid-syntax", `String numérica inválida: "${input}"`);
         }
 
-        // 3. Normalização (Remover underscores para BigInt/parseFloat)
-        const clean = trimmed.replace(/_/g, "");
+        // 3. Normalização (Remover underscores para BigInt/Number.parseFloat)
+        const clean = trimmed.replaceAll("_", "");
         let result: RationalNumber;
 
         // 4. Ingestão por Tipo
@@ -180,7 +185,7 @@ export class RationalNumber {
             const lower = clean.toLowerCase();
             const parts: string[] = lower.split("e");
             const baseStr: string = parts[0];
-            const scientificExp: number = parts.length > 1 ? parseInt(parts[1]) : 0;
+            const scientificExp: number = parts.length > 1 ? Number.parseInt(parts[1]) : 0;
 
             const dotIndex: number = baseStr.indexOf(".");
             let n: bigint;

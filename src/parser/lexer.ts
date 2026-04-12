@@ -41,7 +41,8 @@ export class Lexer {
                 continue;
             }
 
-            const code = char.charCodeAt(0);
+            // deno-lint-ignore no-non-null-assertion
+            const code = char.codePointAt(0)!;
             const isDigit = code >= 48 && code <= 57;
 
             if (isDigit || (char === "." && this.isNextDigit())) {
@@ -104,7 +105,8 @@ export class Lexer {
     private isNextDigit(): boolean {
         const next = this.input[this.pos + 1];
         if (!next) { return false; }
-        const code = next.charCodeAt(0);
+        // deno-lint-ignore no-non-null-assertion
+        const code = next.codePointAt(0)!;
         return code >= 48 && code <= 57;
     }
 
@@ -115,7 +117,8 @@ export class Lexer {
 
         while (this.pos < this.input.length) {
             const char: string = this.input[this.pos];
-            const code = char.charCodeAt(0);
+            // deno-lint-ignore no-non-null-assertion
+            const code = char.codePointAt(0)!;
             const isDigit = code >= 48 && code <= 57;
 
             if (isDigit || char === "_") {

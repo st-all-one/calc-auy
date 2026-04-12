@@ -47,7 +47,7 @@ export function validateMetadata(value: unknown, seen = new Set<unknown>()): voi
             }
 
             for (const key in value) {
-                if (Object.prototype.hasOwnProperty.call(value, key)) {
+                if (Object.hasOwn(value as object, key)) {
                     validateMetadata((value as Record<string, unknown>)[key], seen);
                 }
             }
