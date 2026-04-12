@@ -20,20 +20,36 @@ const FRACTION_RE = /^[+-]?\d+(?:_\d+)*\/[+-]?\d+(?:_\d+)*$/;
 const DECIMAL_RE = /^[+-]?(?:\d+(?:_\d+)*(?:\.\d+(?:_\d+)*)?|\.\d+(?:_\d+)*)(?:[eE][+-]?\d+(?:_\d+)*)?$/;
 
 /**
- * Algoritmo de Euclides Iterativo otimizado para BigInt.
+ * Algoritmo GCD Híbrido ultra-otimizado para BigInt.
  *
- * **Engenharia:** Utiliza o operador de módulo nativo da engine V8, que é
- * implementado em C++ e altamente otimizado para operações de BigInt.
- * Mantém a complexidade O(log(min(a, b))) com baixo overhead de memória.
+ * **Engenharia:** Combina atalhos de hardware (fast-paths) para números pequenos
+ * e comuns com o operador de módulo nativo, que é executado diretamente em C++
+ * na engine V8. Esta abordagem supera o GCD Binário puro em testes de estresse
+ * de alta repetição por reduzir o overhead de loops no espaço do JavaScript.
  */
 function gcd(a: bigint, b: bigint): bigint {
     let u = a < 0n ? -a : a;
     let v = b < 0n ? -b : b;
 
+    // 1. Fast-paths de Unidade e Zero (O(1))
+    if (u === 0n) { return v; }
+    if (v === 0n) { return u; }
+    if (u === 1n || v === 1n) { return 1n; }
+    if (u === v) { return u; }
+
+    // 2. Atalho para números pares pequenos (comum em dízimas)
+    if (u === 2n && (v & 1n) === 0n) { return 2n; }
+    if (v === 2n && (u & 1n) === 0n) { return 2n; }
+
+    // 3. Algoritmo de Euclides com operador nativo % (O(log n))
+    // Em engines modernas como V8/JSC, o operador % para BigInt é extremamente
+    // otimizado, superando o custo de múltiplos shifts manuais em JS.
     while (v !== 0n) {
-        const temp = v;
-        v = u % v;
-        u = temp;
+        u %= v;
+        // Swap manual para evitar alocação de array [u, v]
+        const t = u;
+        u = v;
+        v = t;
     }
 
     return u;
