@@ -109,12 +109,6 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 
 - **Matemática Acessível**: A `CalcAUY` transforma a AST em diferentes representações visuais e integrativas, como narrações verbais em 8 idiomas (`toVerbalA11y`), unicode para CLIs (`toUnicode`), LaTeX para relatórios (`toLaTeX`), HTML via KaTeX (`toHTML`), AST serializada para auditoria profunda (`toAuditTrace`) e diversos outros outputs, garantindo que cada cálculo possa ser lido por pessoas, máquinas e leitores de tela.
 
-## Por que a CalcAUY foi criada?
-
-> Em linhas gerais, porque não achei nenhuma outra maneira (sem gambiarras colossais) de fazer o que essa lib faz.
-> 
-> Stallone L.S., 2026-04-11
-
 ## 🔍 Testes
 
 **📊 Code Coverage**
