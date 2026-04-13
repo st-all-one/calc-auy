@@ -2,7 +2,7 @@
 
 # CalcAUY
 
-**Infraestrutura de Cálculo AST para Engenharia Financeira e Acessibilidade Digital**
+**Infraestrutura de Cálculo AST para Engenharia Financeira e Inclusão Digital**
 
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-2b3a42?style=for-the-badge)](https://opensource.org/licenses/MPL-2.0)
 [![JSR](https://img.shields.io/badge/JSR-F7DF1E?style=for-the-badge&logo=jsr&logoColor=000)](https://jsr.io/@st-all-one/calc-auy)
@@ -10,7 +10,7 @@
 
 </div>
 
-A **CalcAUY** é uma infraestrutura em **TypeScript** projetada para neutralizar a imprecisão do padrão IEEE 754, assegurando integridade atuária através da **Imutabilidade estrita e Árvore de Sintaxe Abstrata (AST)**, transformando cada operação matemática em uma evidência confiável, transparente, acessível e auditável.
+A **CalcAUY** é uma infraestrutura em **TypeScript** projetada para neutralizar a imprecisão do padrão IEEE 754, assegurando integridade atuarial através da **Imutabilidade estrita e Árvore de Sintaxe Abstrata (AST)**, transformando cada operação em uma evidência matemática confiável, transparente, acessível e auditável.
 
 ---
 
