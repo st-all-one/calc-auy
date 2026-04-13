@@ -1,0 +1,10 @@
+{
+    "name": "@calc-auy/cli-poc",
+    "version": "1.0.0",
+    "tasks": {
+        "run": "deno run -A main.ts",
+        "compile": "deno compile --allow-all --output calc-auy-cli main.ts",
+        "compile:linux": "deno compile --allow-all --target x86_64-unknown-linux-gnu --output calc-auy-linux main.ts",
+        "compile:win": "deno compile --allow-all --target x86_64-pc-windows-msvc --output calc-auy-win main.ts"
+    }
+}

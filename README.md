@@ -79,9 +79,9 @@ console.log(resultado.toAuditTrace());
 
 ## 🎯 Qual problema a CalcAUY resolve?
 
-No desenvolvimento de softwares modernos, o uso do padrão **IEEE 754** (number/float) introduz um risco sistêmico. Erros de arredondamento binário, como o clássico `0.1 + 0.2 !== 0.3`, não são meras curiosidades matemáticas; em escala, transformam-se em rombos financeiros, falhas de compliance e passivos jurídicos.
+No desenvolvimento de softwares, o uso do padrão **IEEE 754** (`number/float`) introduz um risco sistêmico. Imprecisão binária, como o clássico `0.1 + 0.2 !== 0.3`, não são meras curiosidades matemáticas; em escala, transformam-se em rombos financeiros, falhas de compliance e passivos jurídicos. Garantir a exatidão é apenas metade do desafio; o diferencial crítico é a capacidade de **provar como o cálculo foi feito**.
 
-A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **artefato de engenharia persistente e auditável**, ao aplicar:
+A **`CalcAUD`** neutraliza esses riscos ao transformar o cálculo em um **artefato auditável**: Ela resolve a opacidade dos motores de cálculo tradicionais, fornecendo um meio inquestionável de provar exatamente como cada resultado foi alcançado, construindo evidências robustas que protegem a integridade da aplicação e blindam a responsabilidade do desenvolvedor, aplicando:
 
 ### 1. Engenharia Matemática
 
@@ -108,12 +108,6 @@ A `CalcAUY` busca neutralizar essa imprecisão ao tratar o cálculo como um **ar
 ### 3. Acessibilidade (A11y) e Universalidade
 
 - **Matemática Acessível**: A `CalcAUY` transforma a AST em diferentes representações visuais e integrativas, como narrações verbais em 8 idiomas (`toVerbalA11y`), unicode para CLIs (`toUnicode`), LaTeX para relatórios (`toLaTeX`), HTML via KaTeX (`toHTML`), AST serializada para auditoria profunda (`toAuditTrace`) e diversos outros outputs, garantindo que cada cálculo possa ser lido por pessoas, máquinas e leitores de tela.
-
-## Por que a CalcAUY foi criada?
-
-> Em linhas gerais, porque não achei nenhuma outra maneira (sem gambiarras colossais) de fazer o que essa lib faz.
-> 
-> Stallone L.S., 2026-04-11
 
 ## 🔍 Testes
 

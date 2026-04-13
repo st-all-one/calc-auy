@@ -1,0 +1,12 @@
+{
+    "name": "@calc-auy/frontend-demo",
+    "version": "1.0.0",
+    "tasks": {
+        "build": "deno run -A npm:esbuild app.ts --bundle --format=iife --outfile=bundle.js --minify --alias:@logtape=./logger_stub.ts",
+        "serve": "deno run -A jsr:@std/http@1.0.13/file-server --port 8080",
+        "demo": "deno task build && deno task serve"
+    },
+    "imports": {
+        "../../mod.ts": "../../mod.ts"
+    }
+}
