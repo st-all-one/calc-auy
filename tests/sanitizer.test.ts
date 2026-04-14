@@ -91,8 +91,10 @@ describe("Sanitizer Utilities", () => {
             const sanitized = sanitizeAST(node) as any; // Cast to any
 
             assertEquals(sanitized.kind, "operation");
-            assertEquals(sanitized.type, REDACTED);
-            assertEquals(sanitized.operands, REDACTED);
+            // Agora a estrutura é mantida (array), mas os filhos são sanitizados
+            assertEquals(Array.isArray(sanitized.operands), true);
+            assertEquals(sanitized.operands[0].originalInput, REDACTED);
+            assertEquals(sanitized.operands[1].originalInput, REDACTED);
         });
 
         it("deve respeitar a sobreposição de PII nos metadados do nó", () => {
