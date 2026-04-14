@@ -46,7 +46,7 @@
     "nodeModulesDir": "auto",
     "vendor": true,
     "lock": {
-        "frozen": true
+        "frozen": false
     },
     "fmt": {
         "bracePosition": "sameLine",

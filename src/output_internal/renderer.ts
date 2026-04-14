@@ -42,10 +42,14 @@ export function renderAST(
     forceCaret = false,
 ): string {
     if (node.kind === "literal") {
-        const input = normalizeInput(node.originalInput);
-        if (format === "latex" && input.includes("/")) {
-            const [n, d] = input.split("/");
-            return String.raw`\frac{${n}}{${d}}`;
+        let input = normalizeInput(node.originalInput);
+        if (format === "latex") {
+            // Escapar % para LaTeX para evitar comentários
+            input = input.replace(/%/g, String.raw`\%`);
+            if (input.includes("/")) {
+                const [n, d] = input.split("/");
+                return String.raw`\frac{${n}}{${d}}`;
+            }
         }
         return input;
     }

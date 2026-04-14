@@ -197,7 +197,7 @@ export const manualExamples: RawExample[] = [
         title: "Hidratação de cálculo hibernado",
         context: "Usuário recupera o cálculo salvo e finaliza ele",
         code:
-            "CalcAUY.hydrate('calc_id_1234').add(CalcAUY.parseExpression('150 * 3 * 5').setMetadata('nota', 'Total alimentação')).commit().toMonetary()",
+            "CalcAUY.hydrate(calc_id_1).add(CalcAUY.parseExpression('150 * 3 * 5').setMetadata('nota', 'Total alimentação')).commit().toMonetary()",
         result: CalcAUY.from(100).setMetadata("nota", "Custo médio diário").mult(
             CalcAUY.from(3).setMetadata("nota", "Semanas operacionais").mult(5).setMetadata("nota", "Dias alocados"),
         ).setMetadata("observacoes", "Verificar alimentação").add(
@@ -214,8 +214,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão string)",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toStringNumber()",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toStringNumber()",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toStringNumber(),
@@ -226,8 +226,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão monetary)",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toMonetary()",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toMonetary()",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toMonetary(),
@@ -240,8 +240,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão float)",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toFloatNumber()",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toFloatNumber()",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toFloatNumber(),
@@ -252,8 +252,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão scaledBigInt)",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toScaledBigInt()",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toScaledBigInt()",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toScaledBigInt(),
@@ -266,8 +266,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão toSlice(3))",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toSlice(3)",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toSlice(3)",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toSlice(3),
@@ -278,8 +278,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão toSliceByRatio(['10%', '5%', '25%', '60%']))",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toSliceByRatio(['10%', '5%', '25%', '60%'])",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toSliceByRatio(['10%', '5%', '25%', '60%'])",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toSliceByRatio(["10%", "5%", "25%", "60%"]),
@@ -292,8 +292,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão toUnicode())",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toUnicode()",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toUnicode()",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toUnicode(),
@@ -304,8 +304,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão toHTML)",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toHTML(katex)",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toHTML(katex)",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toHTML(katex),
@@ -318,8 +318,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão toLaTeX())",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toLaTeX()",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toLaTeX()",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toLaTeX(),
@@ -330,8 +330,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão toRawInternalBigInt)",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toRawInternalBigInt()",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toRawInternalBigInt()",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toRawInternalBigInt(),
@@ -344,8 +344,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão toVerbalA11y (PT/BR))",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toVerbalA11y({ locale: 'pt-BR' })",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toVerbalA11y({ locale: 'pt-BR' })",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toVerbalA11y({ locale: "pt-BR" }),
@@ -356,8 +356,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão toVerbalA11y (FR))",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toVerbalA11y({ locale: 'fr-FR' })",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toVerbalA11y({ locale: 'fr-FR' })",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toVerbalA11y({ locale: "fr-FR" }),
@@ -370,8 +370,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão toCustomOutput)",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toCustomOutput(processor)",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toCustomOutput(processor)",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toCustomOutput((ctx) => {
@@ -388,8 +388,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão toAuditTrace)",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toAuditTrace()",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toAuditTrace()",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toAuditTrace(),
@@ -402,8 +402,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão toJSON)",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toJSON()",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toJSON()",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toJSON(),
@@ -416,8 +416,8 @@ export const manualExamples: RawExample[] = [
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão toImageBuffer)",
         code:
-            "CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from('0.18').mult(12))).setMetadata('meta', { id:1, date: new Date().toISOString() }).commit().toImageBuffer(katex)",
-        result: CalcAUY.from(1000).mult(CalcAUY.from(1).add(CalcAUY.from("0.18").mult(12))).setMetadata("meta", {
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toImageBuffer(katex)",
+        result: CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata("meta", {
             id: 1,
             date: new Date().toISOString(),
         }).commit().toImageBuffer(katex),

@@ -10,7 +10,7 @@
 
 </div>
 
-A **CalcAUY** é uma infraestrutura em **TypeScript** projetada para neutralizar a imprecisão do padrão IEEE 754, assegurando integridade atuarial através da **Imutabilidade estrita e Árvore de Sintaxe Abstrata (AST)**, transformando cada operação em uma evidência matemática confiável, transparente, acessível e auditável.
+A **CalcAUY** é uma infraestrutura em **TypeScript** projetada para neutralizar a imprecisão do padrão **IEEE 754**, assegurando integridade atuarial através da **Imutabilidade estrita e Árvore de Sintaxe Abstrata (AST)**, transformando cada operação em uma evidência matemática confiável, transparente, inclusiva e auditável.
 
 ---
 
@@ -19,11 +19,10 @@ A **CalcAUY** é uma infraestrutura em **TypeScript** projetada para neutralizar
 - [Entendendo a CalcAUY](./docs/start.md)
 - [Exemplos de uso](./docs/examples.md)
 - [Especificações](./docs/specs.md)
-- [Segurança e Auditabilidade](./docs/audit.md)
 
-## 🛣 Demonstração
+## 🛩️ Demonstração
 
-Veja em execução na [Demonstração interativa]()
+Veja em execução na [Demonstração interativa](https://calc-auy.st-all-one.deno.net/)
 
 ## 🚀 Quick-start
 
@@ -47,7 +46,7 @@ const capitalInicial = 10_000.00;
 const taxaJurosAnual = "14.75%";
 const anosDecorridos = 3;
 
-// == Construção da AST de cálculo [ M = C * (1 + j)^t ] ==
+// Construção da AST de cálculo [ M = C * (1 + j)^t ]
 const montante = CalcAUY
     .from(capitalInicial)
     .mult(
@@ -56,12 +55,16 @@ const montante = CalcAUY
             .group()
             .pow(anosDecorridos),
     )
-    .setMetadata("obs", "Juros de 14,75% a.a. (SELIC, Mar/26)");
+    .setMetadata("meta", {
+        data_de_calculo: new Date().toISOString(),
+        referencia: "Juros de 14,75% a.a. (SELIC, Mar/26)",
+        "usuário": { id: 99, calc_token: crypto.randomUUID(), username: "st-all-one" },
+    });
 
-// == Colapso da AST e definição estratégia de arredondamento ==
+// Colapso da AST e definição estratégia de arredondamento
 const resultado = montante.commit({ roundStrategy: "NBR5891" });
 
-// == Extração dos Outputs ==
+// Extração dos Outputs
 console.log(resultado.toMonetary());
 // R$ 15.109,78
 
@@ -71,43 +74,58 @@ console.log(resultado.toUnicode());
 console.log(resultado.toVerbalA11y());
 // 10000 multiplicado por abre parênteses abre parênteses 1 mais 14.75% fecha parênteses elevado a 3 fecha parênteses é igual a 15109 vírgula 78 (Arredondamento: NBR-5891 para 2 casas decimais).
 
-console.log(resultado.toAuditTrace());
+const ASTSerializadaAuditavel = resultado.toAuditTrace();
+console.log(ASTSerializadaAuditavel);
 /*
-{"ast":{"kind":"operation","type":"mul","operands":[{"kind":"literal","value":{"n":"10000","d":"1"},"originalInput":"10000"},{"kind":"group","child":{"kind":"operation","type":"pow","operands":[{"kind":"group","child":{"kind":"operation","type":"add","operands":[{"kind":"literal","value":{"n":"1","d":"1"},"originalInput":"1"},{"kind":"literal","value":{"n":"59","d":"400"},"originalInput":"14.75%"}]}},{"kind":"literal","value":{"n":"3","d":"1"},"originalInput":"3"}]}}],"metadata":{"obs":"Juros de 14,75% a.a. (SELIC, Mar/26)"}},"finalResult":{"n":"96702579","d":"6400"},"strategy":"NBR5891"}
+{"ast":{"kind":"operation","type":"mul","operands":[{"kind":"literal","value":{"n":"10000","d":"1"},"originalInput":"10000"},{"kind":"group","child":{"kind":"operation","type":"pow","operands":[{"kind":"group","child":{"kind":"operation","type":"add","operands":[{"kind":"literal","value":{"n":"1","d":"1"},"originalInput":"1"},{"kind":"literal","value":{"n":"59","d":"400"},"originalInput":"14.75%"}]}},{"kind":"literal","value":{"n":"3","d":"1"},"originalInput":"3"}]}}],"metadata":{"meta":{"data_de_calculo":"2026-04-13T23:40:09.420Z","referencia":"Juros de 14,75% a.a. (SELIC, Mar/26)","usuário":{"id":99,"calc_token":"7ee11b72-d029-4523-a71e-6cc86c4c03d9","username":"st-all-one"}}}},"finalResult":{"n":"96702579","d":"6400"},"strategy":"NBR5891"}
+*/
+
+// == Reabertura do cálculo ==
+const reabertura = CalcAUY.hydrate(ASTSerializadaAuditavel).setMetadata("review", {
+    status: "aprovado",
+    usuario: { id: 1, date: new Date().toISOString(), username: "One" },
+}).commit({ roundStrategy: "NBR5891" });
+
+console.log(reabertura.toAuditTrace());
+/*
+{"ast":{"kind":"operation","type":"mul","operands":[{"kind":"literal","value":{"n":"10000","d":"1"},"originalInput":"10000"},{"kind":"group","child":{"kind":"operation","type":"pow","operands":[{"kind":"group","child":{"kind":"operation","type":"add","operands":[{"kind":"literal","value":{"n":"1","d":"1"},"originalInput":"1"},{"kind":"literal","value":{"n":"59","d":"400"},"originalInput":"14.75%"}]}},{"kind":"literal","value":{"n":"3","d":"1"},"originalInput":"3"}]}}],"metadata":{"meta":{"data_de_calculo":"2026-04-13T23:40:09.420Z","referencia":"Juros de 14,75% a.a. (SELIC, Mar/26)","usuário":{"id":99,"calc_token":"7ee11b72-d029-4523-a71e-6cc86c4c03d9","username":"st-all-one"}},"review":{"status":"aprovado","usuario":{"id":1,"date":"2026-04-13T23:40:09.451Z","username":"One"}}}},"finalResult":{"n":"96702579","d":"6400"},"strategy":"NBR5891"}
 */
 ```
 
 ## 🎯 Qual problema a CalcAUY resolve?
 
-No desenvolvimento de softwares, o uso do padrão **IEEE 754** (`number/float`) introduz um risco sistêmico. Imprecisão binária, como o clássico `0.1 + 0.2 !== 0.3`, não são meras curiosidades matemáticas; em escala, transformam-se em rombos financeiros, falhas de compliance e passivos jurídicos. Garantir a exatidão é apenas metade do desafio; o diferencial crítico é a capacidade de **provar como o cálculo foi feito**.
+No desenvolvimento de softwares, o uso do padrão **IEEE 754** (`number/float`) introduz um risco sistêmico. Imprecisãos binárias, como o clássico `0.1 + 0.2 !== 0.3`, não são meras curiosidades matemáticas; em escala, transformam-se em rombos financeiros, falhas de compliance e passivos jurídicos. Garantir a exatidão é apenas metade do desafio: o problema crítico é a capacidade de **provar como o cálculo foi feito**.
 
-A **`CalcAUD`** neutraliza esses riscos ao transformar o cálculo em um **artefato auditável**: Ela resolve a opacidade dos motores de cálculo tradicionais, fornecendo um meio inquestionável de provar exatamente como cada resultado foi alcançado, construindo evidências robustas que protegem a integridade da aplicação e blindam a responsabilidade do desenvolvedor, aplicando:
+A **`CalcAUD`** neutraliza esses riscos ao transformar o processo de cálculo em um **artefato auditável**: Ela resolve a opacidade dos motores de cálculo tradicionais ao fornecer meios de provar exatamente como cada resultado foi alcançado, entregando evidências que protegem a integridade da aplicação e a responsabilidade técnica da equipe ao aplicar este **três pilares**:
 
-### 1. Engenharia Matemática
+### 1. Integridade Matemática
 
-- **Precisão Racional**: Baseada em `BigInts`, a lib opera puramente com frações exatas `(n/d)`. Executando simplificação via **Algoritmo de Euclides** (MCD) em cada etapa, garantindo que a memória seja otimizada sem sacrificar o rigor matemático.
+- **Aritmética Racional Arbitrária**: Operação baseada em frações exatas `(n/d)` utilizando `BigInt`. A biblioteca executa a simplificação via **Algoritmo de Euclides (MCD) otimizado** em cada etapa, garantindo precisão absoluta sem o overhead.
 
-- **Precedência Rigorosa**: Implementa o padrão `PEMDAS/BODMAS`, tratando a exponenciação com **Associatividade à Direita** e garantindo que o agrupamento léxico proteja a ordem das operações conforme a intenção do cálculo.
+- **Determinismo Lógico**: Implementação rigorosa de **precedência matemática** `(PEMDAS/BODMAS)` com **Associatividade à Direita para exponenciação**. Fornecendo o léxico via `.group()` para garantir que a ordem das operações reflita fielmente a **intenção do cálculo** na AST.
 
-- **Auditabilidade Forense via AST**: Toda operação constrói uma `Árvore de Sintaxe Abstrata (AST) imutável`. Isso permite "hibernar" cálculos complexos em JSON e reidratá-los sem perda de contexto, preservando a intenção original do cálculo.
+- **Conformidade Normativa**: Motor nativo para a [`ABNT NBR 5891`](https://pt.wikipedia.org/wiki/Arredondamento#Norma_ABNT_NBR_5891) e algoritmos de rateio por `Maior Resto`, assegurando que divisões monetárias e arredondamentos sigam padrões atuariais e legais sem desvios acumulados.
 
-- **Segurança por Design**: Opera sob o dogma de `Security by Default`, com redação automática de dados sensíveis (`PII`) em logs estruturados. A engine é protegida por gatekeepers estruturais que validam **estritamente** cada input, neutralizando vetores de ataque como `JSON Bombs` e `Stack Overflow`.
+- **Segurança Estrutural**: Proteção nativa contra vetores de ataque comuns, como `JSON Bombs` e `Stack Overflow`. A biblioteca opera sob o dogma de **Desambiguidade por Design** e **Fail Fast** no padrão [`RFC 7807 enriquecido`](https://datatracker.ietf.org/doc/html/rfc7807), mitigando ataques e facilitando o debug.
 
-- **Integridade Atuária**: Implementação estrita da `NBR 5891` e algoritmos de `Resto de divisão Euclidiana` e `Maior Resto` para rateios monetários exatos, garantindo que nenhum centavo seja perdido ou tendenciado.
+### 2. Auditabilidade Forense
 
-### 2. Developer Experience (DX), Portabilidade e Escalabilidade
+- **AST e Metadados**: Cada etapa do cálculo constrói uma **Árvore de Sintaxe Abstrata (AST) imutável**. Essa estrutura permite a **"hibernação"** de cálculos complexos em `JSON` para armazenamento e posterior **reidratação"**, permitindo adicionar metadados estruturados em cada etapa para autoria e contextualização de negócio.
+
+- **Outputs Multiformato**: Através de processadores de saída, a biblioteca traduz a lógica interna em representações auditáveis, técnicas e inclusivas:
+    - `toUnicode()`: Representação visual para interfaces de terminal (CLI).
+    - `toLaTeX() / toHTML()`: Documentação técnica para relatórios e exibição via KaTeX.
+    - `toAuditTrace()`: JSON detalhado contendo o **"DNA do cálculo"** para auditorias profundas.
+
+- **Interoperabilidade e Extensão**: Sistema de `Custom Output Processor` que permite estender a biblioteca para novos formatos (Protobuf, XML, Excel), mantendo o projeto modular e enxuto.
+
+## 3. Universalidade Sistêmica (DX, Escalabilidade e Inclusão)
 
 - **Tipagem Estrita**: Desenvolvida sob o `Strict Mode máximo` do TypeScript, a lib utiliza `Type Guards` e campos privados para garantir que a integridade dos dados seja mantida do código à transpilação.
 
-- **Agnosticismo de Runtime**: Distribuída via `JSR`, a biblioteca é nativamente compatível com `Deno`, `Node.js`, `Bun` e `Cloudflare Workers`. Sem dependências pesadas, ela mantém um rastro zero de IO, operando puramente em memória.
+- **Performance sob Carga**: O utilitário `.processBatch(...)` gerencia demandas massivos utilizando `scheduler.yield()`, equilibrando o alto throughput com a responsividade do servidor, evitando bloqueios do Event Loop.
 
-- **Interoperabilidade Total**: Através do sistema de `Custom Output Processors`, a lib é extensível para suportar qualquer formato de saída (Protobuf, XML, Excel) sem inflar o núcleo do projeto.
-
-- **Processamento em Lotes**: O utilitário `processBatch` permite processar volumes massivos de transações (ex: 100.000 cálculos) sem congelar o servidor, utilizando a API `scheduler.yield()` para equilibrar o Throughput e a Responsividade.
-
-### 3. Acessibilidade (A11y) e Universalidade
-
-- **Matemática Acessível**: A `CalcAUY` transforma a AST em diferentes representações visuais e integrativas, como narrações verbais em 8 idiomas (`toVerbalA11y`), unicode para CLIs (`toUnicode`), LaTeX para relatórios (`toLaTeX`), HTML via KaTeX (`toHTML`), AST serializada para auditoria profunda (`toAuditTrace`) e diversos outros outputs, garantindo que cada cálculo possa ser lido por pessoas, máquinas e leitores de tela.
+- **Matemática Semântica (A11y)**: Tradução automática da lógica matemática para narração humana em 7 idiomas. Permitindo conformidade com normas de acessibilidade digital (`WCAG/eMAG`), garantindo que os cálculos sejam compreendidos por máquinas, auditores e usuários de tecnologias assistivas.
 
 ## 🔍 Testes
 
@@ -243,6 +261,6 @@ Info:
 
 ---
 
--- Este projeto é Open Source e Licenciado através da **Mozilla Public License v2.0** --
+--- Este projeto é Open Source e Licenciado através da **Mozilla Public License v2.0 (MPL-2.0)** ---
 
 </div>

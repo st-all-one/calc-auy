@@ -1,4 +1,4 @@
-import { CalcAUY } from "../../mod.ts";
+import { CalcAUY, type CalcAUYError } from "../../mod.ts";
 
 /**
  * CalcAUY Front-end Demo Engine
@@ -40,13 +40,17 @@ import { CalcAUY } from "../../mod.ts";
             </div>
             <div style="margin-top: 15px; padding: 10px; background: #fff; border: 1px solid #ccc; border-radius: 4px;">
                 <strong>Rastro de Auditoria (toAuditTrace):</strong>
-                <pre style="font-size: 0.8rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all;">${JSON.stringify(JSON.parse(res.toAuditTrace()), null, 2)}</pre>
+                <pre style="font-size: 0.8rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all;">${
+            JSON.stringify(JSON.parse(res.toAuditTrace()), null, 2)
+        }</pre>
             </div>
             <hr>
             <small>Este cálculo foi executado sem nenhuma chamada de rede ao servidor após o carregamento inicial da página.</small>
         `;
-    } catch (e) {
-        outputEl.innerHTML = `<p style="color:red"><strong>Erro no Cálculo:</strong> ${e.message}</p>`;
+    } catch (error) {
+        outputEl.innerHTML = `<p style="color:red"><strong>Erro no Cálculo:</strong> ${
+            (error as CalcAUYError).message
+        }</p>`;
     }
 };
 

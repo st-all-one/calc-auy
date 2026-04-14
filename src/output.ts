@@ -367,7 +367,9 @@ export class CalcAUYOutput {
 
         return this.instrument("toLaTeX", options, () => {
             const base: string = renderAST(this.#ast, "latex");
-            const roundedStr: string = this.toStringNumber(options);
+            let roundedStr: string = this.toStringNumber(options);
+            // Escapar % no resultado para LaTeX para evitar erros de comentário
+            roundedStr = roundedStr.replace(/%/g, String.raw`\%`);
             const strategyName: string = ROUNDING_IDS[this.#strategy];
             const result = String.raw`\text{round}_{\text{${strategyName}}}(${base}, ${p}) = ${roundedStr}`;
             this.#outputCache.set(cacheKey, result);

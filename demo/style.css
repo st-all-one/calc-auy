@@ -560,23 +560,31 @@ button:active {
 /* Media query para telas ainda maiores (Notebook/Desktop - 3 colunas) */
 @media (min-width: 1100px) {
     #barra-acessibilidade {
-        flex-direction: row;
-        justify-content: space-between;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
         font-size: 1rem;
+        padding: 0.5rem 2rem;
+        width: 100%;
+        left: 50%;
+        transform: translateX(-50%);
     }
 
     #barra-acessibilidade ul {
-        flex-wrap: nowrap;
-        /* Prevent wrapping in desktop mode */
+        flex-wrap: nowrap !important;
+        display: flex !important;
+        gap: 1.5rem !important;
+        margin: 0 !important;
+        width: auto !important;
     }
 
     #barra-acessibilidade #atalhos {
-        justify-content: flex-start;
+        justify-content: flex-start !important;
     }
 
     #barra-acessibilidade #opcoes-acessibilidade {
-        margin-left: auto;
-        /* Empurra o alto contraste para a direita */
+        margin-left: auto !important;
+        justify-content: flex-end !important;
     }
 
     body {

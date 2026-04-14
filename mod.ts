@@ -9,15 +9,15 @@
  * para representar expressões e resolve-as utilizando frações racionais (`n/d`)
  * baseadas em `BigInt`.
  *
- * ### Pilares da Engenharia:
- * 1. **Imutabilidade:** Cada operação gera uma nova instância da árvore, facilitando o rastreio.
- * 2. **Auditabilidade Forense:** Cada nó pode carregar metadados de negócio via `.setMetadata()`.
- * 3. **Acessibilidade (A11y):** Geração nativa de rastro verbalizado localizado para leitores de tela.
+ * ### Engenharia:
+ * 1. **Imutabilidade:** Cada operação gera uma nova instância da AST, facilitando o rastreio.
+ * 2. **Auditabilidade:** Cada nó pode ser hibernado e hidratado a qualquer momento, podendo também inserir metadados de negócio via `.setMetadata()`.
+ * 3. **Inclusividade (a11y e i18n):** Geração nativa de rastro verbalizado localizado para leitores de tela.
  * 4. **Ciclo de Vida Controlado:** O cálculo é construído (Build), finalizado (Commit) e então exportado (Output).
  *
  * @example Uso Fluido (Fluent API)
  * ```ts
- * import { CalcAUY } from "./mod.ts";
+ * import { CalcAUY } from "@st-all-one/calc-auy";
  *
  * const total = CalcAUY.from(100)
  *   .add(50)
