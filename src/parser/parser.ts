@@ -118,7 +118,7 @@ export class Parser {
             const token: Token = this.previous();
 
             // Suporte a percentual como sufixo (ex: 10% ou 10% + 5)
-            // Desambiguação: se o % for seguido de um operando (número ou parênteses), 
+            // Desambiguação: se o % for seguido de um operando (número ou parênteses),
             // ele deve ser tratado como operador de Módulo (infix) no método term().
             if (this.check("PERCENT") && !this.checkNext("NUMBER", "LPAREN")) {
                 this.advance(); // Consome o PERCENT como sufixo

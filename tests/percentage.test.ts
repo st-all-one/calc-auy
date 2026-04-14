@@ -1,4 +1,3 @@
-
 import { describe, it } from "jsr:@std/testing/bdd";
 import { assertEquals } from "jsr:@std/assert";
 import { CalcAUY } from "../src/builder.ts";
@@ -7,7 +6,7 @@ describe("CalcAUY - Suporte a Percentual", () => {
     it("deve aceitar percentual na ingestão direta via from()", () => {
         const res = CalcAUY.from("10%").commit();
         assertEquals(res.toStringNumber({ decimalPrecision: 2 }), "0.10");
-        
+
         // Verifica normalização do rastro
         const trace = JSON.parse(res.toAuditTrace());
         assertEquals(trace.ast.originalInput, "10/100");

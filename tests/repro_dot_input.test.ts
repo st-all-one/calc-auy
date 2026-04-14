@@ -1,4 +1,3 @@
-
 import { describe, it } from "jsr:@std/testing/bdd";
 import { assertEquals, assertStringIncludes } from "jsr:@std/assert";
 import { CalcAUY } from "../src/builder.ts";
@@ -7,7 +6,7 @@ import katex from "npm:katex@^0.16.40";
 describe("Repro: Normalização de Input com Ponto Inicial", () => {
     it("deve renderizar '.5' como '0.5' em Unicode e LaTeX", () => {
         const res = CalcAUY.from(".5").add(10).commit();
-        
+
         // Unicode
         assertEquals(res.toUnicode().includes("0.5"), true, "Deveria conter 0.5 no Unicode");
         assertEquals(res.toUnicode().includes(" .5"), false, "Não deveria conter .5 isolado");
