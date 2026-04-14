@@ -108,7 +108,9 @@ A **`CalcAUD`** neutraliza esses riscos ao transformar o processo de cálculo em
 
 ### 2. Auditabilidade Forense
 
-- **AST e Metadados**: Cada etapa do cálculo constrói uma **Árvore de Sintaxe Abstrata (AST) imutável**. Essa estrutura permite inserir metadados estruturados em cada etapa, **"hibernação"** de cálculos complexos em `JSON` para armazenamento e **"reidratação"** posterior, permitindo movimentar a **intenção de cálculo** com segurança sem perda de contexto.
+- **AST e Metadados**: Cada etapa do cálculo constrói uma **Árvore de Sintaxe Abstrata (AST) imutável**. Essa estrutura permite inserir metadados estruturados em cada etapa, possibilitando **"hibernação"** de cálculos complexos em `JSON` e a **"reidratação"** posterior, permitindo a movimentação da **intenção de cálculo** com segurança entre contextos.
+
+- **Integridade Bit-Perfect**: O mecanismo de serialização da **CalcAUY** é determinístico e lossless. Em testes forenses de larga escala ([amostragens de 100k registros](tests/forensic_audit.test.ts)) confirmam 100% de integridade na reidratação: um cálculo ressuscitado do banco de dados produz exatamente o mesmo resultado e rastro que o objeto original, eliminando qualquer desvio por transporte de dados ou troca de ambiente.
 
 - **Outputs Multiformato**: Através de processadores de saída, a biblioteca traduz a lógica interna em representações auditáveis, técnicas e inclusivas:
     - `toUnicode()`: Representação visual para interfaces de terminal (CLI).
@@ -123,7 +125,7 @@ A **`CalcAUD`** neutraliza esses riscos ao transformar o processo de cálculo em
 
 - **Segurança Estrutural**: Construída sob o dogma de **Zero tolerânica a Ambiguidades**, a `CalcAUY` aplica um parser rigoroso em todos os pontos de input, retornando erros no padrão [`RFC 7807`](https://datatracker.ietf.org/doc/html/rfc7807) diante de qualquer inconsistência identificada, além de implementar táticas de contenção a ataques como `JSON Bombs` e `Stack Overflow`.
 
-- **Performance sob Carga**: Opcionalmente, o utilitário `.processBatch(...)` é uma engine de alto desempenho para volumes industriais (1M+ registros), operando em complexidade `O(N)`. Utiliza **Workers Lógicos e Reducers Nativos** para maximizar a vazão e ocultar latências de I/O (Banco de Dados/APIs), garantindo a responsividade total do sistema via `scheduler.yield()` sem comprometer o `Event Loop`.
+- **Performance sob Carga**: Implementa o utilitário `.processBatch(...)`, uma engine de alto desempenho para volumes industriais (1M+ registros), operando em complexidade `O(N)`. Utiliza **Workers Lógicos e Reducers Nativos** para maximizar a vazão e mitigar latências de I/O (Banco de Dados/APIs), garantindo a responsividade total do sistema via `scheduler.yield()` sem comprometer o `Event Loop`.
 
 - **Matemática Semântica (A11y)**: Tradução automática da lógica matemática para narração humana em 7 idiomas. Permitindo conformidade com normas de acessibilidade digital (`WCAG/eMAG`), garantindo que os cálculos sejam compreendidos por máquinas, auditores e usuários de tecnologias assistivas.
 
