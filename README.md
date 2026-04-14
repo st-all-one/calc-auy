@@ -84,7 +84,7 @@ console.log(ASTSerializadaAuditavel);
 const reabertura = CalcAUY.hydrate(ASTSerializadaAuditavel).setMetadata("review", {
     status: "aprovado",
     usuario: { id: 1, date: new Date().toISOString(), username: "One" },
-}).commit({ roundStrategy: "NBR5891" });
+}).commit({ roundStrategy: JSON.parse(ASTSerializadaAuditavel).strategy });
 
 console.log(reabertura.toAuditTrace());
 /*
@@ -94,9 +94,9 @@ console.log(reabertura.toAuditTrace());
 
 ## 🎯 Qual problema a CalcAUY resolve?
 
-No desenvolvimento de softwares, o uso do padrão **IEEE 754** (`number/float`) introduz um risco sistêmico. Imprecisãos binárias, como o clássico `0.1 + 0.2 !== 0.3`, não são meras curiosidades matemáticas; em escala, transformam-se em rombos financeiros, falhas de compliance e passivos jurídicos. Garantir a exatidão é apenas metade do desafio: o problema crítico é a capacidade de **provar como o cálculo foi feito**.
+No desenvolvimento de softwares, o uso do padrão **IEEE 754** (`number/float`) introduz um risco sistêmico. Imprecisãos binárias, como o clássico `0.1 + 0.2 !== 0.3`, não são meras curiosidades matemáticas; em escala, transformam-se em rombos financeiros, falhas de compliance e passivos jurídicos. Garantir a exatidão é apenas o início do desafio: **Provar como o cálculo foi feito** é o que garante segurança para aplicação.
 
-A **`CalcAUD`** neutraliza esses riscos ao transformar o processo de cálculo em um **artefato auditável**: Ela resolve a opacidade dos motores de cálculo tradicionais ao fornecer meios de provar exatamente como cada resultado foi alcançado, entregando evidências que protegem a integridade da aplicação e a responsabilidade técnica da equipe ao aplicar este **três pilares**:
+A **`CalcAUY`** elimina os riscos de imprecisão ao tratar cada operação como um **artefato auditável**. A biblioteca resolve a falta de transparência dos motores convencionais ao fornecer evidências verificáveis de todas as etapas que compõem o resultado, garantindo a integridade dos dados e a conformidade técnica da implementação ao fundamentar-se em três pilares:
 
 ### 1. Integridade Matemática
 
