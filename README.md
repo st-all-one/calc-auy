@@ -100,30 +100,30 @@ A **`CalcAUD`** neutraliza esses riscos ao transformar o processo de cálculo em
 
 ### 1. Integridade Matemática
 
-- **Aritmética Racional Arbitrária**: Operação baseada em frações exatas `(n/d)` utilizando `BigInt`. A biblioteca executa a simplificação via **Algoritmo de Euclides (MCD) otimizado** em cada etapa, garantindo precisão absoluta sem o overhead.
+- **Aritmética Racional**: Operação baseada em frações exatas `(n/d)` utilizando `BigInt`, executando simplificações via **Algoritmo de Euclides (MCD)** em cada etapa, garantindo precisão absoluta sem o overhead.
 
-- **Determinismo Lógico**: Implementação rigorosa de **precedência matemática** `(PEMDAS/BODMAS)` com **Associatividade à Direita para exponenciação**. Fornecendo o léxico via `.group()` para garantir que a ordem das operações reflita fielmente a **intenção do cálculo** na AST.
+- **Determinismo Lógico**: Implementação rigorosa de **precedência matemática** [`(PEMDAS/BODMAS)`](https://pt.wikipedia.org/wiki/Ordem_de_opera%C3%A7%C3%B5es) com **Associatividade à Direita** para exponenciação, garantindo que as operações respeitem a **intenção do cálculo** com consistência matemática na AST.
 
-- **Conformidade Normativa**: Motor nativo para a [`ABNT NBR 5891`](https://pt.wikipedia.org/wiki/Arredondamento#Norma_ABNT_NBR_5891) e algoritmos de rateio por `Maior Resto`, assegurando que divisões monetárias e arredondamentos sigam padrões atuariais e legais sem desvios acumulados.
-
-- **Segurança Estrutural**: Proteção nativa contra vetores de ataque comuns, como `JSON Bombs` e `Stack Overflow`. A biblioteca opera sob o dogma de **Desambiguidade por Design** e **Fail Fast** no padrão [`RFC 7807`](https://datatracker.ietf.org/doc/html/rfc7807), mitigando ataques e facilitando o debug.
+- **Conformidade Normativa**: Arredondametno padrão [`ABNT NBR 5891`](https://pt.wikipedia.org/wiki/Arredondamento#Norma_ABNT_NBR_5891) e rateio por [`Maior Resto`](https://en.wikipedia.org/wiki/Mathematics_of_apportionment), assegurando que divisões monetárias e arredondamentos sigam padrões atuariais e legais sem desvios acumulados.
 
 ### 2. Auditabilidade Forense
 
-- **AST e Metadados**: Cada etapa do cálculo constrói uma **Árvore de Sintaxe Abstrata (AST) imutável**. Essa estrutura permite a **"hibernação"** de cálculos complexos em `JSON` para armazenamento e posterior **"reidratação"**, permitindo adicionar metadados estruturados em cada etapa para autoria e contextualização de negócio.
+- **AST e Metadados**: Cada etapa do cálculo constrói uma **Árvore de Sintaxe Abstrata (AST) imutável**. Essa estrutura permite inserir metadados estruturados em cada etapa, **"hibernação"** de cálculos complexos em `JSON` para armazenamento e **"reidratação"** posterior, permitindo movimentar a **intenção de cálculo** com segurança sem perda de contexto.
 
 - **Outputs Multiformato**: Através de processadores de saída, a biblioteca traduz a lógica interna em representações auditáveis, técnicas e inclusivas:
     - `toUnicode()`: Representação visual para interfaces de terminal (CLI).
-    - `toLaTeX() / toHTML()`: Documentação técnica para relatórios e exibição via KaTeX.
-    - `toAuditTrace()`: JSON detalhado contendo o **"DNA do cálculo"** para auditorias profundas.
+    - `toLaTeX() / toHTML()`: Documentação técnica para relatórios e exibição via [KaTeX](https://katex.org/).
+    - `toAuditTrace()`: JSON detalhado contendo o **"DNA do cálculo"** para auditoria profunda.
 
-- **Interoperabilidade e Extensão**: Sistema de `Custom Output Processor` que permite estender a biblioteca para novos formatos (Protobuf, XML, Excel), mantendo o projeto modular e enxuto.
+- **Extensividade**: Implementado um sistema de `Custom Output Processor` que permite estender o `Output` da biblioteca para novos formatos (Protobuf, XML, Excel) sem interferência ao cálculo e metadados originais.
 
 ## 3. Universalidade Sistêmica (DX, Escalabilidade e Inclusão)
 
 - **Tipagem Estrita**: Desenvolvida sob o `Strict Mode máximo` do TypeScript, a lib utiliza `Type Guards` e campos privados para garantir que a integridade dos dados seja mantida do código à transpilação.
 
-- **Performance sob Carga**: O utilitário `.processBatch(...)` gerencia demandas massivas utilizando `scheduler.yield()`, equilibrando o alto _throughput_ com a responsividade do servidor, evitando bloqueios do `Event Loop`.
+- **Segurança Estrutural**: Construída sob o dogma de **Zero tolerânica a Ambiguidades**, a `CalcAUY` aplica um parser rigoroso em todos os pontos de input, retornando erros no padrão [`RFC 7807`](https://datatracker.ietf.org/doc/html/rfc7807) diante de qualquer inconsistência identificada, além de implementar táticas de contenção a ataques como `JSON Bombs` e `Stack Overflow`.
+
+- **Performance sob Carga**: Opcionalmente, o utilitário `.processBatch(...)` é uma engine de alto desempenho para volumes industriais (1M+ registros), operando em complexidade `O(N)`. Utiliza **Workers Lógicos e Reducers Nativos** para maximizar a vazão e ocultar latências de I/O (Banco de Dados/APIs), garantindo a responsividade total do sistema via `scheduler.yield()` sem comprometer o `Event Loop`.
 
 - **Matemática Semântica (A11y)**: Tradução automática da lógica matemática para narração humana em 7 idiomas. Permitindo conformidade com normas de acessibilidade digital (`WCAG/eMAG`), garantindo que os cálculos sejam compreendidos por máquinas, auditores e usuários de tecnologias assistivas.
 
