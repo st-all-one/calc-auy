@@ -1,6 +1,6 @@
-import { describe, it } from "jsr:@std/testing/bdd";
-import { assertEquals } from "jsr:@std/assert";
-import { CalcAUY } from "../src/builder.ts";
+import { describe, it } from "@std/testing/bdd";
+import { assertEquals } from "@std/assert";
+import { CalcAUY } from "@src/builder.ts";
 
 describe("CalcAUY - Suporte a Percentual", () => {
     it("deve aceitar percentual na ingestão direta via from()", () => {

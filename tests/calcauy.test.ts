@@ -1,6 +1,6 @@
 import { describe, it } from "@std/testing/bdd";
 import { assertEquals, assertStringIncludes } from "@std/assert";
-import { CalcAUY } from "../mod.ts";
+import { CalcAUY } from "@calcauy";
 
 describe("CalcAUY - Integração e Auditoria", () => {
     describe("Fluxo Básico e Precedência", () => {

@@ -1,6 +1,6 @@
-import { describe, it } from "jsr:@std/testing/bdd";
-import { assertEquals, assertThrows } from "jsr:@std/assert";
-import { Lexer } from "../src/parser/lexer.ts";
+import { describe, it } from "@std/testing/bdd";
+import { assertEquals, assertThrows } from "@std/assert";
+import { Lexer } from "@src/parser/lexer.ts";
 
 describe("Lexer - Casos de Borda e Erros", () => {
     it("deve identificar o token DOUBLE_SLASH (//) corretamente", () => {

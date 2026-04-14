@@ -1,8 +1,8 @@
 import { describe, it } from "@std/testing/bdd";
-import { expect } from "jsr:@std/expect";
-import { CalcAUY } from "../mod.ts";
-import { LOCALES } from "../src/i18n/i18n.ts";
-import type { IKatex } from "../src/core/types.ts";
+import { expect } from "@std/expect";
+import { CalcAUY } from "@calcauy";
+import { LOCALES } from "@src/i18n/i18n.ts";
+import type { IKatex } from "@src/core/types.ts";
 
 // Mock minimal do KaTeX para testes de estresse sem dependência externa pesada
 const mockKatex: IKatex = {

@@ -1,9 +1,9 @@
 import { beforeEach, describe, it } from "@std/testing/bdd";
 import { assert, assertEquals, assertThrows } from "@std/assert";
-import { evaluate } from "../src/ast/engine.ts";
-import { CalcAUYError } from "../src/core/errors.ts";
-import { getSubLogger } from "../src/utils/logger.ts";
-import type { CalculationNode } from "../src/ast/types.ts";
+import { evaluate } from "@src/ast/engine.ts";
+import { CalcAUYError } from "@src/core/errors.ts";
+import { getSubLogger } from "@src/utils/logger.ts";
+import type { CalculationNode } from "@src/ast/types.ts";
 
 // Type for valid log levels
 type LogLevel = "trace" | "debug" | "info" | "warning" | "error" | "fatal";

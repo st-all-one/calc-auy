@@ -1,10 +1,10 @@
 import { beforeEach, describe, it } from "@std/testing/bdd";
 import { assert, assertEquals, assertStringIncludes, assertThrows } from "@std/assert";
-import { CalcAUY } from "../mod.ts";
-import { CalcAUYError } from "../src/core/errors.ts";
-import { getSubLogger } from "../src/utils/logger.ts"; // Import for mocking
-import { loggingPolicy } from "../src/utils/sanitizer.ts"; // Import for mocking
-import { CalcAUYOutput, ICalcAUYCustomOutput, ICalcAUYCustomOutputContext } from "../src/output.ts"; // Import CalcAUYOutput and its interfaces
+import { CalcAUY } from "@calcauy";
+import { CalcAUYError } from "@src/core/errors.ts";
+import { getSubLogger } from "@src/utils/logger.ts"; // Import for mocking
+import { loggingPolicy } from "@src/utils/sanitizer.ts"; // Import for mocking
+import { CalcAUYOutput, ICalcAUYCustomOutput, ICalcAUYCustomOutputContext } from "@src/output.ts"; // Import CalcAUYOutput and its interfaces
 
 // Type for valid log levels
 type LogLevel = "trace" | "debug" | "info" | "warning" | "error" | "fatal";

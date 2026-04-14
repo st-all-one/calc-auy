@@ -1,8 +1,8 @@
 import { describe, it } from "@std/testing/bdd";
 import { assertEquals, assertThrows } from "@std/assert";
-import { attachOp, validateASTNode } from "../src/ast/builder_utils.ts";
-import { CalcAUYError } from "../src/core/errors.ts";
-import type { LiteralNode, OperationNode } from "../src/ast/types.ts";
+import { attachOp, validateASTNode } from "@src/ast/builder_utils.ts";
+import { CalcAUYError } from "@src/core/errors.ts";
+import type { LiteralNode, OperationNode } from "@src/ast/types.ts";
 
 describe("AST Builder Utils - Validação e Anexação", () => {
     describe("validateASTNode", () => {

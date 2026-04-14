@@ -1,7 +1,7 @@
 import { describe, it } from "@std/testing/bdd";
 import { assertEquals } from "@std/assert";
-import { RationalNumber } from "../src/core/rational.ts";
-import { applyRounding } from "../src/rounding/rounding.ts";
+import { RationalNumber } from "@src/core/rational.ts";
+import { applyRounding } from "@src/rounding/rounding.ts";
 
 describe("Reproduction of reported issues", () => {
     it("CEIL rounding should not produce absurd results", () => {

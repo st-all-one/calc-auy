@@ -1,6 +1,6 @@
-import { describe, it } from "jsr:@std/testing/bdd";
-import { expect } from "jsr:@std/expect";
-import { CalcAUY } from "../src/builder.ts";
+import { describe, it } from "@std/testing/bdd";
+import { expect } from "@std/expect";
+import { CalcAUY } from "@src/builder.ts";
 
 describe("CalcAUY - Batch Processing", () => {
     it("deve processar um lote de itens corretamente", async () => {

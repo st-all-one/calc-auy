@@ -1,6 +1,6 @@
-import { CalcAUY } from "../mod.ts";
-import { CalcAUYOutput } from "../src/output.ts";
-import { assertEquals } from "https://deno.land/std@0.221.0/assert/mod.ts";
+import { CalcAUY } from "@calcauy";
+import { CalcAUYOutput } from "@src/output.ts";
+import { assertEquals } from "@std/assert";
 
 Deno.test("Demonstração: Transformação de Massa vs. Consolidação com processBatch", async () => {
     const faturasBrutas = [

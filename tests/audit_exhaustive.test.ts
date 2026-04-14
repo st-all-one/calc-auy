@@ -1,6 +1,6 @@
 import { describe, it } from "@std/testing/bdd";
 import { assertEquals, assertThrows } from "@std/assert";
-import { CalcAUY } from "../mod.ts";
+import { CalcAUY } from "@calcauy";
 
 describe("Auditoria Exaustiva - CalcAUY (Rigor Matemático e Fiscal)", () => {
     describe("1. Aritmética Racional e Imunidade IEEE 754", () => {

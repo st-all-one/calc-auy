@@ -1,6 +1,6 @@
-import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
-import { RationalNumber } from "../src/core/rational.ts";
-import { RoundingHandlers, roundToPrecisionNBR5891 } from "../src/rounding/rounding.ts";
+import { assertEquals } from "@std/assert";
+import { RationalNumber } from "@src/core/rational.ts";
+import { RoundingHandlers, roundToPrecisionNBR5891 } from "@src/rounding/rounding.ts";
 
 Deno.test("NBR 5891 - Regra 1: Algarismo seguinte de 0 a 4 (85.483 -> 85.48)", () => {
     const val = RationalNumber.from("85.483");

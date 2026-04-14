@@ -1,7 +1,7 @@
 import { describe, it } from "@std/testing/bdd";
 import { assertEquals, assertThrows } from "@std/assert";
-import { RationalNumber } from "../src/core/rational.ts";
-import { CalcAUYError } from "../src/core/errors.ts";
+import { RationalNumber } from "@src/core/rational.ts";
+import { CalcAUYError } from "@src/core/errors.ts";
 
 describe("Rigor de Ingestão - RationalNumber", () => {
     it("deve rejeitar lixo alfanumérico no final da string", () => {

@@ -1,8 +1,8 @@
 import { beforeEach, describe, it } from "@std/testing/bdd";
 import { assert, assertEquals, assertStringIncludes } from "@std/assert";
-import { CalcAUYError, ErrorCategory, ErrorContext } from "../src/core/errors.ts";
-import { getSubLogger } from "../src/utils/logger.ts";
-import { loggingPolicy } from "../src/utils/sanitizer.ts"; // Import loggingPolicy
+import { CalcAUYError, ErrorCategory, ErrorContext } from "@src/core/errors.ts";
+import { getSubLogger } from "@src/utils/logger.ts";
+import { loggingPolicy } from "@src/utils/sanitizer.ts"; // Import loggingPolicy
 
 // Type for valid log levels
 type LogLevel = "trace" | "debug" | "info" | "warning" | "error" | "fatal";

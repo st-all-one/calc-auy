@@ -1,6 +1,6 @@
-import { describe, it } from "https://deno.land/std@0.224.0/testing/bdd.ts";
-import { assertEquals, assertStringIncludes } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { CalcAUY, type CalcAUYLocaleA11y } from "../mod.ts";
+import { describe, it } from "@std/testing/bdd";
+import { assertEquals, assertStringIncludes } from "@std/assert";
+import { CalcAUY, type CalcAUYLocaleA11y } from "@calcauy";
 
 const mockKatex = {
     renderToString: (s: string) => `<span>${s}</span>`,

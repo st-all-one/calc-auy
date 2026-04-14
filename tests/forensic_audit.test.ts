@@ -1,11 +1,11 @@
-import { CalcAUY } from "../mod.ts";
-import { assertEquals } from "https://deno.land/std@0.221.0/assert/mod.ts";
-import { DB } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
-import { describe, it } from "https://deno.land/std@0.221.0/testing/bdd.ts";
+import { CalcAUY } from "@calcauy";
+import { assertEquals } from "@std/assert";
+import { DB } from "@sqlite";
+import { describe, it } from "@std/testing/bdd";
 
 const DB_FILE = "tests/forensic.db";
-const TOTAL_DB = 100_000;
-const AMOSTRAS = 10_000;
+const TOTAL_DB = 1_000_000;
+const AMOSTRAS = 100_000;
 
 describe("Auditoria Forense: Integridade de Dados Hibernados", () => {
     it(`deve garantir re-hidratação bit-perfect de ${AMOSTRAS} amostras sorteadas de uma base de ${TOTAL_DB}`, async () => {

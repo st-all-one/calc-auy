@@ -1,7 +1,7 @@
-import { CalcAUY } from "../mod.ts";
-import { assertEquals } from "https://deno.land/std@0.221.0/assert/mod.ts";
-import { DB } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
-import { describe, it } from "https://deno.land/std@0.221.0/testing/bdd.ts";
+import { CalcAUY } from "@calcauy";
+import { assertEquals } from "@std/assert";
+import { DB } from "@sqlite";
+import { describe, it } from "@std/testing/bdd";
 
 const DB_FILE = "tests/test_massive_unoptimized.db";
 const TOTAL_FATURAS = 10_000; // Reduzido para 10k para ser viável em testes de CI sem travar.

@@ -1,7 +1,7 @@
-import { describe, it } from "jsr:@std/testing/bdd";
-import { assertEquals } from "jsr:@std/assert";
-import { sanitizeAST } from "../src/utils/sanitizer.ts";
-import type { OperationNode } from "../src/ast/types.ts";
+import { describe, it } from "@std/testing/bdd";
+import { assertEquals } from "@std/assert";
+import { sanitizeAST } from "@src/utils/sanitizer.ts";
+import type { OperationNode } from "@src/ast/types.ts";
 
 const REDACTED = "[PII]";
 

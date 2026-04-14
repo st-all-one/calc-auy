@@ -1,7 +1,7 @@
-import { describe, it } from "jsr:@std/testing/bdd";
-import { assertEquals, assertStringIncludes } from "jsr:@std/assert";
-import { CalcAUY } from "../src/builder.ts";
-import katex from "npm:katex@^0.16.40";
+import { describe, it } from "@std/testing/bdd";
+import { assertEquals, assertStringIncludes } from "@std/assert";
+import { CalcAUY } from "@src/builder.ts";
+import katex from "katex";
 
 describe("Repro: Normalização de Input com Ponto Inicial", () => {
     it("deve renderizar '.5' como '0.5' em Unicode e LaTeX", () => {

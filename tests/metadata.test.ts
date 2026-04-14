@@ -1,7 +1,7 @@
 import { describe, it } from "@std/testing/bdd";
 import { assertThrows } from "@std/assert";
-import { validateMetadata } from "../src/core/metadata.ts";
-import { CalcAUYError } from "../src/core/errors.ts";
+import { validateMetadata } from "@src/core/metadata.ts";
+import { CalcAUYError } from "@src/core/errors.ts";
 
 describe("Metadados - Validação de Formato", () => {
     it("deve aceitar tipos primitivos válidos (string, number, boolean)", () => {

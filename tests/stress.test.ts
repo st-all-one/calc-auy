@@ -1,6 +1,6 @@
 import { describe, it } from "@std/testing/bdd";
-import { expect } from "jsr:@std/expect";
-import { CalcAUY } from "../mod.ts";
+import { expect } from "@std/expect";
+import { CalcAUY } from "@calcauy";
 
 describe("CalcAUY - Testes de Estresse e Performance Extrema", () => {
     const results: Record<string, string> = {};

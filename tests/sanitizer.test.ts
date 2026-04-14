@@ -1,7 +1,7 @@
 import { beforeEach, describe, it } from "@std/testing/bdd";
 import { assertEquals } from "@std/assert";
-import { loggingPolicy, sanitizeAST, sanitizeObject, setGlobalLoggingPolicy } from "../src/utils/sanitizer.ts";
-import type { GroupNode, LiteralNode, OperationNode } from "../src/ast/types.ts";
+import { loggingPolicy, sanitizeAST, sanitizeObject, setGlobalLoggingPolicy } from "@src/utils/sanitizer.ts";
+import type { GroupNode, LiteralNode, OperationNode } from "@src/ast/types.ts";
 
 const REDACTED = "[PII]";
 const REDACTED_VALUE = { n: REDACTED, d: REDACTED };

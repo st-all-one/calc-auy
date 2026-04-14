@@ -1,7 +1,7 @@
-import { describe, it } from "jsr:@std/testing/bdd";
-import { expect } from "jsr:@std/expect";
-import { CalcAUY } from "../src/builder.ts";
-import { sanitizeAST, sanitizeObject } from "../src/utils/sanitizer.ts";
+import { describe, it } from "@std/testing/bdd";
+import { expect } from "@std/expect";
+import { CalcAUY } from "@src/builder.ts";
+import { sanitizeAST, sanitizeObject } from "@src/utils/sanitizer.ts";
 
 describe("Telemetria e Proteção de PII (Security by Default)", () => {
     it("deve usar o marcador [PII] por padrão", () => {
