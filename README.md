@@ -100,34 +100,34 @@ A **`CalcAUY`** elimina os riscos de imprecisão ao tratar cada operação como 
 
 ### 1. Integridade Matemática
 
-- **Aritmética Racional**: Operação baseada em frações exatas `(n/d)` utilizando `BigInt`, executando simplificações via **Algoritmo de Euclides (MCD)** em cada etapa, garantindo precisão absoluta sem o overhead.
+- **Aritmética Racional**: Operação baseada em frações exatas `(n/d)` utilizando `BigInt`, executando simplificações via **Algoritmo de Euclides (MCD)** em cada etapa, garantindo precisão absoluta sem overhead.
 
-- **Determinismo Lógico**: Implementação rigorosa de **precedência matemática** [`(PEMDAS/BODMAS)`](https://pt.wikipedia.org/wiki/Ordem_de_opera%C3%A7%C3%B5es) com **Associatividade à Direita** para exponenciação, garantindo que as operações respeitem a **intenção do cálculo** com consistência matemática na AST.
+- **Determinismo Lógico**: Implementação rigorosa de **precedência matemática** [`(PEMDAS/BODMAS)`](https://pt.wikipedia.org/wiki/Ordem_de_opera%C3%A7%C3%B5es) com **Associatividade à Direita** para exponenciação, garantindo que as operações respeitem a **intenção do cálculo** com consistência matemática.
 
-- **Conformidade Normativa**: Arredondametno padrão [`ABNT NBR 5891`](https://pt.wikipedia.org/wiki/Arredondamento#Norma_ABNT_NBR_5891) e rateio por [`Maior Resto`](https://en.wikipedia.org/wiki/Mathematics_of_apportionment), assegurando que divisões monetárias e arredondamentos sigam padrões atuariais e legais sem desvios acumulados.
+- **Conformidade Normativa**: Arredondametno padrão [`ABNT NBR 5891`](https://pt.wikipedia.org/wiki/Arredondamento#Norma_ABNT_NBR_5891) e rateio por [`Maior Resto`](https://en.wikipedia.org/wiki/Mathematics_of_apportionment), assegurando padrões atuariais e legais sem desvios acumulados.
 
 ### 2. Auditabilidade Forense
 
-- **AST e Metadados**: Cada etapa do cálculo constrói uma **Árvore de Sintaxe Abstrata (AST) imutável**. Essa estrutura permite inserir metadados estruturados em cada etapa, possibilitando **"hibernação"** de cálculos complexos em `JSON` e a **"reidratação"** posterior, permitindo a movimentação da **intenção de cálculo** com segurança entre contextos.
+- **AST e Metadados**: Cada etapa do cálculo constrói uma **Árvore de Sintaxe Abstrata (AST) imutável**. Essa estrutura permite inserir metadados estruturados em cada etapa, possibilitando a contextualização profunda de cada etapa do cálculo.
 
-- **Integridade Bit-Perfect**: O mecanismo de serialização da **CalcAUY** é determinístico e lossless. Em testes forenses de larga escala ([amostragens de 100k registros](tests/forensic_audit.test.ts)) confirmam 100% de integridade na reidratação: um cálculo ressuscitado do banco de dados produz exatamente o mesmo resultado e rastro que o objeto original, eliminando qualquer desvio por transporte de dados ou troca de ambiente.
+- **Integridade Bit-Perfect**: O mecanismo de serialização da **CalcAUY** é determinístico e lossless. Em testes forenses de larga escala ([amostragens de 100k registros](tests/forensic_audit.test.ts)) foi confirmado 100% de integridade na reidratação: um cálculo ressuscitado do banco de dados produz exatamente o mesmo resultado do objeto original, eliminando qualquer desvio por transporte de dados ou troca de ambiente.
 
-- **Outputs Multiformato**: Através de processadores de saída, a biblioteca traduz a lógica interna em representações auditáveis, técnicas e inclusivas:
+- **Outputs Multiformato**: Através de processadores de saída, a biblioteca traduz a lógica interna em representações técnicas auditáveis, úteis e inclusivas:
     - `toUnicode()`: Representação visual para interfaces de terminal (CLI).
     - `toLaTeX() / toHTML()`: Documentação técnica para relatórios e exibição via [KaTeX](https://katex.org/).
     - `toAuditTrace()`: JSON detalhado contendo o **"DNA do cálculo"** para auditoria profunda.
 
-- **Extensividade**: Implementado um sistema de `Custom Output Processor` que permite estender o `Output` da biblioteca para novos formatos (Protobuf, XML, Excel) sem interferência ao cálculo e metadados originais.
+- **Extensividade**: Implementado um sistema de `Custom Output Processor` que permite estender o `Output` da biblioteca para novos formatos (Protobuf, XML, Excel) sem interferência no cálculo e metadados originais.
 
 ## 3. Universalidade Sistêmica (DX, Escalabilidade e Inclusão)
 
 - **Tipagem Estrita**: Desenvolvida sob o `Strict Mode máximo` do TypeScript, a lib utiliza `Type Guards` e campos privados para garantir que a integridade dos dados seja mantida do código à transpilação.
 
-- **Segurança Estrutural**: Construída sob o dogma de **Zero tolerânica a Ambiguidades**, a `CalcAUY` aplica um parser rigoroso em todos os pontos de input, retornando erros no padrão [`RFC 7807`](https://datatracker.ietf.org/doc/html/rfc7807) diante de qualquer inconsistência identificada, além de implementar táticas de contenção a ataques como `JSON Bombs` e `Stack Overflow`.
+- **Segurança Estrutural**: Construída sob o dogma de **Zero tolerânica a Ambiguidades**, a **`CalcAUY`** aplica um parser rigoroso em todos os pontos de input, retornando erros no padrão [`RFC 7807`](https://datatracker.ietf.org/doc/html/rfc7807) diante de qualquer inconsistência identificada, além de implementar táticas de contenção a ataques como `JSON Bombs` e `Stack Overflow`.
 
-- **Performance sob Carga**: Implementa o utilitário `.processBatch(...)`, uma engine de alto desempenho para volumes industriais (1M+ registros), operando em complexidade `O(N)`. Utiliza **Workers Lógicos e Reducers Nativos** para maximizar a vazão e mitigar latências de I/O (Banco de Dados/APIs), garantindo a responsividade total do sistema via `scheduler.yield()` sem comprometer o `Event Loop`.
+- **Estabilidade em alta demanda**: Implementa o utilitário `CalcAUY.processBatch(...)`, uma engine de alto desempenho para lidar com volumes industriais (1M+ registros), operando em complexidade `O(N)`. Utiliza **Workers Lógicos e Reducers Nativos** para maximizar a vazão e mitigar latências de I/O (Banco de Dados/APIs), garantindo a responsividade total do sistema via `scheduler.yield()` sem comprometer o `Event Loop`.
 
-- **Matemática Semântica (A11y)**: Tradução automática da lógica matemática para narração humana em 7 idiomas. Permitindo conformidade com normas de acessibilidade digital (`WCAG/eMAG`), garantindo que os cálculos sejam compreendidos por máquinas, auditores e usuários de tecnologias assistivas.
+- **Matemática Semântica**: Tradução embutida da lógica matemática para narração humana em 8 idiomas. Permitindo conformidade com normas de acessibilidade digital (`WCAG/eMAG`) e garantindo que os cálculos sejam compreendidos por máquinas, auditores e usuários de tecnologias assistivas.
 
 ## 🔍 Testes
 
