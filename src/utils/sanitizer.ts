@@ -87,9 +87,10 @@ export function sanitizeAST(node: CalculationNode, parentHide?: boolean): object
     } else if (node.kind === "group") {
         sanitized.child = sanitizeAST(node.child, hide);
     } else if (node.kind === "operation") {
-        // Se o nó de operação deve ser oculto, ocultamos também o seu tipo e operandos
-        sanitized.type = hide ? REDACTED : node.type;
-        sanitized.operands = hide ? REDACTED : node.operands.map((op) => sanitizeAST(op, hide));
+        // Engenharia: O tipo da operação e a existência de operandos não são considerados PII.
+        // Isso permite diagnosticar a lógica do cálculo sem revelar os valores sensíveis.
+        sanitized.type = node.type;
+        sanitized.operands = node.operands.map((op) => sanitizeAST(op, hide));
     }
 
     if (node.metadata) {

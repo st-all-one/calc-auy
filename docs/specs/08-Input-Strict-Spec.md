@@ -9,9 +9,10 @@ Diferente da versão 1.0, o input **DEVE** ser preferencialmente `string` ou `bi
 
 ### Formatos Suportados
 - **Inteiros:** `100`, `-50`, `1_000_000`.
-- **Decimais:** `10.50`, `-0.0001`, `.5`. (Convertidos para `n/10^x`).
-- **Frações:** `1/3`, `-22/7`. (Mantidos como racionais puros, sem divisão decimal imediata).
-- **Científicos:** `1.5e-10`, `6.022e23`. (Convertidos para potências de 10 na forma racional).
+- **Decimais:** `10.50`, `-0.0001`, `.5`. (Convertidos para `n/10^x`). Entradas que começam com ponto (ex: `.5`) são normalizadas visualmente para `0.5` nos outputs.
+- **Frações:** `1/3`, `-22/7`. (Mantidos como racionais puros).
+- **Percentuais:** `10%`, `1.5%`, `1_000.5%`. (Convertidos para `n/100`).
+- **Científicos:** `1.5e-10`, `6.022e23`.
 - **Literais BigInt:** `100n`.
 
 ## 2. Regras de Restrição e Segurança (Runtime)
@@ -30,22 +31,23 @@ Ao contrário da versão anterior que escalava tudo para $10^{12}$, a nova vers�
 | Entrada | Lógica de Conversão | Resultado Racional (`n/d`) |
 | :--- | :--- | :--- |
 | `"0.25"` | 2 casas decimais -> $25/100$ | $1/4$ |
-| `"1/3"` | Mantém numerador e denominador | $1/3$ (Precisão Infinita) |
+| `"10.5%"` | $(105/10) / 100$ | $21/200$ |
+| `"1/3"` | Mantém numerador e denominador | $1/3$ |
 | `"1e-2"` | Expoente negativo -> $1/10^2$ | $1/100$ |
 | `100n` | Denominador padrão 1 | $100/1$ |
 
 ## 4. Normalização e Higienização
 
-Antes de processar, o Lexer deve:
-- Remover todos os underscores (`_`).
-- Validar se há apenas um sinal (`+` ou `-`) no início ou após o caractere de fração/expoente.
-- Rejeitar espaços em branco entre dígitos (ex: `10 000`).
+Antes de processar, a lib realiza:
+- Remoção de underscores (`_`) para cálculo, mantendo-os no `originalInput` se solicitado (exceto em percentuais normalizados).
+- Normalização de ponto inicial: `.5` é tratado matematicamente como `0.5`.
+- Validação de sinal único no início.
 
 ## 5. Lexer e Tokenização
 
-O processo de tokenização para a AST deve ser atômico:
-- **NUMBER:** Identificado por uma sequência que combine dígitos, ponto decimal e notação científica.
-- **OPERATOR:** Símbolos fixos `+`, `-`, `*`, `/`, `//`, `%`, `^`.
+O processo de tokenização para a AST é atômico e suporta:
+- **NUMBER:** Sequência de dígitos, ponto, notação científica ou sufixo `n`.
+- **OPERATOR:** `+`, `-`, `*`, `/`, `//` (Divisão Inteira), `%` (Módulo ou Percentual), `^`.
 - **PARENTHESES:** `(` e `)`.
 
 ### Exemplo de Fluxo de Rigor:

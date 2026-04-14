@@ -14,9 +14,10 @@ O `RationalNumber` é um objeto racional verdadeiro que mantém a relação entr
 
 ### Regras de Ouro
 1. **Imutabilidade:** Qualquer operação retorna uma nova instância de `RationalNumber`.
-2. **Simplificação Automática (MDC/GCD):** **Obrigatório.** Toda operação (soma, subtração, multiplicação, divisão) deve aplicar o Máximo Divisor Comum (MDC) imediatamente após o cálculo para manter o numerador e denominador nos menores termos possíveis. Isso evita o crescimento desnecessário dos números BigInt, otimizando o consumo de memória e a performance de processamento.
+2. **GCD Híbrido (Simplificação Automática):** **Obrigatório.** Toda operação deve aplicar o Máximo Divisor Comum imediatamente. A biblioteca utiliza um algoritmo híbrido que combina atalhos de hardware (fast-paths para 0, 1, 2) com o operador de módulo nativo do V8 (C++) para garantir a melhor performance tanto em números pequenos quanto em grandes escalas.
 3. **Divisão por Zero:** Deve ser prevenida e lançar um erro específico (`CalcAUYError`) no momento da criação ou operação.
-4. **Precisão de 50 casas:** Usada para operações que resultam em irracionais ou no momento de converter para string decimal.
+4. **Precisão de 50 casas:** Usada para operações que resultam em irracionais (raízes) ou no momento de converter para string decimal.
+5. **Suporte a Percentuais:** O método `from` e `fromString` aceitam strings terminadas em `%` (ex: `"10.5%"`), convertendo-as automaticamente para a fração racional equivalente (`105/1000`).
 
 ## Métodos Obrigatórios
 - `add(other: RationalNumber): RationalNumber`

@@ -18,19 +18,19 @@ Definir os algoritmos de arredondamento suportados pela CalcAUY 2.0, garantindo 
 Para garantir a transparência da auditoria, o identificador da estratégia deve acompanhar o resultado final nos formatos visuais.
 
 ### 1. LaTeX
-A estratégia deve aparecer como um subscrito no operador de arredondamento ou no final da expressão.
-- **Formato:** `\text{round}_{ID}(valor, precisão)`
-- **Exemplo (NBR):** `\text{round}_{NBR}(1.255, 2) = 1.26`
+A estratégia aparece como um subscrito no operador `\text{round}`.
+- **Formato:** `\text{round}_{\text{ID}}(base, precisão) = resultado`
+- **Exemplo (NBR):** `\text{round}_{\text{NBR-5891}}(1.225, 2) = 1.22`
 
 ### 2. HTML (KaTeX)
-Segue a mesma lógica do LaTeX, mas com acessibilidade injetada.
-- **Visual:** $\text{round}_{HE}(1.255, 2)$
-- **A11y:** O `aria-label` deve conter a tradução verbal completa: "Arredondado via Half-Even para 2 casas decimais".
+Renderização rica com acessibilidade.
+- **Visual:** $\text{round}_{\text{NBR-5891}}$
+- **A11y:** O `aria-label` do fragmento inclui a estratégia por extenso.
 
 ### 3. Unicode (CLI/Logs)
-Utiliza caracteres subscritos para o identificador.
+Utiliza glifos subscritos para o identificador.
 - **Mapeamento:** `HU` -> `ₕᵤ`, `HE` -> `ₕₑ`, `TR` -> `ₜᵣ`, `CE` -> `꜀ₑ`, `NBR` -> `ₙᵦᵣ`.
-- **Exemplo (Truncate):** `roundₜᵣ(1.259, 2) = 1.25`
+- **Exemplo:** `roundₙᵦᵣ(1.225, 2) = 1.22`
 
 ### 4. Verbal (A11y)
 Deve ser por extenso e localizado.

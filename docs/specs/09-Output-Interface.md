@@ -7,91 +7,69 @@ Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAU
 
 ### `toStringNumber(options?: OutputOptions): string`
 - **Descrição:** Retorna a representação decimal do resultado final arredondado.
-- **Parâmetro:** `options.decimalPrecision` define a escala (Default: 2).
+- **Parâmetro:** `options.decimalPrecision` define a escala (Default: 4).
 - **Lógica:** Aplica a `roundStrategy` na precisão informada.
-- **Exemplo:** `1.2345` -> `toStringNumber({ decimalPrecision: 2 })` -> `"1.23"` (se TRUNCATE).
+- **Performance:** Resultado cacheado por instância.
 
 ### `toFloatNumber(options?: OutputOptions): number`
 - **Descrição:** Converte o resultado para o tipo `number` (float) do JavaScript.
-- **Risco:** Útil para compatibilidade com gráficos ou outras bibliotecas, mas sujeito às imprecisões do padrão IEEE 754 para valores muito grandes.
+- **Risco:** Útil para compatibilidade com gráficos, mas sujeito às imprecisões do padrão IEEE 754.
 
 ### `toScaledBigInt(options?: OutputOptions): bigint`
 - **Descrição:** Retorna o valor inteiro escalado para a precisão informada.
-- **Caso de Uso:** Ideal para salvar em bancos de dados como "inteiro" para evitar problemas de float.
 - **Exemplo:** `10.50` com `decimalPrecision: 2` retorna `1050n`.
 
 ### `toRawInternalBigInt(): bigint`
-- **Descrição:** Retorna o numerador puro do `RationalNumber` resultante. Sem arredondamentos ou escalas de saída.
+- **Descrição:** Retorna o numerador puro do `RationalNumber` resultante sem arredondamentos.
 
 ### `toMonetary(options?: MonetaryOptions): string`
-- **Descrição:** Retorna o valor formatado com símbolos monetários e separadores localizados (ex: `R$ 1.250,50`).
-- **Parâmetros:** Exige `currency` (BRL, USD, etc) e `decimalPrecision`.
+- **Descrição:** Retorna o valor formatado com símbolos monetários localizados (ex: `R$ 1.250,50`).
 
 ## Métodos de Rateio e Fatiamento (Slicing)
 
 ### `toSlice(parts: number, options?: OutputOptions): string[]`
-- **Descrição:** Divide o valor final em `parts` parcelas iguais, garantindo que a soma das parcelas seja exatamente igual ao total original.
-- **Algoritmo (Maior Resto):**
-  1. Converte o valor final para centavos (BigInt) baseado na `decimalPrecision`.
-  2. Calcula o `valorBase = total / partes` (divisão inteira).
-  3. Calcula o `resto = total % partes`.
-  4. Distribui 1 centavo para as primeiras `resto` parcelas.
-- **Exemplo:** `10.00` dividido em 3 partes -> `["3.34", "3.33", "3.33"]`.
+- **Descrição:** Divide o valor final em `parts` parcelas iguais (Algoritmo de Maior Resto).
 
 ### `toSliceByRatio(ratios: (number | string)[], options?: OutputOptions): string[]`
-- **Descrição:** Rateia o valor final baseado em um array de proporções (ex: `0.1`, `"22.5%"`, `"1/3"`).
-- **Rigor:** 
-  1. Normaliza os percentuais para que a soma seja 1 (100%).
-  2. Aloca a parte inteira de centavos para cada parcela proporcional.
-  3. Distribui os centavos sobressalentes priorizando as parcelas que tiveram os maiores restos decimais na divisão, garantindo que a soma total bata com o valor original no centavo.
+- **Descrição:** Rateia o valor final baseado em um array de proporções (ex: `0.1`, `"30%"`, `"1/3"`).
 
 ## Métodos de Auditoria Visual e Acessibilidade
 
-### `toLaTeX(): string`
-- **Descrição:** Reconstrói a fórmula matemática em sintaxe LaTeX a partir da AST.
-- **Exemplo:** `10 / (2 + 3)` -> `\frac{10}{\left( 2 + 3 \right)}`.
+### `toLaTeX(options?: OutputOptions): string`
+- **Descrição:** Reconstrói a fórmula matemática em sintaxe LaTeX.
+- **Performance:** Resultado cacheado por instância.
 
-### `toHTML(katex: any, options?: OutputOptions): string`
+### `toHTML(katex: IKatex, options?: OutputOptions): string`
 - **Descrição:** Gera um fragmento HTML acessível utilizando o motor KaTeX.
-- **Inversão de Dependência:** O módulo `katex` deve ser passado como primeiro argumento.
-- **Acessibilidade:** Inclui automaticamente um `aria-label` contendo o retorno do `toVerbalA11y()`.
-- **Estilo:** Injeta automaticamente o CSS minificado do KaTeX (via cache estático) e estilos de responsividade (`overflow-x: auto`).
+- **Agnosticismo:** Injeta fontes e CSS via Base64 (inlined), garantindo funcionamento offline ou em backends (Puppeteer).
+- **Performance:** Resultado cacheado por instância.
 
 ### `toVerbalA11y(options?: OutputOptions): string`
-- **Descrição:** Tradução humana e audível do cálculo.
-- **Rigor:** Deve detalhar o início e fim de grupos (parênteses) e explicitar a estratégia de arredondamento usada.
-- **Exemplo:** "Abre parênteses, dez mais cinco, fecha parênteses, dividido por três, igual a cinco vírgula zero zero (Arredondamento: NBR-5891 para 2 casas decimais)".
+- **Descrição:** Tradução humana e audível do cálculo. Inclui detalhes de grupos e estratégia de arredondamento.
 
 ### `toUnicode(options?: OutputOptions): string`
-- **Descrição:** Representação visual simples para logs e terminais.
-- **Exemplo:** `2³ + √(16)`.
+- **Descrição:** Representação visual matemática para logs e terminais usando glifos Unicode.
 
-### `toImageBuffer(katex: any, options?: OutputOptions): Uint8Array`
+### `toImageBuffer(katex: IKatex, options?: OutputOptions): Uint8Array`
 - **Descrição:** Gera um buffer binário de uma imagem SVG auto-contida da fórmula.
-- **Heurística:** Calcula automaticamente as dimensões da imagem baseadas na complexidade da fórmula LaTeX.
+- **Otimização:** Reutiliza o LaTeX renderizado e utiliza um encoder estático.
 
 ## Auditoria de Rastro e Estrutura
 
-### `toAuditTrace(): Record<string, unknown>`
-- **Descrição:** Retorna um snapshot completo da execução.
-- **Conteúdo:** Um objeto JSON contendo a Árvore AST serializada, onde cada nó inclui:
-  - O valor intermediário calculado naquele ponto (como `RationalNumber`).
-  - A expressão parcial (LaTeX/Unicode).
-  - Metadados de negócio anexados.
-- **Objetivo:** Permitir que auditores externos verifiquem o "passo a passo" do cálculo sem reexecutá-lo.
+### `toAuditTrace(): string`
+- **Descrição:** Retorna um snapshot JSON completo da execução (AST + Resultado + Estratégia).
 
-### `toJSON(outputs?: OutputKey[]): Record<string, unknown>`
-- **Descrição:** Consolida múltiplos outputs em um único objeto.
-- **Padrão:** `["toStringNumber", "toScaledBigInt", "toMonetary", "toLaTeX", "toUnicode", "toVerbalA11y", "toAuditTrace"]`.
+### `toJSON<T extends OutputKey>(outputs?: T[], katex?, options?): string`
+- **Descrição:** Consolida múltiplos outputs em uma única string JSON.
+- **Tipagem Estática:** Exige a instância de `katex` via generics se `toHTML` ou `toImageBuffer` forem solicitados.
 
 ### `toCustomOutput<Toutput>(processor: ICalcAUYCustomOutput<Toutput>): Toutput`
-- **Descrição:** O ápice da extensibilidade da CalcAUY. Permite injetar um formatador externo que tem acesso total ao rastro de auditoria e ao valor racional.
-- **Detalhes Técnicos:** Consulte a **`specs/16-Custom-Output-Processors.md`** para a definição completa da interface e do contexto de dados.
+- **Descrição:** Permite injetar um formatador externo com acesso total ao rastro e ao valor racional.
 
 ## Interface de Opções
 ```typescript
 interface OutputOptions {
-  decimalPrecision?: number; // Opcional, se omitido usa a precisão total do racional
+  decimalPrecision?: number;
   locale?: string;
   currency?: string;
 }

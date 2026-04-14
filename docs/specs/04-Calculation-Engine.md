@@ -19,7 +19,10 @@ A função `evaluate(node: CalculationNode): RationalNumber` deve ser recursiva:
 - Se o nó for **Operation**, executa a operação entre os resultados de `evaluate` de seus operandos utilizando os métodos da classe `RationalNumber`.
 
 ### Otimização de Performance e Memória
-Durante o colapso, o motor deve confiar na simplificação automática (MDC) do `RationalNumber`. Isso garante que operações complexas em cadeia não causem estouro de memória ou lentidão por lidar com BigInts desnecessariamente extensos. Cada resultado intermediário deve ser a fração mais simples possível.
+Durante o colapso, o motor deve confiar na simplificação automática (MDC) do `RationalNumber`. Adicionalmente, as seguintes otimizações são aplicadas:
+1. **Instance-Level Caching:** O resultado do colapso e as strings de rastro (LaTeX, Unicode, HTML) são cacheados na instância do `CalcAUYOutput` após a primeira chamada, garantindo performance O(1) em acessos subsequentes.
+2. **Percurso Único:** A geração de buffers de imagem reutiliza o LaTeX já renderizado, evitando percursos redundantes na árvore AST.
+3. **Encoder Estático:** Utilização de uma única instância de `TextEncoder` para todas as operações de geração de buffer, reduzindo a pressão sobre o Garbage Collector.
 
 ## Segurança em Runtime
 - **Prevenção de Overflow/Underflow:** Embora o BigInt suporte precisão arbitrária, o motor deve monitorar o tamanho do numerador e denominador para evitar consumo excessivo de memória em dízimas periódicas complexas, forçando o colapso para 50 casas decimais quando necessário (ex: em operações de potência e raízes n-ésimas).

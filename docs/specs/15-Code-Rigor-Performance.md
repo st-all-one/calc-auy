@@ -24,8 +24,10 @@ O linter está configurado para prevenir padrões de código perigosos ou ambíg
 - **Libs Disponíveis:** O projeto inclui `dom`, `dom.iterable` e `dom.asynciterable` nas `compilerOptions`. Isso garante que a CalcAUY possa manipular estruturas necessárias para renderização de imagem/HTML e funcionar perfeitamente em navegadores modernos.
 - **Agnosticismo de IO:** O core da biblioteca não deve depender de APIs específicas de sistema operacional (como `Deno.readFile` ou `fs.readFileSync`) para manter sua natureza "run-anywhere".
 
-### Otimização de BigInt
-- O uso de BigInt deve ser monitorado. Embora suporte precisão arbitrária, a simplificação via **MDC** (definida na `specs/01`) é o mecanismo primário de controle de performance, evitando que o custo computacional cresça exponencialmente com o tamanho das frações.
+### Otimização de Performance Extrema
+1. **Instance-Level Caching (Memoization):** Todas as transformações custosas (LaTeX, HTML, Unicode, ImageBuffer) são cacheadas na instância do `CalcAUYOutput`. Chamadas subsequentes possuem custo O(1).
+2. **GCD Híbrido:** Substituição do algoritmo de Euclides puro por uma abordagem híbrida que utiliza o operador `%` nativo do V8 (C++) e fast-paths para números pequenos, otimizando a simplificação de frações.
+3. **Hard Privacy (#):** Uso de campos privados nativos reduz a superfície de ataque e melhora a performance de acesso interno em relação a fechamentos (closures).
 
 ## 4. Governança de Testes e Cobertura
 

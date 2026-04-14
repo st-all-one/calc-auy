@@ -15,7 +15,7 @@ Diferente da implementação anterior, a nova lib deve tratar `a^b^c` como `a^(b
 
 ## Tipagem Literal Rigorosa
 O parser deve utilizar tipos literais para definir os tokens permitidos:
-- `TokenKind = 'NUMBER' | 'LPAREN' | 'RPAREN' | 'OP_ADD' | 'OP_SUB' | 'OP_MUL' | 'OP_DIV' | 'OP_POW' | 'OP_MOD'`
+- `TokenKind = 'NUMBER' | 'LPAREN' | 'RPAREN' | 'PLUS' | 'MINUS' | 'STAR' | 'SLASH' | 'DOUBLE_SLASH' | 'CARET' | 'PERCENT' | 'EOF'`
 
 ## Tratamento de Inconsistências e Redundâncias
 O parser deve disparar um `CalcAUYError` diante de qualquer uma das seguintes situações:
@@ -24,6 +24,7 @@ O parser deve disparar um `CalcAUYError` diante de qualquer uma das seguintes si
 3. **Parênteses Não Balanceados:** `(10 + 5`.
 4. **Expressão Vazia ou Incompleta:** `10 +`.
 5. **Formatos Numéricos Ambíguos:** Rejeitar qualquer entrada que não possa ser convertida em um `RationalNumber` sem perda de informação.
+6. **Desambiguação de Percentual:** O símbolo `%` pode atuar como operador de módulo (infix: `10 % 3`) ou como sufixo percentual (postfix: `10%`). O Parser utiliza lookahead para decidir: se o `%` não for seguido por um número ou parêntese, ele é tratado como sufixo e converte o literal anterior para `n/100`.
 
 ## Arquitetura do Parser
 - **Lexer:** Transforma a string em uma lista de tokens.

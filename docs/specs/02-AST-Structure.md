@@ -9,9 +9,9 @@ Cada nó da árvore representa uma operação ou um valor literal.
 ### Tipos de Nós (`CalculationNode`)
 1. **LiteralNode:** Representa um valor fixo.
    - `value: RationalNumber`
-   - `originalInput: string`
+   - `originalInput: string` (Nota: Em casos de percentual como "10%", este campo é normalizado para "10/100" para evitar ambiguidades no rastro).
 2. **OperationNode:** Representa uma operação entre operandos.
-   - `type: 'add' | 'sub' | 'mul' | 'div' | 'pow' | 'mod'`
+   - `type: 'add' | 'sub' | 'mul' | 'div' | 'pow' | 'mod' | 'divInt'`
    - `operands: CalculationNode[]`
 3. **GroupNode:** Representa o agrupamento léxico `(...)`.
    - `child: CalculationNode`

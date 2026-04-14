@@ -4,9 +4,9 @@
 Garantir a integridade da biblioteca através de padrões de codificação rigorosos, aproveitando os recursos modernos do TypeScript e JavaScript para proteger o estado interno e manter o código manutenível na CalcAUY.
 
 ## Restrições de Runtime (Hard Privacy)
-Diferente da versão anterior, a nova CalcAUY deve utilizar campos privados reais do JavaScript (`#`) em conjunto com os modificadores do TypeScript:
-- **Campos do Motor:** Usar `#` para garantir que o estado interno da AST e do `RationalNumber` seja inacessível mesmo após a compilação/transpilação para JavaScript puro.
-- **Campos de Configuração:** Usar `private readonly` para valores que não precisam de proteção de runtime mas devem ser protegidos em tempo de compilação.
+A CalcAUY utiliza obrigatoriamente campos privados reais do JavaScript (`#`) em substituição ao modificador `private` convencional do TypeScript para todos os membros internos críticos:
+- **Campos do Motor:** O estado da AST, o valor do `RationalNumber` e todos os caches de rastro (LaTeX, Unicode, etc.) devem usar `#` para garantir isolamento total em runtime.
+- **Membros Estáticos:** Caches globais (como o de formatadores de moeda e CSS do KaTeX) e utilitários como o `TextEncoder` também devem ser privados nativos (`static #`).
 
 ## Imutabilidade por Padrão
 Nenhuma instância de `CalcAUY` ou `RationalNumber` deve permitir alterações em seu estado após a criação.

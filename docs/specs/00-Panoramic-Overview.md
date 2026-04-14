@@ -39,6 +39,9 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 - **`toSlice()` / `toSliceByRatio()`**: Rateio exato de centavos (Algoritmo de Maior Resto).
 - `toVerbalA11y()`: Tradução humana da fórmula.
 - `toAuditTrace()`: Snapshot JSON completo com metadados e valores intermediários.
+- **`toJSON(keys?, katex?, options?)`**: Exportação consolidada com tipagem estática e validação de dependências.
 
----
-*Para detalhes de implementação, consulte os arquivos numerados de 01 a 18 neste diretório.*
+## Pilares de Performance
+1.  **GCD Híbrido:** Uso de atalhos de hardware e operador nativo V8 para simplificação ultra-rápida de frações.
+2.  **Instance Caching (Memoization):** Todos os outputs visual e textuais são calculados apenas uma vez por instância e armazenados em cache.
+3.  **Static Asset Inlining:** CSS e Fontes (Base64) embutidos garantem renderização instantânea e agnóstica de ambiente (offline/backend).

@@ -31,6 +31,9 @@ A segunda camada permite um controle granular cirúrgico em nós específicos da
 | `false` | `false` | **EXIBIDO** (Dado Real) |
 
 ## Sanitização de Objetos e Erros
+A lib utiliza a regex `NUMERIC_RE` para identificação rápida de PII em strings:
+- **Regex:** `/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?%?$/` (Suporta decimais, notação científica e percentuais).
+
 O utilitário `sanitizeObject` aplica estas regras recursivamente em:
 1.  **Logs de Debug:** Durante a construção da AST (`builder.ts`).
 2.  **Logs de Info:** Durante a geração de outputs (`output.ts`).
