@@ -123,7 +123,7 @@ A **`CalcAUD`** neutraliza esses riscos ao transformar o processo de cálculo em
 
 - **Tipagem Estrita**: Desenvolvida sob o `Strict Mode máximo` do TypeScript, a lib utiliza `Type Guards` e campos privados para garantir que a integridade dos dados seja mantida do código à transpilação.
 
-- **Performance sob Carga**: O utilitário `.processBatch(...)` gerencia demandas massivos utilizando `scheduler.yield()`, equilibrando o alto throughput com a responsividade do servidor, evitando bloqueios do Event Loop.
+- **Performance sob Carga**: O utilitário `.processBatch(...)` gerencia demandas massivas utilizando `scheduler.yield()`, equilibrando o alto _throughput_ com a responsividade do servidor, evitando bloqueios do `Event Loop`.
 
 - **Matemática Semântica (A11y)**: Tradução automática da lógica matemática para narração humana em 7 idiomas. Permitindo conformidade com normas de acessibilidade digital (`WCAG/eMAG`), garantindo que os cálculos sejam compreendidos por máquinas, auditores e usuários de tecnologias assistivas.
 
