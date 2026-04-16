@@ -1,4 +1,5 @@
 import { CalcAUY } from "@calcauy";
+import { ProcessBatchAUY } from "@src/utils/batch.ts";
 import { assertEquals } from "@std/assert";
 import { DB } from "@sqlite";
 import { describe, it } from "@std/testing/bdd";
@@ -28,7 +29,7 @@ describe("Benchmark Real: CalcAUY + SQLite (Otimizado)", () => {
         const start = performance.now();
         db.execute("BEGIN TRANSACTION");
 
-        await CalcAUY.processBatch(faturasBrutas, (fatura) => {
+        await ProcessBatchAUY(faturasBrutas, (fatura) => {
             const res = CalcAUY.from(fatura.valor).mult("1.05").commit();
             query.execute([
                 fatura.id,

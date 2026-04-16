@@ -7,29 +7,40 @@
  */
 
 /**
- * Opções para configuração do processamento em lote.
+ * Opções para configuração do processamento em lote (Batch Processing).
+ *
+ * **Engenharia:** Projetado para suportar volumes industriais de dados sem comprometer
+ * a responsividade do sistema (Event Loop).
+ *
  * @template ResultType - O tipo do valor resultante de cada tarefa ou do acúmulo final.
  */
 export interface BatchOptions<ResultType = unknown> {
     /**
      * Tamanho de cada lote antes de ceder a execução (yielding).
+     *
+     * **Yielding:** A cada N itens, o utilitário pausa brevemente para permitir que o
+     * Event Loop processe outras tarefas (I/O, requisições HTTP).
      * @default 1000
      */
     batchSize?: number;
     /**
      * Número de fluxos concorrentes (Workers Lógicos).
-     * Se > 0, os itens serão divididos em chunks processados paralelamente.
+     *
+     * **Paralelismo:** Se > 1, divide o array original em chunks e os processa
+     * simultaneamente usando `Promise.all`. Ideal para tarefas pesadas de CPU.
      * @default 0
      */
     logicalWorkers?: number;
     /**
-     * Valor inicial para o acúmulo.
+     * Valor inicial para o acúmulo (usado com o reducer).
      * Obrigatório se um `reducer` for fornecido.
      */
     accumulator?: ResultType;
     /**
-     * Função para combinar resultados de forma eficiente.
-     * Se presente, o `processBatch` retornará um único valor do tipo `ResultType`.
+     * Função para combinar resultados de forma eficiente (Pattern Reducer).
+     *
+     * Se presente, o `ProcessBatchAUY` retornará um único valor acumulado,
+     * economizando memória ao não manter um array gigante de resultados.
      */
     reducer?: (accumulator: ResultType, current: ResultType) => ResultType;
     /**
@@ -39,29 +50,49 @@ export interface BatchOptions<ResultType = unknown> {
 }
 
 /**
- * Processa um array de itens de forma assíncrona e em lotes, com suporte a
- * paralelismo lógico e acúmulo (redução) de massa.
+ * ProcessBatchAUY - Engine de Processamento em Massa com Anti-Bloqueio.
+ *
+ * **Arquitetura Forense:** Este utilitário resolve o problema de cálculos pesados
+ * em ambientes Single Thread (JS/TS). Ele utiliza técnicas de **Yielding** e
+ * **Logical Parallelism** para processar milhões de registros mantendo a latência
+ * de I/O sob controle.
  *
  * @template InputType - Tipo dos dados de entrada no array.
  * @template ResultType - Tipo do resultado gerado por cada tarefa.
  *
- * @param items Array de itens a serem processados.
- * @param task Função a ser executada para cada item (pode ser assíncrona).
- * @param options Configurações de lote, concorrência e acúmulo.
+ * @param items - Array de itens a serem processados.
+ * @param task - Função a ser executada para cada item (pode ser assíncrona).
+ * @param options - Configurações de lote, concorrência e acúmulo.
+ * @returns Um array de resultados ou o valor acumulado final se um reducer for usado.
+ *
+ * @example Exemplo Simples (Array de Resultados)
+ * ```ts
+ * const resultados = await ProcessBatchAUY(lista, async (item) => {
+ *   return item * 2;
+ * });
+ * ```
+ *
+ * @example Consolidação com Reducer (Baixo consumo de RAM)
+ * ```ts
+ * const total = await ProcessBatchAUY(vendas, (v) => v.valor, {
+ *   accumulator: 0,
+ *   reducer: (acc, val) => acc + val
+ * });
+ * ```
  */
-export async function processBatch<InputType, ResultType>(
+export async function ProcessBatchAUY<InputType, ResultType>(
     items: InputType[],
     task: (item: InputType, index: number) => ResultType | Promise<ResultType>,
     options: BatchOptions<ResultType> & { reducer: (acc: ResultType, item: ResultType) => ResultType },
 ): Promise<ResultType>;
 
-export async function processBatch<InputType, ResultType>(
+export async function ProcessBatchAUY<InputType, ResultType>(
     items: InputType[],
     task: (item: InputType, index: number) => ResultType | Promise<ResultType>,
     options?: BatchOptions<ResultType>,
 ): Promise<ResultType[]>;
 
-export async function processBatch<InputType, ResultType>(
+export async function ProcessBatchAUY<InputType, ResultType>(
     items: InputType[],
     task: (item: InputType, index: number) => ResultType | Promise<ResultType>,
     options: BatchOptions<ResultType> = {},

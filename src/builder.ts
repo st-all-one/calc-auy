@@ -24,7 +24,6 @@ import { Parser } from "./parser/parser.ts";
 import { attachOp, validateASTNode } from "./ast/builder_utils.ts";
 import { getSubLogger } from "./utils/logger.ts";
 import { sanitizeAST, setGlobalLoggingPolicy } from "./utils/sanitizer.ts";
-import { type BatchOptions, processBatch } from "./utils/batch.ts";
 
 const logger = getSubLogger("engine");
 
@@ -221,26 +220,6 @@ export class CalcAUY {
         validateASTNode(node);
 
         return new CalcAUY(node);
-    }
-
-    /**
-     * Processa um array de itens de forma assíncrona e em lotes, com suporte a
-     * paralelismo lógico (workers) e acúmulo (redução) nativo.
-     *
-     * **Engenharia:** Evita o bloqueio do Event Loop em cálculos massivos. O suporte
-     * a `logicalWorkers` permite processar chunks do array concorrentemente,
-     * enquanto o `reducer` permite realizar somas/reduções de forma otimizada.
-     *
-     * @param items Array de dados.
-     * @param task Função de transformação/cálculo.
-     * @param options Configuração do lote (batchSize, logicalWorkers, reducer).
-     */
-    public static async processBatch<InputType, ResultType>(
-        items: InputType[],
-        task: (item: InputType, index: number) => ResultType | Promise<ResultType>,
-        options?: BatchOptions<ResultType>,
-    ): Promise<ResultType[] | ResultType> {
-        return await processBatch(items, task, options);
     }
 
     /**

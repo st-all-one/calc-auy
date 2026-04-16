@@ -1,4 +1,5 @@
 import { CalcAUY } from "@calcauy";
+import { ProcessBatchAUY } from "@src/utils/batch.ts";
 import { assertEquals } from "@std/assert";
 import { describe, it } from "@std/testing/bdd";
 
@@ -10,7 +11,7 @@ describe("Benchmark: Acúmulo Massivo (Reducer)", () => {
 
         const items = Array.from({ length: TOTAL_OBJECTS }, (_, i) => i);
 
-        const result = await CalcAUY.processBatch(items, (i: number) => {
+        const result = await ProcessBatchAUY(items, (i: number) => {
             return CalcAUY.from(i).add(1);
         }, {
             batchSize: 5000,

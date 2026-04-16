@@ -1,4 +1,5 @@
 import { CalcAUY } from "@calcauy";
+import { ProcessBatchAUY } from "@src/utils/batch.ts";
 import { CalcAUYOutput } from "@src/output.ts";
 import { assertEquals } from "@std/assert";
 
@@ -14,7 +15,7 @@ Deno.test("Demonstração: Transformação de Massa vs. Consolidação com proce
      * Objetivo: Processar cada fatura individualmente para obter o rastro de auditoria.
      * Útil para: Salvar no banco de dados cada item calculado separadamente.
      */
-    const resultadosIndividuais = await CalcAUY.processBatch(faturasBrutas, (fatura) => {
+    const resultadosIndividuais = await ProcessBatchAUY(faturasBrutas, (fatura) => {
         return CalcAUY.from(fatura.valor)
             .mult(CalcAUY.from(1).add(fatura.taxa))
             .setMetadata("invoice_id", fatura.id)
@@ -40,7 +41,7 @@ Deno.test("Demonstração: Transformação de Massa vs. Consolidação com proce
      * Objetivo: Obter apenas o Valor Total Geral das faturas processadas.
      * Útil para: Relatórios de fechamento ou validação de totais.
      */
-    const valorTotalGeral = await CalcAUY.processBatch(faturasBrutas, (fatura) => {
+    const valorTotalGeral = await ProcessBatchAUY(faturasBrutas, (fatura) => {
         // Cada tarefa retorna um objeto CalcAUY pronto para ser somado
         return CalcAUY.from(fatura.valor).mult(CalcAUY.from(1).add(fatura.taxa));
     }, {

@@ -1,4 +1,5 @@
 import { CalcAUY } from "@calcauy";
+import { ProcessBatchAUY } from "@src/utils/batch.ts";
 import { CalcAUYOutput } from "@src/output.ts";
 import { assertEquals } from "@std/assert";
 import { describe, it } from "@std/testing/bdd";
@@ -11,7 +12,7 @@ describe("Benchmark Massivo: Transformação de Dados", () => {
         const input = Array.from({ length: TOTAL_ITEMS }, (_, i) => i);
         const start = performance.now();
 
-        const resultados = await CalcAUY.processBatch(input, (num: number) => {
+        const resultados = await ProcessBatchAUY(input, (num: number) => {
             return CalcAUY.from(num).add(1).group().mult(2).commit();
         }, {
             batchSize: 10000,

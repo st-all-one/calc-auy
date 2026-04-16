@@ -1,4 +1,5 @@
 import { CalcAUY } from "@calcauy";
+import { ProcessBatchAUY } from "@src/utils/batch.ts";
 import { assertEquals } from "@std/assert";
 import { describe, it } from "@std/testing/bdd";
 
@@ -25,7 +26,7 @@ describe("Simulação de I/O Massivo (Cálculo + Persistência)", () => {
         }));
 
         const start = performance.now();
-        await CalcAUY.processBatch(faturasBrutas, async (fatura) => {
+        await ProcessBatchAUY(faturasBrutas, async (fatura) => {
             const res = CalcAUY.from(fatura.valor).mult("1.05").commit();
             await MockDB.save({ id: fatura.id, total: res.toStringNumber() });
             return null;

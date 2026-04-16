@@ -30,12 +30,12 @@ console.log(parcelas); // ["3.34", "3.33", "3.33"]
 ```
 
 ## 3. Folha de Pagamento (Massa de Dados)
-Use o `processBatch` para processar milhares de salários sem travar o seu servidor.
+Use o `ProcessBatchAUY` para processar milhares de salários sem travar o seu servidor.
 
 ```ts
 const funcionarios = [/* 10.000 objetos */];
 
-const folhaProcessada = await CalcAUY.processBatch(funcionarios, (f) => {
+const folhaProcessada = await ProcessBatchAUY(funcionarios, (f) => {
   return CalcAUY.from(f.salarioBruto)
     .sub(f.descontoInss)
     .mult(1.05) // Bônus de 5%

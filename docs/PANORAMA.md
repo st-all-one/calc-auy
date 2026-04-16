@@ -46,7 +46,7 @@ Com o cálculo selado, você extrai o resultado no formato desejado.
 ## 🛡️ Segurança e Performance
 - **Security by Default:** Logs de infraestrutura ocultam dados sensíveis (PII) por padrão.
 - **Anti-DoS:** Proteção nativa contra "JSON Bombs" e estouro de BigInt (limite de 1M de bits).
-- **Yielding:** Processamento em massa (`processBatch`) que não trava o Event Loop do servidor.
+- **Yielding:** Processamento em massa (`ProcessBatchAUY`) que não trava o Event Loop do servidor.
 
 ---
 **CalcAUY: Rigor Matemático, Transparência de Auditoria e Inclusão por Acessibilidade.**

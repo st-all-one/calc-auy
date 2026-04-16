@@ -1,6 +1,7 @@
 import { describe, it } from "@std/testing/bdd";
 import { expect } from "@std/expect";
 import { CalcAUY } from "@calcauy";
+import { ProcessBatchAUY } from "@src/utils/batch.ts";
 
 describe("CalcAUY - Testes de Estresse e Performance Extrema", () => {
     const results: Record<string, string> = {};
@@ -110,7 +111,7 @@ describe("CalcAUY - Testes de Estresse e Performance Extrema", () => {
         const items = Array.from({ length: TOTAL_TASKS }).map((_, i) => i);
 
         // Processa as mesmas 100.000 tarefas, mas em lotes de 5.000 com yielding
-        await CalcAUY.processBatch(items, (i) => {
+        await ProcessBatchAUY(items, (i) => {
             return CalcAUY.from(i).add(10).mult("1.15").commit();
         }, {
             batchSize: 1000,

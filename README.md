@@ -125,7 +125,7 @@ A **`CalcAUY`** elimina esses riscos ao tratar cada operação como um **artefat
 
 - **Segurança Estrutural**: Construída sob o dogma de **Zero tolerânica a Ambiguidades**, a **`CalcAUY`** aplica um parser rigoroso em todos os pontos de input, retornando erros no padrão [`RFC 7807`](https://datatracker.ietf.org/doc/html/rfc7807) diante de qualquer inconsistência identificada, além de implementar táticas de contenção a ataques como `JSON Bombs` e `Stack Overflow`.
 
-- **Estabilidade em alta demanda**: Implementa o utilitário `CalcAUY.processBatch(...)`, uma engine de alto desempenho para lidar com volumes industriais (1M+ registros), operando em complexidade `O(N)`. Utiliza **Workers Lógicos e Reducers Nativos** para maximizar a vazão e mitigar latências de I/O (Banco de Dados/APIs), garantindo a responsividade total do sistema via `scheduler.yield()` sem comprometer o `Event Loop`.
+- **Estabilidade em alta demanda**: Implementa o utilitário `ProcessBatchAUY(...)`, uma engine de alto desempenho para lidar com volumes industriais (1M+ registros), operando em complexidade `O(N)`. Utiliza **Workers Lógicos e Reducers Nativos** para maximizar a vazão e mitigar latências de I/O (Banco de Dados/APIs), garantindo a responsividade total do sistema via `scheduler.yield()` sem comprometer o `Event Loop`.
 
 - **Matemática Semântica**: Tradução embutida da lógica matemática para narração humana em 8 idiomas. Permitindo conformidade com normas de acessibilidade digital (`WCAG/eMAG`) e garantindo que os cálculos sejam compreendidos por máquinas, auditores e usuários de tecnologias assistivas.
 

@@ -26,7 +26,7 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 - `add()`, `sub()`, `mult()`, `div()`, `pow()`, `mod()`, `divInt()`
 - `group()`: Agrupamento manual.
 - **`setLoggingPolicy({sensitive})`**: Controle global de PII nos logs (1ª camada).
-- **`processBatch(items, task)`**: Processamento assíncrono em lotes (anti-bloqueio).
+- **`ProcessBatchAUY(items, task)`**: Processamento assíncrono em lotes (anti-bloqueio).
 - **`parseExpression(str)`**: Parser de strings matemáticas complexas (com auto-agrupamento).
 - **`setMetadata(key, val)`**: O pilar da auditoria. Use `pii: true|false` para controle granular (2ª camada).
 - **`hibernate()`**: Serializa a árvore atual (**string JSON**).

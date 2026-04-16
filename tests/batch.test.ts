@@ -1,11 +1,12 @@
 import { describe, it } from "@std/testing/bdd";
 import { expect } from "@std/expect";
 import { CalcAUY } from "@src/builder.ts";
+import { ProcessBatchAUY } from "@src/utils/batch.ts";
 
 describe("CalcAUY - Batch Processing", () => {
     it("deve processar um lote de itens corretamente", async () => {
         const items = [10, 20, 30, 40, 50];
-        const results = await CalcAUY.processBatch(items, (val) => {
+        const results = await ProcessBatchAUY(items, (val) => {
             return CalcAUY.from(val).add(5).commit().toFloatNumber();
         }, { batchSize: 2 });
 
@@ -16,7 +17,7 @@ describe("CalcAUY - Batch Processing", () => {
         const items = Array.from({ length: 10 }).map((_, i) => i);
         const progressReports: number[] = [];
 
-        await CalcAUY.processBatch(items, (val) => val, {
+        await ProcessBatchAUY(items, (val) => val, {
             batchSize: 2,
             onProgress: (p) => progressReports.push(p),
         });
@@ -31,7 +32,7 @@ describe("CalcAUY - Batch Processing", () => {
 
     it("deve funcionar com grandes volumes sem erros de integridade", async () => {
         const items = Array.from({ length: 5000 }).map(() => "1.5");
-        const results = await CalcAUY.processBatch(items, (val) => {
+        const results = await ProcessBatchAUY(items, (val) => {
             return CalcAUY.from(val).mult(2).commit().toStringNumber({ decimalPrecision: 1 });
         }, { batchSize: 1000 });
 

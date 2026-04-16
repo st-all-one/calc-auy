@@ -7,15 +7,15 @@ Permitir o processamento massivo de cálculos sem comprometer a responsividade d
 Cálculos que utilizam BigInt, recursão de AST e Newton-Raphson (raízes) são síncronos e pesados. Se um desenvolvedor tentar processar 100.000 cálculos em um loop simples (`Array.map`), o servidor parará de responder a requisições HTTP até que o último cálculo termine.
 
 ## A Solução: Yielding
-O método `CalcAUY.processBatch` utiliza o mecanismo de **Yielding** (ceder a CPU). A cada lote de tamanho N, o processamento pausa brevemente para permitir que o Event Loop execute outras tarefas pendentes (como I/O, timers ou requisições de rede).
+O utilitário `ProcessBatchAUY` utiliza o mecanismo de **Yielding** (ceder a CPU). A cada lote de tamanho N, o processamento pausa brevemente para permitir que o Event Loop execute outras tarefas pendentes (como I/O, timers ou requisições de rede).
 
 - **Prioridade:** Utiliza `scheduler.yield()` em ambientes modernos para uma transição suave.
 - **Fallback:** Utiliza `setTimeout(0)` em ambientes sem suporte à Scheduler API.
 
 ## API
 
-### `CalcAUY.processBatch<T, R>`
-Método estático para processamento assíncrono.
+### `ProcessBatchAUY<T, R>`
+Utilitário para processamento assíncrono independente do core.
 
 **Parâmetros:**
 - `items: T[]`: Array de dados a serem processados.
@@ -29,7 +29,7 @@ Método estático para processamento assíncrono.
 ```ts
 const invoices = [/* milhares de itens */];
 
-const results = await CalcAUY.processBatch(invoices, (inv) => {
+const results = await ProcessBatchAUY(invoices, (inv) => {
     return CalcAUY.from(inv.amount)
         .mult(inv.taxRate)
         .commit();
