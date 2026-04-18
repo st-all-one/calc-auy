@@ -9,7 +9,7 @@ describe("CalcAUY - Intelligent Cache (WeakRef & FinalizationRegistry)", () => {
         const val = "1.23456789";
         const r1 = RationalNumber.from(val);
         const r2 = RationalNumber.from(val);
-        
+
         // r1 e r2 devem ser a mesma referência física
         expect(r1).toBe(r2);
     });
@@ -18,7 +18,7 @@ describe("CalcAUY - Intelligent Cache (WeakRef & FinalizationRegistry)", () => {
         const val = "100.50";
         const c1 = CalcAUY.from(val);
         const c2 = CalcAUY.from(val);
-        
+
         // Os nós AST internos devem ser os mesmos
         expect(c1.getAST()).toBe(c2.getAST());
     });
@@ -26,7 +26,7 @@ describe("CalcAUY - Intelligent Cache (WeakRef & FinalizationRegistry)", () => {
     it("deve permitir que o GC limpe o cache global quando não houver referências", async () => {
         // Nota: O comportamento do GC não é determinístico, mas podemos tentar forçá-lo.
         // Rodar com: deno test --allow-all --allow-gc tests/intelligent_cache.test.ts
-        
+
         const val = "99.999";
         {
             const c1 = CalcAUY.from(val);
@@ -38,10 +38,10 @@ describe("CalcAUY - Intelligent Cache (WeakRef & FinalizationRegistry)", () => {
         if (typeof globalThis.gc === "function") {
             // @ts-ignore
             globalThis.gc();
-            
+
             // Aguarda um pouco para o FinalizationRegistry processar
-            await new Promise(r => setTimeout(r, 50));
-            
+            await new Promise((r) => setTimeout(r, 50));
+
             // Uma nova instância deve ser criada (embora o WeakRef.deref() possa retornar undefined se o GC rodou)
             // Se o cache estivesse vivo (referência forte), ele retornaria o objeto antigo.
             // Como é WeakRef, se o GC rodou, ele cria um novo.

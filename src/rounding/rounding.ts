@@ -162,6 +162,14 @@ export const RoundingHandlers: Record<
             return RationalNumber.from(integralPart + adjustment, pScale);
         }
     },
+
+    /**
+     * "None": Não aplica nenhum arredondamento.
+     * Mantém a precisão racional exata (frações n/d).
+     */
+    NONE: (val: RationalNumber, _p: number): RationalNumber => {
+        return val;
+    },
 };
 
 /**

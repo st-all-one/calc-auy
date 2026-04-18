@@ -146,6 +146,11 @@ export class CalcAUYOutput {
         return this.#cache.get(precision)!;
     }
 
+    private getEffectivePrecision(options?: OutputOptions): number {
+        if (options?.decimalPrecision !== undefined) { return options.decimalPrecision; }
+        return this.#strategy === "NONE" ? 50 : DEFAULT_DECIMAL_PRECISION;
+    }
+
     /**
      * Retorna a representação decimal do resultado como uma string numérica pura.
      *
@@ -180,13 +185,23 @@ export class CalcAUYOutput {
      * ```
      */
     public toStringNumber(options?: OutputOptions): string {
-        const p: number = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
-        const cacheKey = `toStringNumber:${p}`;
+        using _span = startSpan("toStringNumber", logger, options);
+        return this.toStringNumberInternal(options);
+    }
+
+    private toStringNumberInternal(options?: OutputOptions): string {
+        const p: number = this.getEffectivePrecision(options);
+        const isNone = this.#strategy === "NONE";
+        const cacheKey = `toStringNumber:${p}:${isNone}`;
         if (this.#outputCache.has(cacheKey)) { return this.#outputCache.get(cacheKey) as string; }
 
-        const result = this.getRounded(p).toDecimalString(p);
-        this.#outputCache.set(cacheKey, result);
-        return result;
+        const result = isNone ? this.#result.toDecimalString(p) : this.getRounded(p).toDecimalString(p);
+
+        // Se for NONE, removemos zeros à direita desnecessários para mostrar o valor "limpo"
+        const finalResult = isNone ? result.replace(/\.?0+$/, "").replace(/\.$/, "") || "0" : result;
+
+        this.#outputCache.set(cacheKey, finalResult);
+        return finalResult;
     }
 
     /**
@@ -223,7 +238,8 @@ export class CalcAUYOutput {
      * ```
      */
     public toFloatNumber(options?: OutputOptions): number {
-        return Number.parseFloat(this.toStringNumber(options));
+        using _span = startSpan("toFloatNumber", logger, options);
+        return Number.parseFloat(this.toStringNumberInternal(options));
     }
 
     /**
@@ -259,14 +275,32 @@ export class CalcAUYOutput {
      * ```
      */
     public toScaledBigInt(options?: OutputOptions): bigint {
-        const p: number = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
+        using _span = startSpan("toScaledBigInt", logger, options);
+        return this.toScaledBigIntInternal(options);
+    }
+
+    private toScaledBigIntInternal(options?: OutputOptions): bigint {
+        const p: number = this.getEffectivePrecision(options);
         const pScale: bigint = 10n ** BigInt(p);
         const rounded: RationalNumber = this.getRounded(p);
         return (rounded.n * pScale) / rounded.d;
     }
 
+    /**
+     * Retorna o resultado final como um BigInt arredondado para inteiro.
+     *
+     * **Engenharia:** Diferente de apenas retornar o numerador, este método
+     * aplica a estratégia de arredondamento definida no commit para a precisão zero,
+     * garantindo que o rastro matemático seja preservado na conversão para inteiro.
+     */
     public toRawInternalBigInt(): bigint {
-        return this.#result.n;
+        using _span = startSpan("toRawInternalBigInt", logger, {});
+        return this.toRawInternalBigIntInternal();
+    }
+
+    private toRawInternalBigIntInternal(): bigint {
+        const rounded: RationalNumber = this.getRounded(0);
+        return rounded.n / rounded.d;
     }
 
     /**
@@ -304,15 +338,19 @@ export class CalcAUYOutput {
      */
     public toMonetary(options?: OutputOptions): string {
         using _span = startSpan("toMonetary", logger, options);
-        const p: number = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
+        return this.toMonetaryInternal(options);
+    }
+
+    private toMonetaryInternal(options?: OutputOptions): string {
+        const p: number = this.getEffectivePrecision(options);
         const loc = getLocale(options?.locale);
         const currency: string = options?.currency ?? loc.currency;
-        const val: string = this.toStringNumber(options);
+        const val: string = this.toStringNumberInternal(options);
 
         const numberValue = Number.parseFloat(val);
         if (Number.isNaN(numberValue)) { return val; }
 
-        const cacheKey = `${loc.locale}:${currency}:${p}`;
+        const cacheKey = `${loc.locale}:${currency}:${p}:${this.#strategy === "NONE"}`;
         let formatter = CalcAUYOutput.#formatterCache.get(cacheKey);
         if (!formatter) {
             formatter = new Intl.NumberFormat(loc.locale, {
@@ -360,13 +398,18 @@ export class CalcAUYOutput {
      * ```
      */
     public toLaTeX(options?: OutputOptions): string {
-        const p: number = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
-        const cacheKey = `toLaTeX:${p}`;
+        using _span = startSpan("toLaTeX", logger, options);
+        return this.toLaTeXInternal(options);
+    }
+
+    private toLaTeXInternal(options?: OutputOptions): string {
+        const p: number = this.getEffectivePrecision(options);
+        const isNone = this.#strategy === "NONE";
+        const cacheKey = `toLaTeX:${p}:${isNone}`;
         if (this.#outputCache.has(cacheKey)) { return this.#outputCache.get(cacheKey) as string; }
 
-        using _span = startSpan("toLaTeX", logger, options);
         const base: string = renderAST(this.#ast, "latex");
-        let roundedStr: string = this.toStringNumber(options);
+        let roundedStr: string = this.toStringNumberInternal(options);
         // Escapar % no resultado para LaTeX para evitar erros de comentário
         roundedStr = roundedStr.replace(/%/g, String.raw`\%`);
         const strategyName: string = ROUNDING_IDS[this.#strategy];
@@ -407,15 +450,20 @@ export class CalcAUYOutput {
      * ```
      */
     public toUnicode(options?: OutputOptions): string {
-        const p: number = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
-        const cacheKey = `toUnicode:${p}`;
+        using _span = startSpan("toUnicode", logger, options);
+        return this.toUnicodeInternal(options);
+    }
+
+    private toUnicodeInternal(options?: OutputOptions): string {
+        const p: number = this.getEffectivePrecision(options);
+        const isNone = this.#strategy === "NONE";
+        const cacheKey = `toUnicode:${p}:${isNone}`;
         if (this.#outputCache.has(cacheKey)) { return this.#outputCache.get(cacheKey) as string; }
 
-        using _span = startSpan("toUnicode", logger, options);
         const base: string = renderAST(this.#ast, "unicode");
         const strategyName: string = ROUNDING_IDS[this.#strategy];
         const subStrategy: string = toSubscript(strategyName);
-        const result = `round${subStrategy}(${base}, ${p}) = ${this.toStringNumber(options)}`;
+        const result = `round${subStrategy}(${base}, ${p}) = ${this.toStringNumberInternal(options)}`;
         this.#outputCache.set(cacheKey, result);
         return result;
     }
@@ -458,7 +506,7 @@ export class CalcAUYOutput {
      */
     public toHTML(katex: IKatex, options?: OutputOptions, customLocale?: CalcAUYLocaleA11y, skipA11y = false): string {
         using _span = startSpan("toHTML", logger, options);
-        const fullLatex: string = this.toLaTeX(options);
+        const fullLatex: string = this.toLaTeXInternal(options);
         return this.renderHTMLInternal(katex, fullLatex, options, customLocale, skipA11y);
     }
 
@@ -476,7 +524,7 @@ export class CalcAUYOutput {
         if (this.#outputCache.has(cacheKey)) { return this.#outputCache.get(cacheKey) as Uint8Array; }
 
         using _span = startSpan("toImageBuffer", logger, options);
-        const latex: string = this.toLaTeX(options);
+        const latex: string = this.toLaTeXInternal(options);
         const IGNORE_ARAI_LABEL = true;
         const html: string = this.renderHTMLInternal(katex, latex, options, customLocale, IGNORE_ARAI_LABEL);
 
@@ -524,11 +572,15 @@ export class CalcAUYOutput {
      */
     public toVerbalA11y(options?: OutputOptions, customLocale?: CalcAUYLocaleA11y): string {
         using _span = startSpan("toVerbalA11y", logger, options);
-        const p: number = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
+        return this.toVerbalA11yInternal(options, customLocale);
+    }
+
+    private toVerbalA11yInternal(options?: OutputOptions, customLocale?: CalcAUYLocaleA11y): string {
+        const p: number = this.getEffectivePrecision(options);
         const loc = customLocale || getLocale(options?.locale);
         const base: string = renderAST(this.#ast, "verbal", loc);
         const strategyName: string = ROUNDING_IDS[this.#strategy];
-        const finalValueStr: string = this.toStringNumber(options).replace(".", loc.voicedSeparator);
+        const finalValueStr: string = this.toStringNumberInternal(options).replace(".", loc.voicedSeparator);
         const { phrases } = loc;
         return `${base}${phrases.isEqual}${finalValueStr} (${phrases.rounding}: ${strategyName} ${phrases.for} ${p} ${phrases.decimalPlaces}).`;
     }
@@ -570,8 +622,12 @@ export class CalcAUYOutput {
      */
     public toSlice(parts: number, options?: OutputOptions): string[] {
         using _span = startSpan("toSlice", logger, { ...options, parts });
-        const p: number = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
-        const totalCents: bigint = this.toScaledBigInt(options);
+        return this.toSliceInternal(parts, options);
+    }
+
+    private toSliceInternal(parts: number, options?: OutputOptions): string[] {
+        const p: number = this.getEffectivePrecision(options);
+        const totalCents: bigint = this.toScaledBigIntInternal(options);
         return performSlice(totalCents, parts, p);
     }
 
@@ -610,8 +666,12 @@ export class CalcAUYOutput {
      */
     public toSliceByRatio(ratios: (number | string)[], options?: OutputOptions): string[] {
         using _span = startSpan("toSliceByRatio", logger, { ...options, ratios });
-        const p: number = options?.decimalPrecision ?? DEFAULT_DECIMAL_PRECISION;
-        const totalCents: bigint = this.toScaledBigInt(options);
+        return this.toSliceByRatioInternal(ratios, options);
+    }
+
+    private toSliceByRatioInternal(ratios: (number | string)[], options?: OutputOptions): string[] {
+        const p: number = this.getEffectivePrecision(options);
+        const totalCents: bigint = this.toScaledBigIntInternal(options);
         return performSliceByRatio(totalCents, ratios, p);
     }
     /**
@@ -648,6 +708,10 @@ export class CalcAUYOutput {
      */
     public toAuditTrace(): string {
         using _span = startSpan("toAuditTrace", logger, {});
+        return this.toAuditTraceInternal();
+    }
+
+    private toAuditTraceInternal(): string {
         return JSON.stringify({
             ast: this.#ast,
             finalResult: this.#result.toJSON(),
@@ -706,6 +770,10 @@ export class CalcAUYOutput {
                 "toAuditTrace",
             ];
         const res: Record<string, unknown> = {};
+
+        // Mapeamento rigoroso para métodos internos para evitar spam de logs recursivos
+        const self = this as unknown as Record<string, (opts?: OutputOptions) => unknown>;
+
         for (const key of keys) {
             if (key === ("toJSON" as OutputKey) || key === ("toCustomOutput" as OutputKey)) {
                 continue;
@@ -719,11 +787,36 @@ export class CalcAUYOutput {
                 );
             }
 
-            const method = (this as Record<OutputKey, unknown>)[key];
+            const internalKey = `${key}Internal`;
+            // Prioriza o método Internal (sem log) se existir, senão usa o público
+            const method = self[internalKey] || self[key];
+
             if (typeof method === "function") {
-                const val = (key === "toHTML" || key === "toImageBuffer")
-                    ? method.call(this, katex as IKatex, options)
-                    : method.call(this, options);
+                let val: unknown;
+                if (key === "toHTML" || key === "toImageBuffer") {
+                    const fullLatex = this.toLaTeXInternal(options);
+                    const IGNORE_ARAI_LABEL = key === "toImageBuffer";
+                    const html = this.renderHTMLInternal(
+                        katex as IKatex,
+                        fullLatex,
+                        options,
+                        undefined,
+                        IGNORE_ARAI_LABEL,
+                    );
+
+                    if (key === "toImageBuffer") {
+                        const svg: string = generateSVG(html, fullLatex);
+                        val = CalcAUYOutput.#encoder.encode(svg);
+                    } else {
+                        val = html;
+                    }
+                } else if (key === "toSlice") {
+                    // toSlice exige 'parts' nas options, mas o toJSON padrão não o suporta diretamente
+                    // a menos que seja passado via options. No caso de toJSON genérico, ignoramos.
+                    continue;
+                } else {
+                    val = method.call(this, options);
+                }
 
                 res[key] = typeof val === "bigint" ? val.toString() : val;
             }
@@ -776,9 +869,9 @@ export class CalcAUYOutput {
             ast: this.#ast,
             strategy: this.#strategy,
             audit: {
-                latex: this.toLaTeX(),
-                unicode: this.toUnicode(),
-                verbal: this.toVerbalA11y(),
+                latex: this.toLaTeXInternal(),
+                unicode: this.toUnicodeInternal(),
+                verbal: this.toVerbalA11yInternal(),
             },
             options: {},
             methods: {
@@ -820,7 +913,7 @@ export class CalcAUYOutput {
             throw new CalcAUYError("invalid-syntax", "O módulo 'katex' é obrigatório para toHTML.");
         }
 
-        const verbal: string = skipA11y ? "" : this.toVerbalA11y(options, customLocale);
+        const verbal: string = skipA11y ? "" : this.toVerbalA11yInternal(options, customLocale);
         const rendered: string = katex.renderToString(fullLatex, { displayMode: true, throwOnError: false });
 
         if (!CalcAUYOutput.#cachedKaTeXCSS) { CalcAUYOutput.#cachedKaTeXCSS = KATEX_CSS_MINIFIED; }

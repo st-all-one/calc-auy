@@ -73,9 +73,9 @@ describe("CalcAUYOutput - Output Methods and Customization", () => {
         loggingPolicy.sensitive = originalLoggingPolicySensitive; // Reset logging policy
     });
 
-    it("deve retornar o numerador interno bruto como BigInt", () => {
+    it("deve retornar o resultado arredondado como BigInt", () => {
         const res = CalcAUY.from(10).div(3).commit();
-        assertEquals(res.toRawInternalBigInt(), 10n); // Numerator of 10/3 is 10n
+        assertEquals(res.toRawInternalBigInt(), 3n); // 10/3 rounded to 0 decimals is 3
     });
 
     it("deve formatar o resultado como valor monetário padrão (pt-BR, BRL)", () => {

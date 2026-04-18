@@ -22,6 +22,7 @@ export const ROUNDING_IDS = {
     HALF_EVEN: "HALF-EVEN",
     TRUNCATE: "TRUNCATE",
     CEIL: "CEIL",
+    NONE: "NONE",
 } as const;
 
 export type RoundingStrategy = keyof typeof ROUNDING_IDS;
