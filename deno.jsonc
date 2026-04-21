@@ -43,7 +43,8 @@
     "imports": {
         "@logtape": "jsr:@logtape/logtape@^2.0.5",
         "@std/crypto": "jsr:@std/crypto@^1.0.5",
-        "@std/encoding": "jsr:@std/encoding@^1.0.10"
+        "@std/encoding": "jsr:@std/encoding@^1.0.10",
+        "@std/uuid": "jsr:@std/uuid@^1.1.1"
     },
     "nodeModulesDir": "auto",
     "vendor": true,

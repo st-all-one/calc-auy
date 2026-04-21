@@ -11,7 +11,7 @@ A classe `CalcAUYError` deve ser serializável e compatível com o padrão de "P
 - `title: string` (Resumo curto e legível por humanos).
 - `status: number` (Sugestão de código HTTP equivalente, ex: 400 para Parser, 422 para Cálculo).
 - `detail: string` (Explicação detalhada da causa da falha).
-- `instance: string` (UUID único da ocorrência do erro para correlação em logs).
+- `instance: string` (UUID-V7 único da ocorrência do erro para correlação temporal em logs).
 - `context: ErrorContext` (Objeto contendo o estado técnico do erro).
 
 ## Categorias de Erros e Severidade

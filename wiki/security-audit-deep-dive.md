@@ -31,7 +31,18 @@ A biblioteca utiliza o algoritmo **BLAKE3** (conhecido por sua extrema performan
 
 ---
 
-## 3. Segurança Jurídica: O Escudo da Equipe
+## 3. Rastreabilidade de Incidentes: UUID-V7 Forense
+
+Para garantir que cada falha ou exceção possa ser correlacionada no tempo e no espaço (sistemas distribuídos), a CalcAUY utiliza o padrão **UUID-V7** para identificar cada instância de erro (`CalcAUYError`).
+
+### Vantagens do UUID-V7 no Contexto de Auditoria:
+1.  **Ordenação Temporal:** Diferente do UUID-V4 (aleatório), o V7 é baseado em timestamp, o que permite que logs de erro de diferentes servidores sejam ordenados cronologicamente sem depender exclusivamente da precisão do relógio do sistema de log.
+2.  **Eficiência em Banco de Dados:** Por serem sequenciais no tempo, os UUIDs V7 são amigáveis a índices (B-Tree), evitando a fragmentação excessiva em tabelas de log de auditoria.
+3.  **Identificação Unívoca:** Cada erro disparado pela engine gera um ID único (`urn:uuid:...`), permitindo que um rastro de erro em um log de telemetria seja cruzado com o rastro enviado na resposta de uma API (RFC 7807).
+
+---
+
+## 4. Segurança Jurídica: O Escudo da Equipe
 
 Em disputas judiciais ou perícias fiscais, o maior risco para um time de engenharia é a acusação de "Caixa Preta". A CalcAUY elimina esse risco através da **Transparência Procedural**.
 

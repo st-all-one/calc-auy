@@ -151,9 +151,11 @@ describe("CalcAUY - Testes de Estresse e Performance Extrema", () => {
         let caught = false;
 
         try {
-            await CalcAUY.from(2).pow(1000001).commit();
+            const a = await CalcAUY.from(2).pow(1_000_001).commit();
+            console.log(a);
         } catch (err: any) {
-            if (err.type === "calc-auy/math-overflow") { caught = true; }
+            console.log(err);
+            if (err.title === "math-overflow") { caught = true; }
         }
 
         const end = performance.now();

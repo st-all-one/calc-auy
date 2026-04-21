@@ -7,6 +7,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+import { v7 as uuidV7 } from "@std/uuid";
 import { getSubLogger } from "../utils/logger.ts";
 import { sanitizeObject } from "../utils/sanitizer.ts";
 
@@ -53,15 +54,17 @@ export class CalcAUYError extends Error {
     public constructor(
         category: ErrorCategory,
         detail: string,
+        // deno-lint-ignore default-param-last
         context: ErrorContext = {},
+        options?: ErrorOptions,
     ) {
-        super(detail);
-        // RFC 7807: 'type' deve ser uma URI que identifica o tipo do problema.
+        super(detail, options);
+
         this.type = `https://github.com/st-all-one/calc-auy/blob/main/wiki/errors/${category}.md`;
-        this.title = category; // 'title' passa a ser o identificador autodescritivo.
+        this.title = category;
         this.detail = detail;
         this.context = context;
-        this.instance = `urn:uuid:${crypto.randomUUID()}`;
+        this.instance = `urn:uuid:${uuidV7.generate()}`;
 
         const statusMap: Record<ErrorCategory, number> = {
             "invalid-syntax": 400,
@@ -84,6 +87,7 @@ export class CalcAUYError extends Error {
                 instance: this.instance,
                 status: this.status,
                 detail: this.detail,
+                cause: options?.cause,
                 context: sanitizeObject(this.context),
             });
         }
