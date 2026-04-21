@@ -139,7 +139,7 @@ CalcAUYError: Violação de integridade detectada: a assinatura não confere com
 ```
 
 > **NOTA:**
-> Embora tenha sido mostrada a alteração no item "`strategy`", qualquer alteração, em qualquer ponto do objeto serializado, seja um "`0`" a mais dentro da `AST` ou uma letra diferente em qualquer "`metadado`", invalidará a assinatura da mesma forma.
+> Embora tenha sido mostrada a alteração no item "`strategy`", qualquer alteração, em qualquer ponto do objeto serializado, seja um "`0`" a mais dentro da `AST` ou uma letra diferente em qualquer `metadado`, invalidará a assinatura da mesma forma.
 > 
 > A integridade do objeto é total: ou **tudo** permanece idêntico, ou é considerado [violação crítica de integridade](./wiki/errors/integrity-critical-violation.md).
 > 
@@ -166,7 +166,7 @@ A **`CalcAUY`** foi construída do zero para cenários onde a **prova do resulta
 
 No desenvolvimento de softwares, o uso do padrão **IEEE 754** (`number/float`) introduz um risco sistêmico. Imprecisões binárias, como o clássico `0.1 + 0.2 !== 0.3`, não são meras curiosidades matemáticas; em escala, transformam-se em rombos financeiros, falhas de compliance e passivos jurídicos. Garantir a exatidão é o ponto de partida; **provar como o cálculo foi feito e a integridade da informação** é o que garante segurança jurídica para o ecossistema.
 
-A **`CalcAUY`** elimina esses riscos ao tratar cada operação como um **artefato auditável**, resolvendo a falta de transparência dos motores convencionais ao fornecer evidências de **todas as etapas** que compõem o resultado junto de uma **assinatura de integridade**, facilitando a conformidade técnica e jurídica da aplicação.
+A **`CalcAUY`** elimina esses riscos ao tratar cada operação como um **artefato auditável assinado**, resolvendo a falta de transparência dos motores convencionais ao fornecer evidências de **todas as etapas** que compõem o resultado junto de uma **assinatura de integridade**, facilitando a conformidade técnica e jurídica da aplicação.
 
 O que torna isso possível é a implementação destes três pilares:
 
