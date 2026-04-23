@@ -77,9 +77,22 @@ export interface ICalcAUYCustomOutputContext {
         | "toSlice"
         | "toSliceByRatio"
         | "toAuditTrace"
+        | "getAST"
         | "toJSON"
     >;
 }
+...
+    /**
+     * Retorna uma cópia profunda e desconectada da Árvore de Sintaxe Abstrata (AST).
+     *
+     * **Engenharia:** Garante o isolamento de memória através de `structuredClone`,
+     * permitindo a inspeção da árvore final sem risco de mutação do estado consolidado.
+     *
+     * @returns Cópia da AST final.
+     */
+    public getAST(): CalculationNode {
+        return structuredClone(this.#ast);
+    }
 
 /**
  * Chaves de saída suportadas pelo método toJSON.

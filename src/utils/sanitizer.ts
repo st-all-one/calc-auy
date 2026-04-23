@@ -8,6 +8,7 @@
 
 import type { CalculationNode } from "../ast/types.ts";
 import type { InstanceConfig } from "../core/types.ts";
+import { BIRTH_TICKET_MOCK } from "../core/symbols.ts";
 
 const REDACTED = "[PII]";
 
@@ -26,6 +27,7 @@ export const DEFAULT_INSTANCE_CONFIG: Required<InstanceConfig> = {
     salt: "",
     encoder: "HEX",
     contextLabel: "",
+    [BIRTH_TICKET_MOCK]: "",
 };
 
 /**

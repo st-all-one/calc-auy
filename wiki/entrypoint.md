@@ -62,8 +62,9 @@ Entenda a filosofia por trás do projeto e como os dados são tratados intername
 A porta de entrada para criar seus cálculos através da classe `CalcAUY`.
 *   [**Resumo de Métodos do Builder**](./builder-methods.md): Tabela rápida de funções.
 *   **Destaques:**
-    *   [`from()`](./builder-methods/from.md): O início de qualquer cálculo.
-    *   [`parseExpression()`](./builder-methods/parseExpression.md): Para fórmulas complexas em string.
+    *   [`create()`](./builder-methods/create.md): O início obrigatório de qualquer jurisdição de cálculo.
+    *   [`from()`](./builder-methods/from.md): Ingestão de valores na instância.
+    *   [`addFromExternalInstance()`](./builder-methods/addFromExternalInstance.md): Integração segura entre contextos.
     *   [`hydrate()`](./builder-methods/hydrate.md) & [`checkIntegrity()`](./builder-methods/checkIntegrity.md): Segurança e persistência.
 
 ### 3. Referência da API (Output)

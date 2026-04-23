@@ -75,7 +75,6 @@ export interface ControlNode extends BaseNode {
     kind: "control";
     type: "reanimation_event";
     metadata: {
-        timestamp: string;
         previousContextLabel: string;
         previousSignature: string;
     } & Record<string, MetadataValue>;

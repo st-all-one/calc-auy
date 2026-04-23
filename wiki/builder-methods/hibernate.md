@@ -6,8 +6,9 @@ O `hibernate()` é o método de serialização da CalcAUY. Ele converte a Árvor
 
 1.  **Traversal de Árvore:** Percorre recursivamente todos os nós da AST (literais, operações e grupos).
 2.  **Serialização de BigInt:** Converte as propriedades `n` (numerador) e `d` (denominador) de cada nó em strings, contornando a limitação nativa do `JSON.stringify` com tipos `bigint`.
-3.  **Preservação de Metadados:** Garante que todos os metadados anexados a cada operação sejam incluídos no JSON.
-4.  **Imutabilidade de Snapshot:** Gera uma representação estática da árvore naquele exato momento da fluidez do builder.
+3. **Preservação de Contexto:** Garante que todos os metadados anexados e o identificador da jurisdição (`contextLabel`) sejam incluídos no JSON.
+4. **Imutabilidade de Snapshot:** Gera uma representação estática da árvore naquele exato momento.
+
 
 ## 🎯 Propósito
 Fornecer uma forma de "congelar" a lógica matemática para armazenamento em disco, banco de dados ou transmissão via rede, sem perder a capacidade de reidratação futura.

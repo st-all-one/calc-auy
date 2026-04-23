@@ -106,8 +106,8 @@ export function validateASTNode(
             throw new CalcAUYError("corrupted-node", "Nó de controle sem metadados obrigatórios.");
         }
         const m = n.metadata as Record<string, unknown>;
-        if (!m.timestamp || !m.previousSignature) {
-            throw new CalcAUYError("corrupted-node", "Metadados de controle incompletos (timestamp/signature faltando).");
+        if (!m.previousSignature) {
+            throw new CalcAUYError("corrupted-node", "Metadados de controle incompletos (previousSignature faltando).");
         }
         if (!n.child) {
             throw new CalcAUYError("corrupted-node", "Nó de controle sem nó filho.");

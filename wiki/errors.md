@@ -24,13 +24,14 @@ Estes erros ocorrem quando a operação é sintaticamente correta, mas matematic
 | [`complex-result`](./errors/complex-result.md) | O resultado seria um número imaginário (ex: raiz de negativo). |
 | [`math-overflow`](./errors/math-overflow.md) | O cálculo excedeu o limite de segurança de 1 milhão de bits. |
 
-### 🛡️ Erros de Integridade e Sistema (500 Internal Server Error)
-Erros críticos relacionados à segurança forense e persistência de dados.
+### 🛡️ Erros de Integridade e Sistema (403/500)
+Erros críticos relacionados à segurança forense, persistência de dados e isolamento de jurisdição.
 
 | Erro | Descrição Curta |
 | :--- | :--- |
-| [`integrity-critical-violation`](./errors/integrity-critical-violation.md) | A assinatura digital BLAKE3 não confere com os dados (Adulteração). |
-| [`corrupted-node`](./errors/corrupted-node.md) | A estrutura da AST está incompleta ou malformada para hidratação. |
+| [`instance-mismatch`](./errors/instance-mismatch.md) | Tentativa de misturar instâncias de contextos isolados (403). |
+| [`integrity-critical-violation`](./errors/integrity-critical-violation.md) | A assinatura digital BLAKE3 não confere com os dados (500). |
+| [`corrupted-node`](./errors/corrupted-node.md) | A estrutura da AST está incompleta ou malformada (500). |
 
 ---
 

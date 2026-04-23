@@ -17,7 +17,7 @@
  *
  * @example Uso Fluido (Fluent API)
  * ```ts
- * import { CalcAUY } from "@st-all-one/calc-auy";
+ * import { CalcAUYLogic } from "@st-all-one/calc-auy";
  *
  * const total = CalcAUY.from(100)
  *   .add(50)
@@ -31,7 +31,8 @@
  * @module
  */
 
-export { CalcAUY } from "./src/builder.ts";
+export { CalcAUY } from "./src/main.ts";
+export { CalcAUYLogic } from "./src/builder.ts";
 export { ProcessBatchAUY } from "./src/utils/batch.ts";
 export { CalcAUYOutput } from "./src/output.ts";
 export { CalcAUYError } from "./src/core/errors.ts";

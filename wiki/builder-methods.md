@@ -1,19 +1,25 @@
 # Métodos do Builder (CalcAUY)
 
-A fase de construção na CalcAUY é onde a lógica de negócio é traduzida em uma **Árvore de Sintaxe Abstrata (AST)** imutável. Nesta etapa, nenhuma operação matemática é executada; os valores e operadores são acumulados de forma racional para garantir precisão absoluta no momento do fechamento.
+A fase de construção na CalcAUY é onde a lógica de negócio é traduzida em uma **Árvore de Sintaxe Abstrata (AST)** imutável. Agora, com o **Controle Rigoroso de Instâncias**, cada builder opera em uma jurisdição isolada e segura.
 
 ## 🚀 Resumo de Métodos
 
-Abaixo estão os métodos públicos da classe `CalcAUY`, organizados por sua função no ciclo de vida do builder.
+Os métodos são acessados através da instância criada pela factory `CalcAUY.create()`.
 
-### 📥 Ingestão e Persistência
+### 🏗️ Criação de Contexto (Static)
 | Método | Exemplo Rápido | Descrição |
 | :--- | :--- | :--- |
-| [`from`](./builder-methods/from.md) | `CalcAUY.from("10.50")` | Ingestão segura de valores (Static). |
-| [`parseExpression`](./builder-methods/parseExpression.md) | `CalcAUY.parseExpression("1+2")` | Parser de strings matemáticas (Static). |
-| [`hydrate`](./builder-methods/hydrate.md) | `await CalcAUY.hydrate(j, {salt})` | Reconstrói árvore validando integridade (Static). |
-| [`checkIntegrity`](./builder-methods/checkIntegrity.md) | `await CalcAUY.checkIntegrity(t, {salt})` | Valida assinatura sem reconstruir a árvore (Static). |
-| [`hibernate`](./builder-methods/hibernate.md) | `await calc.hibernate()` | Serializa a árvore com assinatura digital. |
+| [`create`](./builder-methods/create.md) | `CalcAUY.create({label, salt})` | Gera um novo universo de cálculo isolado. |
+| [`checkIntegrity`](./builder-methods/checkIntegrity.md) | `await CalcAUY.checkIntegrity(t, {salt})` | Valida assinatura sem reconstruir a árvore. |
+
+### 📥 Ingestão e Persistência (Instância)
+| Método | Exemplo Rápido | Descrição |
+| :--- | :--- | :--- |
+| [`from`](./builder-methods/from.md) | `instance.from("10.50")` | Ingestão segura de valores. |
+| [`parseExpression`](./builder-methods/parseExpression.md) | `instance.parseExpression("1+2")` | Parser de strings matemáticas. |
+| [`hydrate`](./builder-methods/hydrate.md) | `await instance.hydrate(j, {salt})` | Reconstrói árvore validando integridade. |
+| [`hibernate`](./builder-methods/hibernate.md) | `await instance.hibernate()` | Serializa a árvore com assinatura digital. |
+| [`fromExternalInstance`](./builder-methods/fromExternalInstance.md) | `await instance.fromExternalInstance(ext)` | Integração segura entre jurisdições. |
 
 ### 🏷️ Estrutura e Auditoria
 | Método | Exemplo Rápido | Descrição |
@@ -22,11 +28,10 @@ Abaixo estão os métodos públicos da classe `CalcAUY`, organizados por sua fun
 | [`group`](./builder-methods/group.md) | `calc.add(5).group()` | Força precedência (parênteses). |
 | [`getAST`](./builder-methods/getAST.md) | `calc.getAST()` | Retorna o objeto da árvore bruta. |
 
-### ⚡ Configuração e Otimização
+### ⚡ Otimização
 | Método | Exemplo Rápido | Descrição |
 | :--- | :--- | :--- |
-| [`setSecurityPolicy`](./builder-methods/setSecurityPolicy.md) | `CalcAUY.setSecurityPolicy(p)` | Define política de PII e integridade (Static). |
-| [`createCacheSession`](./builder-methods/createCacheSession.md) | `using _ = CalcAUY.session()` | Ativa cache de alta performance. |
+| [`createCacheSession`](./builder-methods/createCacheSession.md) | `using _ = CalcAUY.createCacheSession()` | Ativa cache de alta performance. |
 
 ### ➗ Operações Aritméticas (Fluentes)
 | Método | Exemplo Rápido | Descrição |
@@ -47,10 +52,10 @@ Abaixo estão os métodos públicos da classe `CalcAUY`, organizados por sua fun
 
 ## 💡 Fluxo de Trabalho Recomendado
 
-1.  **Controle a segurança**, definindo o `CalcAUY.setSecurityPolicy({ salt, encoder })`
-2.  **Inicie** a instância via `CalcAUY.from()` ou `CalcAUY.parseExpression()`.
-3.  **Encadeie** as operações (`add`, `mult`, etc.), use `group()` para controlar a precedência caso precise.
-4.  **Enriqueça** o contexto com `setMetadata()` onde for necessário.
-5.  **Finalize** com `await commit()`, defina a estratégia de arredondamento se necessário.
+1.  **Crie a Jurisdição**, definindo as políticas em `CalcAUY.create({ contextLabel, salt, sensitive })`.
+2.  **Inicie** o cálculo via `instance.from()` ou `instance.parseExpression()`.
+3.  **Encadeie** as operações, mantendo o rastro forense dentro da mesma instância.
+4.  **Integre contextos** diferentes apenas via `addFromExternalInstance()` para manter a auditabilidade.
+5.  **Finalize** com `await commit()`.
 
 Para detalhes profundos sobre cada método, incluindo 10 casos de uso reais e anotações de engenharia, clique nos links acima.

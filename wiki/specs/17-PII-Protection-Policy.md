@@ -1,46 +1,41 @@
 # Especificação Técnica 17: Política de Proteção de PII e Integridade
 
-A CalcAUY implementa um sistema de proteção de dados sensíveis (Personally Identifiable Information) e integridade forense em camadas, garantindo conformidade com LGPD/GDPR e auditabilidade militar.
+A CalcAUY implementa um sistema de proteção de dados sensíveis (Personally Identifiable Information) e integridade forense em camadas, agora operando sob o modelo de **Jurisdições Isoladas**.
 
-## Camada 1: Política Global (`setSecurityPolicy`)
+## Camada 1: Política por Instância (`create`)
 
-O controle mestre da biblioteca é feito através do método estático global.
+O controle de segurança é definido no momento da criação da jurisdição. Não existe mais estado global, garantindo que diferentes módulos do sistema possam ter níveis de restrição distintos.
 
--   **Método:** `CalcAUY.setSecurityPolicy(config: { sensitive?: boolean, salt?: string, encoder?: SignatureEncoder })`
+-   **Método:** `CalcAUY.create(config: InstanceConfig)`
 -   **Configuração Padrão:** `{ sensitive: true, salt: "", encoder: "HEX" }`
 
 ### Comportamento da Redação (sensitive: true)
-Quando ativado, os utilitários de log e erro (`sanitizeAST`, `sanitizeObject`) substituem automaticamente:
-1.  **Valores Numéricos:** O numerador (`n`) e denominador (`d`) são substituídos pela string `[PII]`.
+Quando ativado na instância, os utilitários de log e erro substituem automaticamente:
+1.  **Valores Numéricos:** O numerador (`n`) e denominador (`d`) são substituídos por `[PII]`.
 2.  **Input Original:** O campo `originalInput` é ofuscado.
-3.  **Metadados:** Todos os metadados são removidos do rastro de log, a menos que o nó permita a liberação.
+3.  **Metadados de Negócio:** Redigidos para `[PII]`.
 
-### Lacre Digital (salt e encoder)
-A definição do `salt` é incorporada a geração de assinaturas BLAKE3 no `commit()` e `hibernate()`.
-*   **Não-Repúdio:** O rastro de auditoria é selado matematicamente.
-*   **HEX:** Encoder padrão para transporte seguro e otimizado.
+### Exceções Técnicas (Visibilidade Garantida)
+Para garantir a auditabilidade do rastro técnico, os metadados do nó `control` (**timestamp**, **previousContextLabel** e **previousSignature**) **NUNCA** são redigidos, permitindo que a linhagem do dado seja rastreada mesmo em modo restrito.
 
 ## Camada 2: Controle Granular via Metadata (`pii`)
 
-O desenvolvedor pode marcar nós individuais da AST para forçar ou liberar a visibilidade, independente da política global.
+O desenvolvedor pode marcar nós individuais da AST para forçar ou liberar a visibilidade.
 
--   **Ocultação Forçada:** `.setMetadata("pii", true)` - Garante que o dado NUNCA apareça em logs, mesmo em ambiente de dev.
--   **Liberação de Visibilidade:** `.setMetadata("pii", false)` - Permite que constantes públicas (ex: alíquota de 18%) apareçam nos logs técnicos para facilitar o debug, mesmo em produção.
+-   **Ocultação Forçada:** `.setMetadata("pii", true)` - Garante que o dado NUNCA apareça em logs.
+-   **Liberação de Visibilidade:** `.setMetadata("pii", false)` - Permite que constantes públicas (ex: alíquota de 18%) apareçam nos logs técnicos mesmo em jurisdições sensíveis.
 
 ---
 
-## Exemplo de Fluxo Seguro
+## Exemplo de Fluxo Isolado
 
 ```typescript
-// 1. Bloqueio global
-CalcAUY.setSecurityPolicy({ sensitive: true, salt: "secret-key" });
+// 1. Jurisdição Segura
+const Secure = CalcAUY.create({ contextLabel: "bank", sensitive: true, salt: "S1" });
 
-// 2. Cálculo com dados sensíveis (Ocultos no log)
-const fatura = CalcAUY.from("1500.50").setMetadata("client_id", "USR-99");
+// 2. Jurisdição Pública
+const Public = CalcAUY.create({ contextLabel: "gov", sensitive: false, salt: "S2" });
 
-// 3. Taxa pública (Liberada no log)
-const imposto = CalcAUY.from("0.18").setMetadata("pii", false);
-
-const final = await fatura.mult(imposto).commit();
-// Logs técnicos mostrarão a operação de MULT, mas esconderão o valor 1500.50.
+const s = Secure.from(5000); // Oculto nos logs
+const p = Public.from(0.18); // Visível nos logs
 ```

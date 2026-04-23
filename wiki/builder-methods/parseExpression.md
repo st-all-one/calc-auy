@@ -23,11 +23,11 @@ Permitir a definição de lógica de negócio complexa através de strings legí
 ```typescript
 // Exemplo 1: Regra de preço dinâmica
 const formula = "(custo + frete) * (1 + margem)";
-const calc = CalcAUY.parseExpression(formula);
+const calc = instance.parseExpression(formula);
 ```
 ```typescript
 // Exemplo 2: Cálculo de comissão variável
-const commission = CalcAUY.parseExpression("venda * 0.05 + bonus");
+const commission = instance.parseExpression("venda * 0.05 + bonus");
 ```
 
 2.  **Cálculo de Juros Compostos:** Implementação da fórmula de montante acumulado.

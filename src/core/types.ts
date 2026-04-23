@@ -8,6 +8,7 @@
 
 import type { RoundingStrategy } from "./constants.ts";
 import type { SignatureEncoder } from "../utils/sanitizer.ts";
+import { BIRTH_TICKET_MOCK } from "./symbols.ts";
 
 /**
  * Configuração de segurança e comportamento de uma instância CalcAUY.
@@ -29,6 +30,11 @@ export interface InstanceConfig {
      * Rótulo amigável para identificar a instância em logs e erros.
      */
     contextLabel?: string;
+    /**
+     * Injeção interna de timestamp para testes (Birth Certificate Mock).
+     * @internal
+     */
+    [BIRTH_TICKET_MOCK]?: string;
 }
 
 /**

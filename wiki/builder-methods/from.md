@@ -21,11 +21,11 @@ Garantir que a imprecisão numérica nunca contamine a engine, preservando a int
 1.  **Ingestão de Inputs de Formulário:** Recebimento de strings vindas de campos de texto.
 ```typescript
 // Exemplo 1: Captura direta de input HTML
-const val = CalcAUY.from(inputElement.value);
+const val = instance.from(inputElement.value);
 ```
 ```typescript
 // Exemplo 2: Tratamento de campo de preço em React
-const price = CalcAUY.from(formData.get("price") as string);
+const price = instance.from(formData.get("price") as string);
 ```
 
 2.  **Cálculos Baseados em Percentuais:** Ingestão direta de taxas e alíquotas.

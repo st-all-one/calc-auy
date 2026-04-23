@@ -92,15 +92,16 @@ Para garantir a **Imutabilidade Forense**, a CalcAUY implementa um sistema de la
 
 ### Geração da Assinatura (Signature)
 A `signature` é gerada através de um processo determinístico de quatro etapas:
-1.  **Canonização (Canonical K-Sort):** O objeto (seja a AST ou o rastro de auditoria) é transformado em uma string única. Todas as chaves do objeto são ordenadas alfabeticamente de forma recursiva, garantindo que a assinatura seja independente da ordem dos campos no JSON original.
-2.  **Injeção de Salt:** Um segredo (`salt`) definido globalmente via `setSecurityPolicy` ou passado localmente é anexado à string canonizada. Isso garante que a assinatura seja exclusiva para aquele ambiente ou aplicação, dificultando ataques de dicionário ou manipulações em massa.
-3.  **Hashing BLAKE3:** O payload final é processado pelo algoritmo **BLAKE3**, gerando um hash de alta performance e resistência militar contra colisões, garantindo a integridade total do rastro de auditoria.
-4.  **Encoding Customizado:** O hash resultante é codificado utilizando o `encoder` configurado (suportando `HEX`, `BASE64`, `BASE58` ou `BASE32`). O padrão é **BASE58**, que oferece o melhor equilíbrio entre compactação e legibilidade humana para auditoria manual.
+1.  **Canonização (Canonical K-Sort):** Todas as chaves do objeto são ordenadas alfabeticamente.
+2.  **Isolamento de Jurisdição:** Cada assinatura é vinculada ao `salt` e `contextLabel` da instância única. O uso de **Symbols** e **Branded Types** garante que cálculos de jurisdições diferentes nunca se misturem silenciosamente.
+3.  **Hashing BLAKE3:** O payload final é processado pelo algoritmo **BLAKE3**.
+4.  **Encoding Customizado:** O hash é codificado (Default: **HEX**).
 
 ### Validação de Integridade
 A integridade é verificada automaticamente durante o `hydrate()` ou via `checkIntegrity()`:
-- A engine reconstrói a assinatura baseada no conteúdo atual e no salt fornecido.
-- **Proteção contra Adulteração:** Se um único bit da AST ou do rastro de auditoria for modificado (ex: alteração de um valor, tipo de operação ou metadado), a assinatura deixará de coincidir e a CalcAUY lançará uma exceção crítica (`integrity-critical-violation`), impedindo o processamento de dados fraudados.
+- A engine reconstrói a assinatura baseada no conteúdo atual e no salt da instância.
+- **Proteção contra Adulteração:** Se um único bit for modificado, a assinatura deixará de coincidir.
+- **Detecção de Mistura:** Tentativas de usar um valor de uma instância A em uma instância B sem o método `addFromExternalInstance()` dispararão o erro `instance-mismatch`.
 
 ---
 

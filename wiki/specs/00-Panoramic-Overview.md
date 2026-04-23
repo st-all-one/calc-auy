@@ -22,17 +22,17 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 
 ## Resumo de Métodos Principais
 
-### Classe `CalcAUY` (Builder)
+### Classe `CalcAUY` (Factory & Utils)
+- **`create({contextLabel, salt, ...})`**: Ponto inicial obrigatório. Gera a jurisdição isolada.
+- **`checkIntegrity(ast, {salt})`**: Valida a assinatura de um rastro sem reconstruir a árvore (**Promise<boolean>**).
+
+### Classe `CalcAUYLogic` (Builder)
 - `add()`, `sub()`, `mult()`, `div()`, `pow()`, `mod()`, `divInt()`
 - `group()`: Agrupamento manual.
-- **`setSecurityPolicy({salt, encoder})`**: Controle global de integridade (BLAKE3) e PII nos logs.
-- **`ProcessBatchAUY(items, task)`**: Processamento assíncrono em lotes (anti-bloqueio).
-- **`parseExpression(str)`**: Parser de strings matemáticas complexas (com auto-agrupamento).
-- **`setMetadata(key, val)`**: O pilar da auditoria. Use `pii: true|false` para controle granular.
-- **`hibernate()`**: Serializa a árvore atual selada (**Promise<string>**). Veja `specs/19`.
+- **`addFromExternalInstance(ext)`**: Portal de integração entre jurisdições.
+- **`hibernate()`**: Serializa a árvore atual selada (**Promise<string>**).
 - **`getAST()`**: Retorna o objeto da árvore atual (**CalculationNode**).
-- **`static hydrate(ast, {salt})`**: Reconstrói a instância validando assinatura digital (**Promise**). Veja `specs/19`.
-- **`static checkIntegrity(ast, {salt})`**: Valida a assinatura de um rastro sem reconstruir a árvore (**Promise<boolean>**). Veja `specs/19`.
+- **`hydrate(ast, {salt})`**: Reconstrói a instância validando assinatura digital (**Promise**).
 - **`commit(strategy)`**: Finaliza, colapsa e assina o cálculo (**Promise**).
 
 ### Classe `CalcAUYOutput` (Result)
