@@ -47,7 +47,7 @@ Garante que o resultado final e a estratégia correspondem à árvore.
   {
     "ast": "Structure",
     "finalResult": { "n": "...", "d": "..." },
-    "strategy": "NBR5891",
+    "roundStrategy": "NBR5891",
     "contextLabel": "financeiro_matriz"
   }
   ```

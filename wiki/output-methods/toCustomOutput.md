@@ -110,13 +110,13 @@ const barcode = output.toCustomOutput(ctx => `BAR|${ctx.methods.toScaledBigInt()
 const msgpackBuffer = res.toCustomOutput(ctx => msgpack.encode({
   val: ctx.methods.toStringNumber(),
   audit: ctx.audit.unicode,
-  strategy: ctx.strategy
+  roundStrategy: ctx.roundStrategy
 }));
 ```
 ```typescript
 // Exemplo 2: Payload otimizado para cache distribuído
 const binaryCache = output.toCustomOutput(ctx => {
-  return msgpack.encode([ctx.result.n.toString(), ctx.result.d.toString(), ctx.strategy]);
+  return msgpack.encode([ctx.result.n.toString(), ctx.result.d.toString(), ctx.roundStrategy]);
 });
 ```
 

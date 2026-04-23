@@ -109,8 +109,8 @@ sendEmail(res.commit().toMonetary());
 10. **Ajuste Dinâmico de Estratégia:** Decidir como arredondar baseado em metadados.
 ```typescript
 // Exemplo 1: Estratégia por tipo de operação
-const strategy = isTax ? "TRUNCATE" : "NBR5891";
-const final = calc.commit({ roundStrategy: strategy });
+const roundStrategy = isTax ? "TRUNCATE" : "NBR5891";
+const final = calc.commit({ roundStrategy: roundStrategy });
 ```
 ```typescript
 // Exemplo 2: Política de arredondamento por país

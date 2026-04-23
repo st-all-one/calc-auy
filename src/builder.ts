@@ -238,7 +238,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
         const dataToVerify = payload.data || {
             ast: payload.ast,
             finalResult: payload.finalResult,
-            strategy: payload.strategy,
+            roundStrategy: payload.roundStrategy,
         };
 
         const signature = payload.signature;
@@ -265,6 +265,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             metadata: {
                 previousContextLabel: payload.contextLabel || "",
                 previousSignature: signature,
+                previousRoundStrategy: payload.roundStrategy || "",
             },
             child: node,
         };
@@ -300,6 +301,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
         let externalAST: CalculationNode;
         let externalSignature: string;
         let externalContextLabel = "";
+        let externalStrategy = "";
 
         if (external instanceof CalcAUYLogic) {
             // Instância "Viva": Fecha com assinatura imediata e valida
@@ -308,7 +310,9 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             // deno-lint-ignore no-non-null-assertion
             externalAST = (payload.data || payload.ast)!;
             externalSignature = payload.signature;
-            externalContextLabel = external.getContextConfig().contextLabel;
+            const extConfig = external.getContextConfig();
+            externalContextLabel = extConfig.contextLabel;
+            externalStrategy = extConfig.roundStrategy || "";
         } else {
             // Objeto ou JSON serializado
             const payload: SerializedCalculation = typeof external === "string"
@@ -324,6 +328,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             externalAST = (payload.data || payload.ast)!;
             externalSignature = payload.signature;
             externalContextLabel = payload.contextLabel || "";
+            externalStrategy = payload.roundStrategy || "";
             // Validação estrutural básica
             validateASTNode(externalAST);
         }
@@ -335,6 +340,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             metadata: {
                 previousContextLabel: externalContextLabel,
                 previousSignature: externalSignature,
+                previousRoundStrategy: externalStrategy,
             },
             child: externalAST,
         };
@@ -527,21 +533,21 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
     /**
      * Finaliza a construção da árvore e inicia a fase de avaliação.
      */
-    public async commit(options: { roundStrategy?: RoundingStrategy } = {}): Promise<CalcAUYOutput> {
-        using _span = startSpan("commit", logger, options);
+    public async commit(): Promise<CalcAUYOutput> {
+        using _span = startSpan("commit", logger);
         const ast = this.assertAST();
 
-        const strategy: RoundingStrategy = options.roundStrategy ?? "NBR5891";
+        const roundStrategy: RoundingStrategy = this.#config.roundStrategy;
         const result: RationalNumber = evaluate(ast);
 
         // Gera a assinatura de integridade do resultado consolidado (AST fixa + Resultado)
         const payload = {
             ast,
             finalResult: result.toJSON(),
-            strategy,
+            roundStrategy,
         };
         const signature = await generateSignature(payload, this.#config.salt, this.#config.encoder);
 
-        return new CalcAUYOutput(result, ast, strategy, signature, this.#config);
+        return new CalcAUYOutput(result, ast, roundStrategy, signature, this.#config);
     }
 }

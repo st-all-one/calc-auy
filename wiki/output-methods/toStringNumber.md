@@ -119,7 +119,7 @@ const modelData = { input_feature: parseFloat(res.toStringNumber()) };
 
 | Opção | Tipo | Descrição | Impacto no Output |
 | :--- | :--- | :--- | :--- |
-| `decimalPrecision` | `number` | Define o número de casas decimais. | Força o arredondamento para a precisão N. Se omitido e strategy for `NONE`, mostra 50 casas. |
+| `decimalPrecision` | `number` | Define o número de casas decimais. | Força o arredondamento para a precisão N. Se omitido e roundStrategy for `NONE`, mostra 50 casas. |
 | `locale` | `string` | Localidade (ex: 'pt-BR'). | **Nenhum.** Este método sempre usa o ponto `.` como separador decimal por padrão técnico. |
 
 ## 💡 Recomendações

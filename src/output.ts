@@ -52,7 +52,7 @@ export interface ICalcAUYCustomOutputContext {
     /** A árvore de sintaxe completa para reconstrução customizada. */
     ast: CalculationNode;
     /** A estratégia de arredondamento aplicada no commit. */
-    strategy: RoundingStrategy;
+    roundStrategy: RoundingStrategy;
     /** Rastros auditáveis pré-gerados. */
     audit: {
         latex: string;
@@ -116,7 +116,7 @@ type KatexDependentKey = "toHTML" | "toImageBuffer";
 export class CalcAUYOutput {
     readonly #result: RationalNumber;
     readonly #ast: CalculationNode;
-    readonly #strategy: RoundingStrategy;
+    readonly #roundStrategy: RoundingStrategy;
     readonly #signature: string;
     readonly #config: Required<InstanceConfig>;
     readonly #cache: Map<number, RationalNumber> = new Map<number, RationalNumber>();
@@ -128,20 +128,20 @@ export class CalcAUYOutput {
     public constructor(
         result: RationalNumber,
         ast: CalculationNode,
-        strategy: RoundingStrategy,
+        roundStrategy: RoundingStrategy,
         signature: string,
         config: Required<InstanceConfig>,
     ) {
         this.#result = result;
         this.#ast = ast;
-        this.#strategy = strategy;
+        this.#roundStrategy = roundStrategy;
         this.#signature = signature;
         this.#config = config;
     }
 
     private getRounded(precision: number): RationalNumber {
         if (!this.#cache.has(precision)) {
-            const rounded: RationalNumber = applyRounding(this.#result, this.#strategy, precision);
+            const rounded: RationalNumber = applyRounding(this.#result, this.#roundStrategy, precision);
             this.#cache.set(precision, rounded);
         }
         // deno-lint-ignore no-non-null-assertion
@@ -150,7 +150,7 @@ export class CalcAUYOutput {
 
     private getEffectivePrecision(options?: OutputOptions): number {
         if (options?.decimalPrecision !== undefined) { return options.decimalPrecision; }
-        return this.#strategy === "NONE" ? 50 : DEFAULT_DECIMAL_PRECISION;
+        return this.#roundStrategy === "NONE" ? 50 : DEFAULT_DECIMAL_PRECISION;
     }
 
     /**
@@ -193,7 +193,7 @@ export class CalcAUYOutput {
 
     private toStringNumberInternal(options?: OutputOptions): string {
         const p: number = this.getEffectivePrecision(options);
-        const isNone = this.#strategy === "NONE";
+        const isNone = this.#roundStrategy === "NONE";
         const cacheKey = `toStringNumber:${p}:${isNone}`;
         if (this.#outputCache.has(cacheKey)) { return this.#outputCache.get(cacheKey) as string; }
 
@@ -353,7 +353,7 @@ export class CalcAUYOutput {
         const numberValue = Number.parseFloat(val);
         if (Number.isNaN(numberValue)) { return val; }
 
-        const cacheKey = `${loc.locale}:${currency}:${p}:${this.#strategy === "NONE"}`;
+        const cacheKey = `${loc.locale}:${currency}:${p}:${this.#roundStrategy === "NONE"}`;
         let formatter = CalcAUYOutput.#formatterCache.get(cacheKey);
         if (!formatter) {
             formatter = new Intl.NumberFormat(loc.locale, {
@@ -407,7 +407,7 @@ export class CalcAUYOutput {
 
     private toLaTeXInternal(options?: OutputOptions): string {
         const p: number = this.getEffectivePrecision(options);
-        const isNone = this.#strategy === "NONE";
+        const isNone = this.#roundStrategy === "NONE";
         const cacheKey = `toLaTeX:${p}:${isNone}`;
         if (this.#outputCache.has(cacheKey)) { return this.#outputCache.get(cacheKey) as string; }
 
@@ -415,7 +415,7 @@ export class CalcAUYOutput {
         let roundedStr: string = this.toStringNumberInternal(options);
         // Escapar % no resultado para LaTeX para evitar erros de comentário
         roundedStr = roundedStr.replace(/%/g, String.raw`\%`);
-        const strategyName: string = ROUNDING_IDS[this.#strategy];
+        const strategyName: string = ROUNDING_IDS[this.#roundStrategy];
         const result = String.raw`\text{round}_{\text{${strategyName}}}(${base}, ${p}) = ${roundedStr}`;
         this.#outputCache.set(cacheKey, result);
         return result;
@@ -459,12 +459,12 @@ export class CalcAUYOutput {
 
     private toUnicodeInternal(options?: OutputOptions): string {
         const p: number = this.getEffectivePrecision(options);
-        const isNone = this.#strategy === "NONE";
+        const isNone = this.#roundStrategy === "NONE";
         const cacheKey = `toUnicode:${p}:${isNone}`;
         if (this.#outputCache.has(cacheKey)) { return this.#outputCache.get(cacheKey) as string; }
 
         const base: string = renderAST(this.#ast, "unicode");
-        const strategyName: string = ROUNDING_IDS[this.#strategy];
+        const strategyName: string = ROUNDING_IDS[this.#roundStrategy];
         const subStrategy: string = toSubscript(strategyName);
         const result = `round${subStrategy}(${base}, ${p}) = ${this.toStringNumberInternal(options)}`;
         this.#outputCache.set(cacheKey, result);
@@ -582,7 +582,7 @@ export class CalcAUYOutput {
         const p: number = this.getEffectivePrecision(options);
         const loc = customLocale || getLocale(options?.locale);
         const base: string = renderAST(this.#ast, "verbal", loc);
-        const strategyName: string = ROUNDING_IDS[this.#strategy];
+        const strategyName: string = ROUNDING_IDS[this.#roundStrategy];
         const finalValueStr: string = this.toStringNumberInternal(options).replace(".", loc.voicedSeparator);
         const { phrases } = loc;
         return `${base}${phrases.isEqual}${finalValueStr} (${phrases.rounding}: ${strategyName} ${phrases.for} ${p} ${phrases.decimalPlaces}).`;
@@ -718,7 +718,7 @@ export class CalcAUYOutput {
         return JSON.stringify({
             ast: this.#ast,
             finalResult: this.#result.toJSON(),
-            strategy: this.#strategy,
+            roundStrategy: this.#roundStrategy,
             signature: this.#signature,
             contextLabel: this.#config.contextLabel,
         });
@@ -877,7 +877,7 @@ export class CalcAUYOutput {
         const context: ICalcAUYCustomOutputContext = {
             result: this.#result,
             ast: this.#ast,
-            strategy: this.#strategy,
+            roundStrategy: this.#roundStrategy,
             audit: {
                 latex: this.toLaTeXInternal(),
                 unicode: this.toUnicodeInternal(),

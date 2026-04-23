@@ -48,11 +48,11 @@ export function mapAllOutputs(
 
     // 4. Exemplo de processador customizado (Simples e Didático)
     const processorCode = `(ctx) => {
-    return \`[REPORT] Result: \${ctx.result.n}/\${ctx.result.d} | Strategy: \${ctx.strategy}\`;
+    return \`[REPORT] Result: \${ctx.result.n}/\${ctx.result.d} | Strategy: \${ctx.roundStrategy}\`;
 }`;
 
     const customReport = output.toCustomOutput((ctx) => {
-        return `[REPORT] Result: ${ctx.result.n}/${ctx.result.d} | Strategy: ${ctx.strategy}`;
+        return `[REPORT] Result: ${ctx.result.n}/${ctx.result.d} | Strategy: ${ctx.roundStrategy}`;
     });
 
     return {

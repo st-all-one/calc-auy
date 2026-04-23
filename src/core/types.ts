@@ -31,6 +31,10 @@ export interface InstanceConfig {
      */
     contextLabel?: string;
     /**
+     * Estratégia de arredondamento padrão para a instância.
+     */
+    roundStrategy?: RoundingStrategy;
+    /**
      * Injeção interna de timestamp para testes (Birth Certificate Mock).
      * @internal
      */

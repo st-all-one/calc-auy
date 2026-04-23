@@ -21,7 +21,7 @@ Diferente da versão anterior que passava apenas um BigInt escalado, o novo cont
 ### Estrutura do Contexto
 - **`result: RationalNumber`**: O valor final do cálculo (numerador/denominador puros).
 - **`ast: CalculationNode`**: A árvore completa para reconstrução customizada.
-- **`strategy: RoundingStrategy`**: A estratégia definida no `commit`.
+- **`roundStrategy: RoundingStrategy`**: A estratégia definida no `commit`.
 - **`audit`: Objeto contendo os rastros pré-gerados:
   - `latex: string`
   - `unicode: string`
@@ -43,7 +43,7 @@ const xmlExporter: ICalcAUYCustomOutput<string> = (ctx) => {
   const valFormatado = ctx.methods.toString({ decimalPrecision: 2 });
   
   return `
-    <imposto strategy="${ctx.strategy}">
+    <imposto roundStrategy="${ctx.roundStrategy}">
       <valor_bruto>${ctx.result.n}/${ctx.result.d}</valor_bruto>
       <valor_fiscal>${valFormatado}</valor_fiscal>
       <centavos_inteiros>${cents}</centavos_inteiros>

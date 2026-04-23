@@ -90,7 +90,7 @@ console.log(resultado.toVerbalA11y());
 const RastroAuditavel = resultado.toAuditTrace();
 console.log(RastroAuditavel);
 /*
-{"ast":{"kind":"operation","type":"mul","operands":[{"kind":"literal","value":{"n":"10000","d":"1"},"originalInput":"10000"},{"kind":"group","child":{"kind":"operation","type":"pow","operands":[{"kind":"group","child":{"kind":"operation","type":"add","operands":[{"kind":"literal","value":{"n":"1","d":"1"},"originalInput":"1"},{"kind":"literal","value":{"n":"59","d":"400"},"originalInput":"14.75%"}],"metadata":{"ref":"SELIC, mar/26"}}},{"kind":"literal","value":{"n":"3","d":"1"},"originalInput":"3"}]}}],"metadata":{"meta":{"data_de_calculo":"2026-04-21T09:00:00.000Z","usuário":{"id":99,"calc_token":"...UUID...","username":"st-all-one"}}}},"finalResult":{"n":"96702579","d":"6400"},"strategy":"NBR5891","signature":"b99d38e3726589136134614d4d3734ed469c8a81261d88aba309c278151f1515"}
+{"ast":{"kind":"operation","type":"mul","operands":[{"kind":"literal","value":{"n":"10000","d":"1"},"originalInput":"10000"},{"kind":"group","child":{"kind":"operation","type":"pow","operands":[{"kind":"group","child":{"kind":"operation","type":"add","operands":[{"kind":"literal","value":{"n":"1","d":"1"},"originalInput":"1"},{"kind":"literal","value":{"n":"59","d":"400"},"originalInput":"14.75%"}],"metadata":{"ref":"SELIC, mar/26"}}},{"kind":"literal","value":{"n":"3","d":"1"},"originalInput":"3"}]}}],"metadata":{"meta":{"data_de_calculo":"2026-04-21T09:00:00.000Z","usuário":{"id":99,"calc_token":"...UUID...","username":"st-all-one"}}}},"finalResult":{"n":"96702579","d":"6400"},"roundStrategy":"NBR5891","signature":"b99d38e3726589136134614d4d3734ed469c8a81261d88aba309c278151f1515"}
 */
 
 // == Reabertura do cálculo ==
@@ -101,12 +101,12 @@ const aprovacao = await calculoReaberto
         status: "aprovado",
         usuario: { id: 1, date: "2026-04-21T10:00:00.000Z", username: "One" },
     })
-    .commit({ roundStrategy: JSON.parse(RastroAuditavel).strategy });
+    .commit({ roundStrategy: JSON.parse(RastroAuditavel).roundStrategy });
 
 const rastroAprovado = aprovacao.toAuditTrace();
 console.log(rastroAprovado);
 /*
-{"ast":{"kind":"operation","type":"mul","operands":[{"kind":"literal","value":{"n":"10000","d":"1"},"originalInput":"10000"},{"kind":"group","child":{"kind":"operation","type":"pow","operands":[{"kind":"group","child":{"kind":"operation","type":"add","operands":[{"kind":"literal","value":{"n":"1","d":"1"},"originalInput":"1"},{"kind":"literal","value":{"n":"59","d":"400"},"originalInput":"14.75%"}],"metadata":{"ref":"SELIC, mar/26"}}},{"kind":"literal","value":{"n":"3","d":"1"},"originalInput":"3"}]}}],"metadata":{"meta":{"data_de_calculo":"2026-04-21T09:00:00.000Z","usuário":{"id":99,"calc_token":"...UUID...","username":"st-all-one"}},"review":{"status":"aprovado","usuario":{"id":1,"date":"2026-04-21T10:00:00.000Z","username":"One"}}}},"finalResult":{"n":"96702579","d":"6400"},"strategy":"NBR5891","signature":"d7fd4aff41a764903c997e5def57eadc655cbaed166f6c93ab59939f327c2d46"}
+{"ast":{"kind":"operation","type":"mul","operands":[{"kind":"literal","value":{"n":"10000","d":"1"},"originalInput":"10000"},{"kind":"group","child":{"kind":"operation","type":"pow","operands":[{"kind":"group","child":{"kind":"operation","type":"add","operands":[{"kind":"literal","value":{"n":"1","d":"1"},"originalInput":"1"},{"kind":"literal","value":{"n":"59","d":"400"},"originalInput":"14.75%"}],"metadata":{"ref":"SELIC, mar/26"}}},{"kind":"literal","value":{"n":"3","d":"1"},"originalInput":"3"}]}}],"metadata":{"meta":{"data_de_calculo":"2026-04-21T09:00:00.000Z","usuário":{"id":99,"calc_token":"...UUID...","username":"st-all-one"}},"review":{"status":"aprovado","usuario":{"id":1,"date":"2026-04-21T10:00:00.000Z","username":"One"}}}},"finalResult":{"n":"96702579","d":"6400"},"roundStrategy":"NBR5891","signature":"d7fd4aff41a764903c997e5def57eadc655cbaed166f6c93ab59939f327c2d46"}
 */
 ```
 > **NOTA:**
@@ -120,7 +120,7 @@ console.log(rastroAprovado);
 ```ts
 // == Tentativa de Fraude ==
 const fraude = JSON.parse(rastroAprovado);
-fraude["strategy"] = "TRUNCATE";
+fraude["roundStrategy"] = "TRUNCATE";
 
 try {
     await CalcAUY.checkIntegrity(fraude, { salt: SALT, encoder: ENCODER });
@@ -145,7 +145,7 @@ CalcAUYError: Violação de integridade detectada: a assinatura não confere com
 ```
 
 > **NOTA:**
-> Embora tenha sido mostrada a alteração no item "`strategy`", qualquer alteração, em qualquer ponto do objeto serializado, seja um "`0`" a mais dentro da `AST` ou uma letra diferente em qualquer `metadado`, invalidará a assinatura da mesma forma.
+> Embora tenha sido mostrada a alteração no item "`roundStrategy`", qualquer alteração, em qualquer ponto do objeto serializado, seja um "`0`" a mais dentro da `AST` ou uma letra diferente em qualquer `metadado`, invalidará a assinatura da mesma forma.
 > 
 > A integridade do objeto é total: ou **tudo** permanece idêntico, ou é considerado [violação crítica de integridade](./wiki/errors/integrity-critical-violation.md).
 > 

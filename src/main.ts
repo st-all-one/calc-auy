@@ -92,7 +92,7 @@ export class CalcAUY {
         const dataToVerify = payload.data || {
             ast: payload.ast,
             finalResult: payload.finalResult,
-            strategy: payload.strategy,
+            roundStrategy: payload.roundStrategy,
         };
 
         const encoder = config.encoder || DEFAULT_INSTANCE_CONFIG.encoder;

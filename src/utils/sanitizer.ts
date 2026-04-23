@@ -27,6 +27,7 @@ export const DEFAULT_INSTANCE_CONFIG: Required<InstanceConfig> = {
     salt: "",
     encoder: "HEX",
     contextLabel: "",
+    roundStrategy: "NBR5891",
     [BIRTH_TICKET_MOCK]: "",
 };
 

@@ -375,10 +375,10 @@ export const manualExamples: RawExample[] = [
             id: 1,
             date: new Date().toISOString(),
         }).commit().toCustomOutput((ctx) => {
-            return `[REPORT] Result: ${ctx.result.n}/${ctx.result.d} | Strategy: ${ctx.strategy}`;
+            return `[REPORT] Result: ${ctx.result.n}/${ctx.result.d} | Strategy: ${ctx.roundStrategy}`;
         }),
         customProcessor:
-            "(ctx) => { return `[REPORT] Result: ${ctx.result.n}/${ctx.result.d} | Strategy: ${ctx.strategy}`; }",
+            "(ctx) => { return `[REPORT] Result: ${ctx.result.n}/${ctx.result.d} | Strategy: ${ctx.roundStrategy}`; }",
     },
 
     // toAuditTrace

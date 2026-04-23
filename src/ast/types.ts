@@ -97,5 +97,5 @@ export interface SerializedCalculation {
     /** Resultado consolidado (apenas em traces de auditoria). */
     finalResult?: RationalValue;
     /** Estratégia de arredondamento aplicada (apenas em traces). */
-    strategy?: string;
+    roundStrategy?: string;
 }

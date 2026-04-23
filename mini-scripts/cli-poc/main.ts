@@ -22,7 +22,7 @@ ${colors.bold("Uso:")}
 ${colors.bold("Modos de Operação:")}
   1. Fluente:  -v 100 -o add -w 50
   2. Parser:   -e "100 + (50 * 2) / 7"
-  3. Hydrate:  -j '{"ast": {...}, "strategy": "..."}'
+  3. Hydrate:  -j '{"ast": {...}, "roundStrategy": "..."}'
 
 ${colors.bold("Opções Gerais:")}
   -m, --metadata <str> Adiciona um metadado context:str

@@ -42,7 +42,7 @@ O renderizador SVG deve garantir que o identificador subscrito (NBR, HU, etc.) s
 ## Implementação na AST e RationalNumber
 
 ### Colapso de Arredondamento
-O arredondamento ocorre apenas no método `.commit(strategy)` e é re-executado nos métodos de output se a `decimalPrecision` for alterada.
+O arredondamento ocorre apenas no método `.commit(roundStrategy)` e é re-executado nos métodos de output se a `decimalPrecision` for alterada.
 
 1. **Entrada:** `RationalNumber` (n/d) com precisão interna de 50 casas.
 2. **Escalonamento:** Multiplica-se o valor pela potência de 10 da precisão de saída desejada.
@@ -59,7 +59,7 @@ O `ASTSnapshot` gerado pelo `toAuditTrace()` deve incluir a estratégia de arred
 ```json
 {
   "type": "commit",
-  "strategy": "NBR5891",
+  "roundStrategy": "NBR5891",
   "visual_id": "NBR",
   "final_value": { "n": "126", "d": "100" }
 }

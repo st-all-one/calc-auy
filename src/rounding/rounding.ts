@@ -173,14 +173,14 @@ export const RoundingHandlers: Record<
 };
 
 /**
- * Applies a rounding strategy to a RationalNumber.
+ * Applies a rounding roundStrategy to a RationalNumber.
  */
 export function applyRounding(
     val: RationalNumber,
-    strategy: RoundingStrategy,
+    roundStrategy: RoundingStrategy,
     precision: number,
 ): RationalNumber {
-    const handler: (val: RationalNumber, p: number) => RationalNumber = RoundingHandlers[strategy];
+    const handler: (val: RationalNumber, p: number) => RationalNumber = RoundingHandlers[roundStrategy];
     return handler(val, precision);
 }
 

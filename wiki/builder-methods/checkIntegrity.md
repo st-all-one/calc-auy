@@ -5,7 +5,7 @@ O `checkIntegrity()` é o componente de validação pura da CalcAUY. Diferente d
 ## ⚙️ Funcionamento Interno
 
 1.  **Parsing de Payload:** Aceita o rastro assinado tanto como uma string JSON bruta quanto como um objeto já parseado.
-2.  **Extração de Dados:** Isola os dados matemáticos críticos (`ast`, `finalResult`, `strategy`) e a assinatura contida no envelope.
+2.  **Extração de Dados:** Isola os dados matemáticos críticos (`ast`, `finalResult`, `roundStrategy`) e a assinatura contida no envelope.
 3.  **Confronto Determinístico:** Gera um novo hash BLAKE3 a partir dos dados extraídos utilizando o Salt fornecido e compara com a assinatura recebida.
 4.  **Veredito de Integridade:** Retorna `true` se os hashes coincidirem perfeitamente. Lança uma exceção se houver qualquer divergência.
 

@@ -33,7 +33,7 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 - **`hibernate()`**: Serializa a árvore atual selada (**Promise<string>**).
 - **`getAST()`**: Retorna o objeto da árvore atual (**CalculationNode**).
 - **`hydrate(ast, {salt})`**: Reconstrói a instância validando assinatura digital (**Promise**).
-- **`commit(strategy)`**: Finaliza, colapsa e assina o cálculo (**Promise**).
+- **`commit(roundStrategy)`**: Finaliza, colapsa e assina o cálculo (**Promise**).
 
 ### Classe `CalcAUYOutput` (Result)
 - `toMonetary()`, `toStringNumber()`, `toLaTeX()`, `toHTML()`, `toUnicode()`, `toImageBuffer()`
