@@ -6,7 +6,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import { CalcAUY, CalcAUYOutput } from "@calc-auy";
+import { CalcAUYLogic, CalcAUYOutput } from "@calc-auy";
 
 /**
  * Executa uma expressão de cálculo recebida via string, garantindo a auditoria
@@ -34,8 +34,8 @@ export function executeExpression(
     }
 
     // 3. Validação de Segurança da Sintaxe Core
-    if (!expression.startsWith('CalcAUY.from("')) {
-        throw new Error("A expressão deve iniciar com 'CalcAUY.from(\"'");
+    if (!expression.startsWith('CalcAUYLogic.from("')) {
+        throw new Error("A expressão deve iniciar com 'CalcAUYLogic.from(\"'");
     }
     if (!expression.includes(".commit(")) {
         throw new Error("A expressão deve conter '.commit(...)'");
@@ -71,15 +71,15 @@ export function executeExpression(
     }
 
     // 6. Execução Controlada
-    // Injetamos a classe CalcAUY no escopo da função para permitir o encadeamento dinâmico.
-    const fn = new Function("CalcAUY", `return ${expression};`);
-    const result = fn(CalcAUY);
+    // Injetamos a classe CalcAUYLogic no escopo da função para permitir o encadeamento dinâmico.
+    const fn = new Function("CalcAUYLogic", `return ${expression};`);
+    const result = fn(CalcAUYLogic);
 
-    if (!(result instanceof CalcAUYOutput) && !(result instanceof CalcAUY)) {
+    if (!(result instanceof CalcAUYOutput) && !(result instanceof CalcAUYLogic)) {
         throw new Error(
-            "A expressão deve retornar um CalcAUY ou CalcAUYOutput",
+            "A expressão deve retornar um CalcAUYLogic ou CalcAUYOutput",
         );
     }
 
-    return result instanceof CalcAUY ? result.commit() : result;
+    return result instanceof CalcAUYLogic ? result.commit() : result;
 }
