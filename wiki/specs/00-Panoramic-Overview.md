@@ -12,7 +12,7 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 3.  **Construção e Enriquecimento (`specs/10`):** 
     - **Fluent API:** Construção da árvore AST.
     - **Metadados:** `.setMetadata()` anexa o contexto de negócio a cada operação.
-    - **Hibernação:** `.hibernate()` (ou `.getAST()`) extrai o estado atual selado com assinatura digital.
+    - **Hibernação:** `.hibernate()` extrai o estado atual selado com assinatura digital.
 4.  **Precedência e Execução (`specs/07`, `specs/13`):** O `commit()` aplica regras como **NBR-5891** e assina o resultado.
 5.  **Saída e Acessibilidade (`specs/09`, `specs/14`):** Geração de multiformatos com rastro forense.
 6.  **Proteção de Dados e Telemetria (`specs/11`, `specs/17`, `specs/19`):** Sistema de proteção de PII (*Security by Default*) e integridade militar via **BLAKE3**.
@@ -29,14 +29,14 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 ### Classe `CalcAUYLogic` (Builder)
 - `add()`, `sub()`, `mult()`, `div()`, `pow()`, `mod()`, `divInt()`
 - `group()`: Agrupamento manual.
-- **`addFromExternalInstance(ext)`**: Portal de integração entre jurisdições.
+- **`fromExternalInstance(ext)`**: Portal de integração entre jurisdições.
 - **`hibernate()`**: Serializa a árvore atual selada (**Promise<string>**).
-- **`getAST()`**: Retorna o objeto da árvore atual (**CalculationNode**).
 - **`hydrate(ast, {salt})`**: Reconstrói a instância validando assinatura digital (**Promise**).
 - **`commit(roundStrategy)`**: Finaliza, colapsa e assina o cálculo (**Promise**).
 
 ### Classe `CalcAUYOutput` (Result)
 - `toMonetary()`, `toStringNumber()`, `toLaTeX()`, `toHTML()`, `toUnicode()`, `toImageBuffer()`
+- **`toASTObject()`**: Retorna o objeto de rastro completo (**Record<string, unknown>**).
 - **`toSlice()` / `toSliceByRatio()`**: Rateio exato de centavos (Algoritmo de Maior Resto).
 - `toVerbalA11y()`: Tradução humana da fórmula.
 - `toAuditTrace()`: Snapshot JSON completo com metadados e assinatura de integridade.

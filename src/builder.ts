@@ -72,6 +72,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
     readonly #ast: CalculationNode | null;
     readonly #instanceId: symbol;
     readonly #config: Required<InstanceConfig>;
+    readonly #birthTime: string | null;
 
     // Branding para IDE: Impede mistura de instâncias com labels ou configurações diferentes
     // @ts-ignore: Branding field
@@ -80,10 +81,16 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
     private readonly __config_brand!: Config;
 
     /** @internal */
-    constructor(ast: CalculationNode | null, instanceId: symbol, config: Required<InstanceConfig>) {
+    constructor(
+        ast: CalculationNode | null,
+        instanceId: symbol,
+        config: Required<InstanceConfig>,
+        birthTime: string | null,
+    ) {
         this.#ast = ast;
         this.#instanceId = instanceId;
         this.#config = config;
+        this.#birthTime = birthTime;
     }
 
     /**
@@ -101,7 +108,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             this.validateInstance(value);
             // Se a instância atual estiver vazia, assume a AST da instância recebida
             if (this.#ast === null) {
-                return new CalcAUYLogic<Context, Config>(value.#ast, this.#instanceId, this.#config);
+                return new CalcAUYLogic<Context, Config>(value.#ast, this.#instanceId, this.#config, value.#birthTime);
             }
             return value;
         }
@@ -115,30 +122,23 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
         }
 
         // --- Lógica de Criação de Nó ---
-        const createBirthNode = (input: string): LiteralNode => {
+        const createBaseNode = (input: string): LiteralNode => {
             const r: RationalNumber = RationalNumber.from(input);
-            const node: LiteralNode = {
+            return {
                 kind: "literal",
                 value: r.toJSON() as RationalValue,
                 originalInput: input,
             };
-
-            // Padrão Birth Certificate: Fixa o timestamp no nascimento
-            if (this.#ast === null) {
-                const birth = this.#config[BIRTH_TICKET_MOCK] || new Date().toISOString();
-                node.metadata = { ...node.metadata, timestamp: birth };
-            }
-            return node;
         };
+
+        const getBirth = () => this.#config[BIRTH_TICKET_MOCK] || new Date().toISOString();
 
         // Prioridade 1: Cache de Sessão (Escopado)
         const session = getActiveSession();
         const sessionCached = session?.getExtra<LiteralNode>(inputStr);
         if (sessionCached) {
             if (this.#ast === null) {
-                const birth = this.#config[BIRTH_TICKET_MOCK] || new Date().toISOString();
-                const node = { ...sessionCached, metadata: { ...sessionCached.metadata, timestamp: birth } };
-                return new CalcAUYLogic<Context, Config>(node, this.#instanceId, this.#config);
+                return new CalcAUYLogic<Context, Config>(sessionCached, this.#instanceId, this.#config, getBirth());
             }
             return this.op("add", value);
         }
@@ -147,9 +147,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
         const hotCached = hotLiteralNodeCache.get(inputStr);
         if (hotCached) {
             if (this.#ast === null) {
-                const birth = this.#config[BIRTH_TICKET_MOCK] || new Date().toISOString();
-                const node = { ...hotCached, metadata: { ...hotCached.metadata, timestamp: birth } };
-                return new CalcAUYLogic<Context, Config>(node, this.#instanceId, this.#config);
+                return new CalcAUYLogic<Context, Config>(hotCached, this.#instanceId, this.#config, getBirth());
             }
             return this.op("add", value);
         }
@@ -159,9 +157,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
         const globalCached = globalRef?.deref();
         if (globalCached) {
             if (this.#ast === null) {
-                const birth = this.#config[BIRTH_TICKET_MOCK] || new Date().toISOString();
-                const nodeWithBirth = { ...globalCached, metadata: { ...globalCached.metadata, timestamp: birth } };
-                return new CalcAUYLogic<Context, Config>(nodeWithBirth, this.#instanceId, this.#config);
+                return new CalcAUYLogic<Context, Config>(globalCached, this.#instanceId, this.#config, getBirth());
             }
             if (hotLiteralNodeCache.size < HOT_CACHE_LIMIT) {
                 hotLiteralNodeCache.set(inputStr, globalCached);
@@ -169,24 +165,20 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             return this.op("add", value);
         }
 
-        const newNode = createBirthNode(inputStr);
-
-        // Armazenamento no cache: apenas nós "puros" sem timestamp de nascimento
-        const cleanNode = { ...newNode, metadata: { ...newNode.metadata } };
-        delete cleanNode.metadata?.timestamp;
+        const newNode = createBaseNode(inputStr);
 
         if (session) {
-            session.setExtra(inputStr, cleanNode);
+            session.setExtra(inputStr, newNode);
         } else {
             if (hotLiteralNodeCache.size < HOT_CACHE_LIMIT) {
-                hotLiteralNodeCache.set(inputStr, cleanNode);
+                hotLiteralNodeCache.set(inputStr, newNode);
             }
-            globalLiteralNodeCache.set(inputStr, new WeakRef(cleanNode));
-            astCacheRegistry.register(cleanNode, inputStr);
+            globalLiteralNodeCache.set(inputStr, new WeakRef(newNode));
+            astCacheRegistry.register(newNode, inputStr);
         }
 
         if (this.#ast === null) {
-            return new CalcAUYLogic<Context, Config>(newNode, this.#instanceId, this.#config);
+            return new CalcAUYLogic<Context, Config>(newNode, this.#instanceId, this.#config, getBirth());
         }
 
         return this.op("add", value);
@@ -199,20 +191,15 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
         const lexer: Lexer = new Lexer(expression);
         const tokens = lexer.tokenize();
         const parser: Parser = new Parser(tokens);
-        let newNode = parser.parse();
+        const newNode = parser.parse();
 
         if (this.#ast === null) {
-            // Padrão Birth Certificate: Fixa o timestamp no nascimento da árvore completa
             const birth = this.#config[BIRTH_TICKET_MOCK] || new Date().toISOString();
-            newNode = {
-                ...newNode,
-                metadata: { ...newNode.metadata, timestamp: birth },
-            } as CalculationNode;
-            return new CalcAUYLogic<Context, Config>(newNode, this.#instanceId, this.#config);
+            return new CalcAUYLogic<Context, Config>(newNode, this.#instanceId, this.#config, birth);
         }
 
         // Se já houver AST, adiciona a expressão à árvore atual
-        return this.add(new CalcAUYLogic<Context, Config>(newNode, this.#instanceId, this.#config));
+        return this.add(new CalcAUYLogic<Context, Config>(newNode, this.#instanceId, this.#config, this.#birthTime));
     }
 
     /**
@@ -258,7 +245,10 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
         const node: CalculationNode = payload.data || payload.ast || (payload as unknown as CalculationNode);
         validateASTNode(node);
 
-        // Envolve em nó de controle (reanimação) - Preserva o timestamp original contido no rastro
+        // Extrai o birthTime original se disponível nos metadados da raiz
+        const originalBirthTime = node.metadata?.timestamp as string | undefined;
+
+        // Envolve em nó de controle (reanimação)
         const controlNode: ControlNode = {
             kind: "control",
             type: "reanimation_event",
@@ -270,15 +260,25 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             child: node,
         };
 
-        return new CalcAUYLogic<Context, Config>(controlNode, this.#instanceId, this.#config);
+        return new CalcAUYLogic<Context, Config>(
+            controlNode,
+            this.#instanceId,
+            this.#config,
+            originalBirthTime || null,
+        );
     }
 
     /**
      * Captura e serializa a árvore atual em uma string JSON pronta para persistência.
      */
     public async hibernate(): Promise<string> {
-        const ast = this.assertAST();
-        // Lacre Determinístico: Usa a AST como está, preservando o nascimento fixo
+        const ast = structuredClone(this.assertAST());
+
+        // Injeta o carimbo de nascimento apenas no fechamento
+        if (this.#birthTime) {
+            ast.metadata = { ...ast.metadata, timestamp: this.#birthTime };
+        }
+
         const signature = await generateSignature(ast, this.#config.salt, this.#config.encoder);
         const payload: SerializedCalculation = {
             data: ast,
@@ -302,6 +302,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
         let externalSignature: string;
         let externalContextLabel = "";
         let externalStrategy = "";
+        let externalBirthTime: string | null = null;
 
         if (external instanceof CalcAUYLogic) {
             // Instância "Viva": Fecha com assinatura imediata e valida
@@ -313,6 +314,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             const extConfig = external.getContextConfig();
             externalContextLabel = extConfig.contextLabel;
             externalStrategy = extConfig.roundStrategy || "";
+            externalBirthTime = (externalAST.metadata?.timestamp as string) || null;
         } else {
             // Objeto ou JSON serializado
             const payload: SerializedCalculation = typeof external === "string"
@@ -331,6 +333,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             externalStrategy = payload.roundStrategy || "";
             // Validação estrutural básica
             validateASTNode(externalAST);
+            externalBirthTime = (externalAST.metadata?.timestamp as string) || null;
         }
 
         // Carimbo de Jurisdição (Linhagem original preservada)
@@ -346,33 +349,16 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
         };
 
         if (this.#ast === null) {
-            // Certidão de Nascimento: carimba o timestamp no nó control se ele for o ponto de partida
-            const birth = this.#config[BIRTH_TICKET_MOCK] || new Date().toISOString();
-            controlNode.metadata = { ...controlNode.metadata, timestamp: birth };
-            return new CalcAUYLogic<Context, Config>(controlNode, this.#instanceId, this.#config);
+            // Se for o ponto de partida, herda o nascimento da instância externa ou gera um novo
+            const birth = externalBirthTime || this.#config[BIRTH_TICKET_MOCK] || new Date().toISOString();
+            return new CalcAUYLogic<Context, Config>(controlNode, this.#instanceId, this.#config, birth);
         }
 
         // União via operação especial, envolvida em grupo por segurança
         const group: GroupNode = { kind: "group", child: controlNode };
         const newAST = attachOp(this.assertAST(), "crossContextAdd", group);
 
-        // Herança de Birth Certificate: preserva o nascimento da árvore atual
-        if (this.#ast.metadata?.timestamp) {
-            newAST.metadata = { ...newAST.metadata, timestamp: this.#ast.metadata.timestamp };
-        }
-
-        return new CalcAUYLogic<Context, Config>(newAST, this.#instanceId, this.#config);
-    }
-
-    /**
-     * Retorna uma cópia profunda e desconectada da Árvore de Sintaxe Abstrata (AST).
-     *
-     * **Engenharia:** Utiliza `structuredClone` para garantir que qualquer modificação
-     * externa no objeto retornado não contamine o estado interno e imutável da instância.
-     * Para persistência oficial com assinatura, utilize o método `.hibernate()`.
-     */
-    public getAST(): CalculationNode {
-        return structuredClone(this.assertAST());
+        return new CalcAUYLogic<Context, Config>(newAST, this.#instanceId, this.#config, this.#birthTime);
     }
 
     /**
@@ -393,12 +379,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             });
         }
 
-        // Herança de Birth Certificate: preserva o nascimento
-        if (ast.metadata?.timestamp) {
-            newAST.metadata = { ...newAST.metadata, timestamp: ast.metadata.timestamp };
-        }
-
-        return new CalcAUYLogic<Context, Config>(newAST, this.#instanceId, this.#config);
+        return new CalcAUYLogic<Context, Config>(newAST, this.#instanceId, this.#config, this.#birthTime);
     }
 
     /**
@@ -421,12 +402,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             });
         }
 
-        // Herança de Birth Certificate: preserva o nascimento
-        if (ast.metadata?.timestamp) {
-            node.metadata = { ...node.metadata, timestamp: ast.metadata.timestamp };
-        }
-
-        return new CalcAUYLogic<Context, Config>(node, this.#instanceId, this.#config);
+        return new CalcAUYLogic<Context, Config>(node, this.#instanceId, this.#config, this.#birthTime);
     }
 
     // --- Fluent Operations ---
@@ -514,11 +490,6 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
 
         const newAST: CalculationNode = attachOp(ast, type, rightNode);
 
-        // Herança de Birth Certificate: O novo nó raiz herda o timestamp de nascimento da árvore anterior
-        if (ast.metadata?.timestamp) {
-            newAST.metadata = { ...newAST.metadata, timestamp: ast.metadata.timestamp };
-        }
-
         if (logger.isEnabledFor("debug")) {
             logger.debug("Node appended to AST", {
                 operation: type,
@@ -527,7 +498,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             });
         }
 
-        return new CalcAUYLogic<Context, Config>(newAST, this.#instanceId, this.#config);
+        return new CalcAUYLogic<Context, Config>(newAST, this.#instanceId, this.#config, this.#birthTime);
     }
 
     /**
@@ -535,7 +506,12 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
      */
     public async commit(): Promise<CalcAUYOutput> {
         using _span = startSpan("commit", logger);
-        const ast = this.assertAST();
+        const ast = structuredClone(this.assertAST());
+
+        // Injeta o carimbo de nascimento apenas no fechamento
+        if (this.#birthTime) {
+            ast.metadata = { ...ast.metadata, timestamp: this.#birthTime };
+        }
 
         const roundStrategy: RoundingStrategy = this.#config.roundStrategy;
         const result: RationalNumber = evaluate(ast);

@@ -1,5 +1,5 @@
 import { describe, it } from "@std/testing/bdd";
-import { assertEquals, assertThrows, assertRejects } from "@std/assert";
+import { assertEquals, assertRejects, assertThrows } from "@std/assert";
 import { CalcAUY } from "@calcauy";
 import { CalcAUYError } from "@src/core/errors.ts";
 
@@ -161,7 +161,11 @@ describe("Auditoria Exaustiva - CalcAUY (Rigor Matemático e Fiscal)", () => {
 
     describe("8. Erros e Segurança", () => {
         it("deve lançar division-by-zero em divisão direta", async () => {
-            await assertRejects(async () => await CalcAUY.from(10).div(0).commit(), CalcAUYError, "O denominador não pode ser zero.");
+            await assertRejects(
+                async () => await CalcAUY.from(10).div(0).commit(),
+                CalcAUYError,
+                "O denominador não pode ser zero.",
+            );
         });
 
         it("deve lançar complex-result em raiz de número negativo", async () => {

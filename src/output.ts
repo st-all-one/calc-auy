@@ -68,6 +68,7 @@ export interface ICalcAUYCustomOutputContext {
         | "toFloatNumber"
         | "toScaledBigInt"
         | "toRawInternalNumber"
+        | "toASTObject"
         | "toMonetary"
         | "toLaTeX"
         | "toUnicode"
@@ -304,6 +305,27 @@ export class CalcAUYOutput {
 
     private toRawInternalNumberInternal(): { n: bigint; d: bigint } {
         return { n: this.#result.n, d: this.#result.d };
+    }
+
+    /**
+     * Retorna o rastro completo da execução como um objeto para inspeção programática.
+     *
+     * **Engenharia:** Semelhante ao `toAuditTrace`, mas retorna o objeto puro
+     * (sem serialização JSON). Útil para integrações que já lidam com objetos JS/TS.
+     */
+    public toASTObject(): Record<string, unknown> {
+        using _span = startSpan("toASTObject", logger, {});
+        return this.toASTObjectInternal();
+    }
+
+    private toASTObjectInternal(): Record<string, unknown> {
+        return {
+            ast: structuredClone(this.#ast),
+            finalResult: this.#result.toJSON(),
+            roundStrategy: this.#roundStrategy,
+            signature: this.#signature,
+            contextLabel: this.#config.contextLabel,
+        };
     }
 
     /**
@@ -889,6 +911,7 @@ export class CalcAUYOutput {
                 toFloatNumber: this.toFloatNumber.bind(this),
                 toScaledBigInt: this.toScaledBigInt.bind(this),
                 toRawInternalNumber: this.toRawInternalNumber.bind(this),
+                toASTObject: this.toASTObject.bind(this),
                 toMonetary: this.toMonetary.bind(this),
                 toLaTeX: this.toLaTeX.bind(this),
                 toUnicode: this.toUnicode.bind(this),

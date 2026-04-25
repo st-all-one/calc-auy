@@ -24,7 +24,7 @@ describe("CalcAUY Builder Features", () => {
         it("deve definir a política de segurança global e retornar a classe CalcAUY para encadeamento", () => {
             // Ensure initial state is sensitive (default)
             securityPolicy.sensitive = true;
-            
+
             const returnedClass = CalcAUY.setSecurityPolicy({ sensitive: false });
 
             // Assert that the method returns the class itself for chaining

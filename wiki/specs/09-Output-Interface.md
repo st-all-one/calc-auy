@@ -22,6 +22,9 @@ Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAU
 ### `toRawInternalNumber(): { n: bigint, d: bigint }`
 - **Descrição:** Retorna o objeto racional bruto (numerador e denominador) resultante do cálculo, sem qualquer arredondamento.
 
+### `toASTObject(): Record<string, unknown>`
+- **Descrição:** Retorna o rastro completo da execução como um objeto para inspeção programática (clonado). Inclui a AST, resultado, estratégia e assinatura.
+
 ### `toMonetary(options?: MonetaryOptions): string`
 - **Descrição:** Retorna o valor formatado com símbolos monetários localizados (ex: `R$ 1.250,50`).
 

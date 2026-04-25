@@ -26,7 +26,6 @@ Os métodos são acessados através da instância criada pela factory `CalcAUY.c
 | :--- | :--- | :--- |
 | [`setMetadata`](./builder-methods/setMetadata.md) | `calc.setMetadata("id", 1)` | Anexa justificativas de negócio ao nó. |
 | [`group`](./builder-methods/group.md) | `calc.add(5).group()` | Força precedência (parênteses). |
-| [`getAST`](./builder-methods/getAST.md) | `calc.getAST()` | Retorna o objeto da árvore bruta. |
 
 ### ⚡ Otimização
 | Método | Exemplo Rápido | Descrição |

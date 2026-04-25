@@ -7,7 +7,7 @@ O `fromExternalInstance()` é o portal de ingestão e integração para cálculo
 1.  **Dualidade de Ingestão:** 
     -   **Ponto de Partida:** Se a instância atual estiver vazia, o método atua como o `.from()` inicial, definindo a árvore externa (envolta em `control`) como a **RAIZ** do cálculo.
     -   **Anexação:** Se a instância já possuir um cálculo iniciado, ele realiza a união via operação `crossContextAdd`.
-2.  **Lacre de Nascimento:** Ao ser usado como ponto de partida, o método gera a **Certidão de Nascimento** (timestamp) para a jurisdição atual, garantindo o determinismo da assinatura.
+2.  **Captura de Nascimento:** Ao ser usado como ponto de partida (instância vazia), o método captura o `birthTime` para a jurisdição atual, que será selado na AST no momento do fechamento, garantindo o determinismo da assinatura final.
 3.  **Carimbo de Jurisdição:** Envolve a árvore externa em um nó do tipo `control`. Este nó registra permanentemente o `previousContextLabel` e a `previousSignature` original.
 4.  **Handshake de Segurança:** Valida a integridade da instância externa (viva ou serializada) antes de permitir a entrada do dado.
 

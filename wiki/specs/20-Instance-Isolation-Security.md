@@ -42,11 +42,12 @@ Diferente de operações matemáticas, o nó `control` é um carimbo de linhagem
 - **`previousSignature`**: Assinatura original do dado antes da integração.
 
 ## 5. Lacre de Fechamento (Timestamp Jurídico)
-A CalcAUY implementa o conceito de **Certidão de Fechamento**. Sempre que um cálculo é encerrado (`commit`) ou persistido (`hibernate`), a engine realiza a injeção automática de um `timestamp` nos metadados do nó raiz da AST.
+A CalcAUY implementa o conceito de **Certidão de Fechamento**. Embora o momento de nascimento do cálculo seja capturado em sua inicialização (via `.from()`, `.parseExpression()` ou `.fromExternalInstance()`), a injeção física deste `timestamp` nos metadados do nó raiz da AST ocorre **exclusivamente** no ato de encerramento (`commit`) ou persistência (`hibernate`).
 
 ### Imutabilidade Temporal:
-- **Proteção por Assinatura:** Como o timestamp é injetado **antes** da geração da assinatura digital, ele torna-se parte integrante do lacre. Qualquer tentativa de retroagir ou alterar o momento do fechamento invalidará o rastro.
-- **Linhagem Preservada:** Em integrações cross-context, o nó `control` aponta para a árvore filha que já possui seu próprio timestamp de fechamento original, permitindo reconstruir a linha do tempo exata de cada parcela do cálculo.
+- **Preservação da Fase de Build:** Durante a fase de construção, os nós permanecem puros e sem carimbos de tempo redundantes, otimizando o rastro técnico.
+- **Proteção por Assinatura:** O timestamp é injetado **imediatamente antes** da geração da assinatura digital BLAKE3. Isso o torna parte integrante do lacre criptográfico; qualquer tentativa de retroagir ou alterar o momento do fechamento invalidará a assinatura.
+- **Linhagem Preservada:** Em integrações cross-context, o nó `control` aponta para a árvore filha que já possui seu próprio timestamp de fechamento original, permitindo reconstruir a linha do tempo exata de cada jurisdição que contribuiu para o cálculo.
 
 ## 5. Matriz de Segurança de Jurisdição
 

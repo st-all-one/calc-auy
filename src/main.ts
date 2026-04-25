@@ -55,7 +55,7 @@ export class CalcAUY {
 
         const instanceId = Symbol(fullConfig.contextLabel);
 
-        return new CalcAUYLogic<T["contextLabel"], T>(null, instanceId, fullConfig);
+        return new CalcAUYLogic<T["contextLabel"], T>(null, instanceId, fullConfig, null);
     }
 
     /**
