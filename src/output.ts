@@ -122,6 +122,10 @@ export class CalcAUYOutput {
     readonly #config: Required<InstanceConfig>;
     readonly #cache: Map<number, RationalNumber> = new Map<number, RationalNumber>();
     readonly #outputCache: Map<string, string | Uint8Array> = new Map();
+    #cachedASTObject: Record<string, unknown> | null = null;
+    #cachedMethods: ICalcAUYCustomOutputContext["methods"] | null = null;
+    #cachedResultJSON: { n: string; d: string } | null = null;
+
     static #cachedKaTeXCSS: string | null = null;
     static readonly #formatterCache = new Map<string, Intl.NumberFormat>();
     static readonly #encoder = new TextEncoder();
@@ -152,6 +156,13 @@ export class CalcAUYOutput {
     private getEffectivePrecision(options?: OutputOptions): number {
         if (options?.decimalPrecision !== undefined) { return options.decimalPrecision; }
         return this.#roundStrategy === "NONE" ? 50 : DEFAULT_DECIMAL_PRECISION;
+    }
+
+    private getResultJSON(): { n: string; d: string } {
+        if (!this.#cachedResultJSON) {
+            this.#cachedResultJSON = this.#result.toJSON() as { n: string; d: string };
+        }
+        return this.#cachedResultJSON;
     }
 
     /**
@@ -319,13 +330,17 @@ export class CalcAUYOutput {
     }
 
     private toASTObjectInternal(): Record<string, unknown> {
-        return {
-            ast: structuredClone(this.#ast),
-            finalResult: this.#result.toJSON(),
-            roundStrategy: this.#roundStrategy,
-            signature: this.#signature,
-            contextLabel: this.#config.contextLabel,
-        };
+        if (!this.#cachedASTObject) {
+            this.#cachedASTObject = {
+                // Otimização: Shallow copy do root. Nós da AST são imutáveis por design.
+                ast: { ...this.#ast },
+                finalResult: this.getResultJSON(),
+                roundStrategy: this.#roundStrategy,
+                signature: this.#signature,
+                contextLabel: this.#config.contextLabel,
+            };
+        }
+        return { ...this.#cachedASTObject };
     }
 
     /**
@@ -737,13 +752,13 @@ export class CalcAUYOutput {
     }
 
     private toAuditTraceInternal(): string {
-        return JSON.stringify({
-            ast: this.#ast,
-            finalResult: this.#result.toJSON(),
-            roundStrategy: this.#roundStrategy,
-            signature: this.#signature,
-            contextLabel: this.#config.contextLabel,
-        });
+        const cacheKey = "auditTrace";
+        let trace = this.#outputCache.get(cacheKey) as string;
+        if (trace === undefined) {
+            trace = JSON.stringify(this.toASTObjectInternal());
+            this.#outputCache.set(cacheKey, trace);
+        }
+        return trace;
     }
 
     /**
@@ -896,17 +911,9 @@ export class CalcAUYOutput {
      */
     public toCustomOutput<T>(processor: ICalcAUYCustomOutput<T>): T {
         using _span = startSpan("toCustomOutput", logger, {});
-        const context: ICalcAUYCustomOutputContext = {
-            result: this.#result,
-            ast: this.#ast,
-            roundStrategy: this.#roundStrategy,
-            audit: {
-                latex: this.toLaTeXInternal(),
-                unicode: this.toUnicodeInternal(),
-                verbal: this.toVerbalA11yInternal(),
-            },
-            options: {},
-            methods: {
+
+        if (!this.#cachedMethods) {
+            this.#cachedMethods = {
                 toStringNumber: this.toStringNumber.bind(this),
                 toFloatNumber: this.toFloatNumber.bind(this),
                 toScaledBigInt: this.toScaledBigInt.bind(this),
@@ -922,7 +929,20 @@ export class CalcAUYOutput {
                 toSliceByRatio: this.toSliceByRatio.bind(this),
                 toAuditTrace: this.toAuditTrace.bind(this),
                 toJSON: this.toJSON.bind(this),
+            };
+        }
+
+        const context: ICalcAUYCustomOutputContext = {
+            result: this.#result,
+            ast: this.#ast,
+            roundStrategy: this.#roundStrategy,
+            audit: {
+                latex: this.toLaTeXInternal(),
+                unicode: this.toUnicodeInternal(),
+                verbal: this.toVerbalA11yInternal(),
             },
+            options: {},
+            methods: this.#cachedMethods,
         };
         return processor.call(this, context);
     }

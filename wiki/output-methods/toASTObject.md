@@ -4,8 +4,9 @@ O `toASTObject()` fornece acesso ao rastro completo da execução como um objeto
 
 ## ⚙️ Funcionamento Interno
 
-1.  **Clone Estrutural:** Utiliza `structuredClone` para garantir que o objeto retornado seja uma cópia profunda, desconectada da instância interna de output. Isso garante a imutabilidade do estado original mesmo que o objeto retornado seja mutado externamente.
-2.  **Snapshot Completo:** Diferente do antigo `getAST()`, este método não retorna apenas a árvore, mas o pacote completo de auditoria:
+1.  **Shallow Copy e Imutabilidade:** Como os nós da AST são imutáveis por design, o método realiza apenas um *shallow copy* do nó raiz para compor o objeto de rastro. Isso garante que o objeto retornado seja uma nova referência, mas evita o processamento pesado de uma clonagem profunda recursiva.
+2.  **Cache de Instância:** O objeto de rastro é calculado apenas na primeira chamada e armazenado em um cache privado (`#cachedASTObject`), garantindo performance O(1) em acessos subsequentes.
+3.  **Snapshot Completo:** Diferente do antigo `getAST()`, este método não retorna apenas a árvore, mas o pacote completo de auditoria:
     -   `ast`: A Árvore de Sintaxe Abstrata completa.
     -   `finalResult`: O resultado consolidado em formato racional (`{ n, d }`).
     -   `roundStrategy`: A estratégia de arredondamento aplicada.

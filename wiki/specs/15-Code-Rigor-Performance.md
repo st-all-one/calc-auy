@@ -25,8 +25,9 @@ O linter está configurado para prevenir padrões de código perigosos ou ambíg
 - **Agnosticismo de IO:** O core da biblioteca não deve depender de APIs específicas de sistema operacional (como `Deno.readFile` ou `fs.readFileSync`) para manter sua natureza "run-anywhere".
 
 ### Otimização de Performance Extrema
-1. **Instance-Level Caching (Memoization):** Todas as transformações custosas (LaTeX, HTML, Unicode, ImageBuffer) são cacheadas na instância do `CalcAUYOutput`. Chamadas subsequentes possuem custo O(1).
-2. **GCD Híbrido:** Substituição do algoritmo de Euclides puro por uma abordagem híbrida que utiliza o operador `%` nativo do V8 (C++) e fast-paths para números pequenos, otimizando a simplificação de frações.
+1. **Instance-Level Caching (Memoization):** Todas as transformações custosas (LaTeX, HTML, Unicode, ImageBuffer, AuditTrace) são cacheadas na instância do `CalcAUYOutput`. Chamadas subsequentes possuem custo O(1).
+2. **Otimização de Clonagem (Shallow Copy):** Em operações que exigem o retorno ou modificação da raiz da árvore (ex: `hibernate`, `commit`, `toASTObject`), a biblioteca utiliza *shallow copy* do nó raiz em vez de `structuredClone`. Como os nós são imutáveis por contrato, o reuso das referências dos sub-nós é seguro e elimina a latência recursiva em árvores profundas.
+3. **GCD Híbrido:** Substituição do algoritmo de Euclides puro por uma abordagem híbrida que utiliza o operador `%` nativo do V8 (C++) e fast-paths para números pequenos, otimizando a simplificação de frações.
 3. **Hard Privacy (#):** Uso de campos privados nativos reduz a superfície de ataque e melhora a performance de acesso interno em relação a fechamentos (closures).
 
 ## 4. Governança de Testes e Cobertura
