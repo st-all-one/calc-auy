@@ -1,5 +1,14 @@
 # 12 - Sistema de Erros e Diagnósticos (CalcAUYError)
 
+```mermaid
+flowchart LR
+    E[CalcAUYError] --> T[type: div-by-zero]
+    E --> U[instance: urn:uuid:v7...]
+    E --> C[context: ErrorContext]
+    C --> A[partialAST]
+    C --> O[operation]
+```
+
 ## Objetivo
 Definir a arquitetura de tratamento de exceções da biblioteca, garantindo que qualquer falha (seja no parsing, cálculo ou output) forneça metadados suficientes para auditoria forense e recuperação de estado na CalcAUY.
 

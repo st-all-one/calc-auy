@@ -1,5 +1,13 @@
 # 19 - Assinaturas Digitais e Integridade Forense (BLAKE3)
 
+```mermaid
+flowchart LR
+    Data[AST / Result] --> KSort[Recursive K-Sort]
+    KSort --> Salt[Concat Salt]
+    Salt --> BLAKE3[BLAKE3 Hash]
+    BLAKE3 --> Seal[Encoded Lacre]
+```
+
 ## Objetivo
 Definir o protocolo de segurança de dados da CalcAUY, garantindo que qualquer rastro de auditoria ou estado persistido seja imutável e verificável através de criptografia de ponta em jurisdições isoladas.
 

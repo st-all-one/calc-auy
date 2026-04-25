@@ -1,6 +1,18 @@
 # Erro: `invalid-precision` (400 Bad Request)
 
-Este erro ocorre durante a fase de **Projeção (Output)** quando os parâmetros de precisão decimal solicitados são tecnicamente impossíveis ou fora dos limites de segurança.
+```mermaid
+sequenceDiagram
+    participant App
+    participant Result as CalcAUYOutput
+    App->>Result: toStringNumber({ decimalPrecision: -1 })
+    activate Result
+    Note over Result: 26-04-25 10:00 (iso)<br/>Erro de Projeção: invalid-precision<br/>Precisão negativa não permitida
+    Result-->>App: Throw CalcAUYError
+    deactivate Result
+```
+
+Este erro ocorre durante a fase de **Projeção (Output)**
+ quando os parâmetros de precisão decimal solicitados são tecnicamente impossíveis ou fora dos limites de segurança.
 
 ## 🛠️ Como ocorre
 1. **Precisão Negativa:** Solicitar `-1` ou menos casas decimais.

@@ -1,5 +1,13 @@
 # 11 - Telemetria e Logs Estruturados (LogTape 2.0)
 
+```mermaid
+flowchart TD
+    Op[Operation Trigger] --> Capture[Event Capture]
+    Capture --> Sanitize["PII Sanitizer (Redaction)"]
+    Sanitize --> LogTape[LogTape Driver]
+    LogTape --> Stream["Console / Remote / File"]
+```
+
 ## Objetivo
 Definir o padrão de instrumentação da biblioteca, garantindo que desenvolvedores e auditores possam monitorar o fluxo de execução, diagnosticar falhas e verificar a integridade da AST sem comprometer a performance ou a privacidade na CalcAUY.
 

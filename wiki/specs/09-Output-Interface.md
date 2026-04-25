@@ -1,5 +1,18 @@
 # 09 - Interface Pública de Saída (CalcAUYOutput)
 
+```mermaid
+classDiagram
+    class CalcAUYOutput {
+        +toStringNumber()
+        +toMonetary()
+        +toLaTeX()
+        +toHTML()
+        +toAuditTrace()
+        +toSlice()
+        +toVerbalA11y()
+    }
+```
+
 ## Objetivo
 Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAUYOutput` é o objeto imutável que carrega o estado final da Árvore AST e o resultado numérico processado, permitindo múltiplas representações do mesmo fato matemático.
 

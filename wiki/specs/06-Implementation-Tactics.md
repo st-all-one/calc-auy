@@ -1,5 +1,22 @@
 # 06 - Táticas de Implementação e Segurança
 
+```mermaid
+flowchart TD
+    subgraph InstanceA [Instance 1]
+        V1["#ast (Root)"]
+    end
+    
+    InstanceA --> Op["op: .add(5)"]
+    Op --> InstanceB [Instance 2]
+    
+    subgraph InstanceB
+        V2["#ast (New Root)"]
+    end
+    
+    style V1 fill:#f8bbd0,stroke:#880e4f
+    style V2 fill:#c8e6c9,stroke:#2e7d32
+```
+
 ## Objetivo
 Garantir a integridade da biblioteca através de padrões de codificação rigorosos, aproveitando os recursos modernos do TypeScript e JavaScript para proteger o estado interno e manter o código manutenível na CalcAUY.
 

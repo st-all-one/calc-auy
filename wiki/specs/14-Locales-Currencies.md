@@ -1,5 +1,13 @@
 # 14 - Internacionalização: Locales e Moedas Padrão
 
+```mermaid
+flowchart TD
+    Req["Request: pt-BR"] --> Registry[Locale Registry]
+    Registry --> Res["BRL (R$) | 'vírgula'"]
+    Req2["Request: en-US"] --> Registry
+    Registry --> Res2["USD ($) | 'point'"]
+```
+
 ## Objetivo
 Definir a matriz de suporte a idiomas e moedas da CalcAUY 2.0, permitindo que a biblioteca resolva automaticamente o símbolo monetário (`currency`) e as regras de tradução verbal a partir do `locale` informado.
 

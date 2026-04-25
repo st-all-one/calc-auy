@@ -1,6 +1,19 @@
 # Erro: `math-overflow` (422 Unprocessable Entity)
 
-Embora o `BigInt` do JavaScript suporte números gigantescos, a CalcAUY impõe um limite de segurança de **1 milhão de bits** para prevenir exaustão de memória e ataques de negação de serviço (DoS).
+```mermaid
+sequenceDiagram
+    participant App
+    participant Calc as CalcAUY
+    activate Calc
+    App->>Calc: pow(1000000)
+    App->>Calc: commit()
+    Note over Calc: 26-04-25 10:00 (iso)<br/>Erro de Sistema: math-overflow<br/>Cálculo excede 1 milhão de bits
+    Calc-->>App: Throw CalcAUYError
+    deactivate Calc
+```
+
+Embora o `BigInt` do JavaScript suporte números gigantescos,
+ a CalcAUY impõe um limite de segurança de **1 milhão de bits** para prevenir exaustão de memória e ataques de negação de serviço (DoS).
 
 ## 🛠️ Como ocorre
 1. **Torres de Potência:** Exponenciações sucessivas (ex: `10^10^10`).

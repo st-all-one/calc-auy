@@ -1,5 +1,14 @@
 # 02 - Estrutura de Árvore (AST) e Persistência
 
+```mermaid
+graph TD
+    Root[OperationNode: add] --> Left[LiteralNode: 10]
+    Root --> Right[GroupNode]
+    Right --> Child[OperationNode: mul]
+    Child --> L[LiteralNode: 5]
+    Child --> R[LiteralNode: 2]
+```
+
 ## Objetivo
 Definir uma estrutura de Árvore de Sintaxe Abstrata (AST) que permita a recuperação do cálculo de qualquer ponto (hibernação/hidratação) e suporte auditoria plena sob o motor CalcAUY.
 

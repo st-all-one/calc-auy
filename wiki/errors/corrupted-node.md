@@ -1,6 +1,19 @@
 # Erro: `corrupted-node` (500 Internal Server Error)
 
-O `corrupted-node` indica que a estrutura da AST fornecida para hidratação está incompleta, malformada ou contém tipos de nós que a engine não reconhece.
+```mermaid
+sequenceDiagram
+    participant App
+    participant Calc as CalcAUY
+    Note over App: JSON incompleto ou campos ausentes
+    App->>Calc: hydrate(bad_json)
+    activate Calc
+    Note over Calc: 26-04-25 10:00 (iso)<br/>Erro de AST: corrupted-node<br/>Estrutura da árvore é inválida
+    Calc-->>App: Throw CalcAUYError
+    deactivate Calc
+```
+
+O `corrupted-node` indica que a estrutura da AST fornecida para hidratação está incompleta,
+ malformada ou contém tipos de nós que a engine não reconhece.
 
 ## 🛠️ Como ocorre
 1. **JSON Incompleto:** Falta de campos obrigatórios como `kind`, `type`, `value` ou `operands`.

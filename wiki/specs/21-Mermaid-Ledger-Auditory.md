@@ -1,5 +1,19 @@
 # 21 - Auditoria de Linhagem Visual (Mermaid Sequence Ledger)
 
+```mermaid
+flowchart LR
+    E1[Ingestion] --> E2[Operation]
+    E2 --> E3[Handover]
+    E3 --> E4[Closing]
+    
+    subgraph Ledger (Timeline)
+        E1
+        E2
+        E3
+        E4
+    end
+```
+
 ## Objetivo
 Estabelecer o padrão de visualização cronológica da CalcAUY, transformando a estrutura técnica da AST em uma narrativa de eventos legível para humanos e auditores. O rastro Mermaid não é apenas uma representação matemática, mas um **Livro-Razão (Ledger)** de transições de jurisdição.
 

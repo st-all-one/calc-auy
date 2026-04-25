@@ -1,5 +1,23 @@
 # 00 - Visão Panorâmica da Engenharia CalcAUY
 
+```mermaid
+flowchart LR
+    Create[CalcAUY.create] --> Ingest[from / parse]
+    Ingest --> Build[AST Construction]
+    Build --> Commit[commit / Lacre]
+    Commit --> Output[toMonetary / toLaTeX / ...]
+    
+    subgraph Jurisdição
+        Ingest
+        Build
+    end
+    
+    subgraph Execução
+        Commit
+        Output
+    end
+```
+
 > **Nota:** Este documento é um espelho do `docs/PANORAMA.md` e serve como ponto de entrada para as especificações técnicas (specs/01 a specs/14).
 
 ## Essência do Projeto

@@ -1,5 +1,13 @@
 # 13 - Estratégias de Arredondamento e Identificadores Visuais
 
+```mermaid
+flowchart LR
+    R[Rational: 2.5] --> NBR[NBR: 2]
+    R --> HU[Half-Up: 3]
+    R --> TR[Trunc: 2]
+    R --> CE[Ceil: 3]
+```
+
 ## Objetivo
 Definir os algoritmos de arredondamento suportados pela CalcAUY 2.0, garantindo que o colapso do `RationalNumber` para a precisão de saída seja determinístico, auditável e visualmente identificado em todos os formatos.
 

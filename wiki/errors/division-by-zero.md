@@ -1,6 +1,19 @@
 # Erro: `division-by-zero` (422 Unprocessable Entity)
 
-Este erro ocorre quando a lógica do cálculo tenta realizar uma divisão onde o divisor (denominador) resulta em zero. A CalcAUY bloqueia isso tanto na ingestão quanto na execução (`commit`).
+```mermaid
+sequenceDiagram
+    participant App
+    participant Calc as CalcAUY
+    activate Calc
+    App->>Calc: from(10)
+    App->>Calc: div(0)
+    Note over Calc: 26-04-25 10:00 (iso)<br/>Erro Matemático: division-by-zero<br/>Tentativa de divisão por zero detectada
+    Calc-->>App: Throw CalcAUYError
+    deactivate Calc
+```
+
+Este erro ocorre quando a lógica do cálculo tenta realizar uma divisão onde o divisor (denominador) resulta em zero.
+ A CalcAUY bloqueia isso tanto na ingestão quanto na execução (`commit`).
 
 ## 🛠️ Como ocorre
 1. **Divisão Direta:** Uso explícito do divisor zero em `div()` ou `divInt()`.

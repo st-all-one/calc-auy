@@ -1,6 +1,18 @@
 # Erro: `unsupported-type` (400 Bad Request)
 
-O `unsupported-type` é o guardião da camada de entrada. Ele garante que apenas dados que podem ser convertidos com segurança em frações racionais `BigInt` entrem no motor de cálculo.
+```mermaid
+sequenceDiagram
+    participant App
+    participant Calc as CalcAUY
+    App->>Calc: from(NaN)
+    activate Calc
+    Note over Calc: 26-04-25 10:00 (iso)<br/>Erro de Ingestão: unsupported-type<br/>Tipo de dado não permitido (NaN/Null)
+    Calc-->>App: Throw CalcAUYError
+    deactivate Calc
+```
+
+O `unsupported-type` é o guardião da camada de entrada.
+ Ele garante que apenas dados que podem ser convertidos com segurança em frações racionais `BigInt` entrem no motor de cálculo.
 
 ## 🛠️ Como ocorre
 1. **Objetos e Arrays:** Tentar passar estruturas complexas diretamente para o `from()`.

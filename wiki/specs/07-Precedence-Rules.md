@@ -1,5 +1,17 @@
 # 07 - Tabela de Precedência e Associatividade Rigorosa
 
+```mermaid
+graph TD
+    P1[1. Parênteses / Groups] --- P2[2. Exponenciação ^]
+    P2 --- P3[3. Multiplicação / Divisão * /]
+    P3 --- P4[4. Adição / Subtração + -]
+    
+    style P1 fill:#e1f5fe,stroke:#01579b
+    style P2 fill:#fff9c4,stroke:#fbc02d
+    style P3 fill:#f3e5f5,stroke:#7b1fa2
+    style P4 fill:#ffebee,stroke:#c62828
+```
+
 ## Objetivo
 Estabelecer a "Lei de Execução" do motor CalcAUY, garantindo que qualquer expressão, seja via Parser ou via encadeamento de métodos, resulte em uma Árvore AST matematicamente correta e previsível.
 

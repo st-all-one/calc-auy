@@ -1,5 +1,13 @@
 # 08 - Especificação Restritiva de Input e Lexer
 
+```mermaid
+flowchart TD
+    In["Input: string | bigint | number"] --> Guard["Rigor Guard (Regex)"]
+    Guard -->|Invalid| Err[CalcAUYError]
+    Guard -->|Valid| Normalizer[Normalizador]
+    Normalizer --> Rat[RationalNumber]
+```
+
 ## Objetivo
 Atuar como o "Guardião da Integridade" da CalcAUY 2.0, garantindo que apenas dados numericamente puros e inequívocos entrem no sistema, convertendo-os diretamente para a forma racional sem perda de precisão por escala fixa.
 

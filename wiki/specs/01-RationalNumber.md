@@ -1,5 +1,13 @@
 # 01 - RationalNumber: A Unidade Básica de Precisão
 
+```mermaid
+flowchart TD
+    In["Input: '1.5' | 10n | '1/3'"] --> Parser[Rational Parser]
+    Parser --> Fraction["Rational(n, d)"]
+    Fraction --> GCD[GCD / MDC Híbrido]
+    GCD --> Final["Simplified Rational(3, 2)"]
+```
+
 ## Objetivo
 Definir a representação fundamental de dados da biblioteca, garantindo precisão absoluta e imutabilidade total em todas as operações matemáticas.
 

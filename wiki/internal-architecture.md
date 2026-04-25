@@ -7,17 +7,36 @@ A **CalcAUY** não é uma simples calculadora; ela é um **Motor de Projeção R
 ## 🚀 Visão Geral do Pipeline
 
 ```mermaid
-graph TD
-    A[Raw Input: String/Number] -->|Ingestion Layer| B(RationalNumber n/d)
-    B -->|Builder Layer| C{AST Construction}
-    C -->|parseExpression| D[Recursive Descent Parser]
-    C -->|Fluent API| E[Immutable Nodes]
-    D --> F[AST Tree]
-    E --> F
-    F -->|Commit Trigger| G[Execution Engine]
-    G -->|GCD/MDC Híbrido| H[Rational Collapse]
-    H -->|Scale 10^50| I[Decimal Projection]
-    I -->|Output Layer| J[LaTeX/Audit/A11y/Image]
+flowchart TD
+    subgraph LT1 [<b>1. Ingestão (Input Lifetime)</b>]
+        Raw[Raw Input: String/Number] -->|Rigor Lexical| Parser[Parser Numérico Estrito]
+        Parser --> Rat(RationalNumber n/d)
+        Rat --> Cache{Cache System}
+    end
+
+    subgraph LT2 [<b>2. Construção (Build Lifetime)</b>]
+        Cache --> Fluent[Fluent Builder API]
+        Fluent --> AST[AST Immutable Tree]
+        AST --> Metadata[Enriquecimento de Metadados]
+    end
+
+    subgraph LT3 [<b>3. Execução (Commit Lifetime)</b>]
+        Metadata --> Commit[<b>commit() Trigger</b>]
+        Commit --> Collapse[Evaluation / GCD Algorithm]
+        Collapse --> Lacre[Lacre Digital BLAKE3]
+    end
+
+    subgraph LT4 [<b>4. Projeção (Output Lifetime)</b>]
+        Lacre --> Formats{Format Drivers}
+        Formats --> LaTeX[LaTeX / Image]
+        Formats --> Finance[Monetary / Slicing]
+        Formats --> A11y[Verbal / Mermaid]
+    end
+
+    LT1 ==> LT2 ==> LT3 ==> LT4
+
+    style Commit fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style Lacre fill:#fce4ec,stroke:#880e4f,stroke-width:2px
 ```
 
 ---

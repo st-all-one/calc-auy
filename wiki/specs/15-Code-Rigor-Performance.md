@@ -1,6 +1,10 @@
 # 15 - Rigor de Código e Performance
 
-Esta especificação define os limites técnicos e de qualidade impostos pela configuração do projeto (`deno.jsonc`), garantindo que o código seja previsível, seguro e performático em qualquer ambiente.
+```mermaid
+flowchart LR
+    P1[Instance Caching] --- P2[GCD Híbrido]
+    P2 --- P3[Hard Privacy]
+```
 
 ## 1. Rigor de Tipagem (TypeScript Strict)
 

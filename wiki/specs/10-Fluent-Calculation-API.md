@@ -1,5 +1,19 @@
 # 10 - API Fluida de Construção de Cálculo (CalcAUYLogic)
 
+```mermaid
+flowchart LR
+    A[from] --> B[add]
+    B --> C[mult]
+    C --> D[group]
+    D --> E[commit]
+    
+    subgraph Build Phase
+        B
+        C
+        D
+    end
+```
+
 ## Objetivo
 Definir a interface de construção de expressões matemáticas. A `CalcAUY` utiliza o padrão **Fluent Builder**, onde cada operação anexa um nó à Árvore AST em uma jurisdição isolada (instância).
 

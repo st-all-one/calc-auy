@@ -1,6 +1,20 @@
 # Erro: `complex-result` (422 Unprocessable Entity)
 
-A CalcAUY opera exclusivamente no domínio dos **Números Reais**. O erro `complex-result` ocorre quando uma operação matemática resultaria em um número imaginário ou complexo.
+```mermaid
+sequenceDiagram
+    participant App
+    participant Calc as CalcAUY
+    activate Calc
+    App->>Calc: from(-4)
+    App->>Calc: pow(0.5)
+    App->>Calc: commit()
+    Note over Calc: 26-04-25 10:00 (iso)<br/>Erro Matemático: complex-result<br/>Operação resultou em número imaginário
+    Calc-->>App: Throw CalcAUYError
+    deactivate Calc
+```
+
+A CalcAUY opera exclusivamente no domínio dos **Números Reais**.
+ O erro `complex-result` ocorre quando uma operação matemática resultaria em um número imaginário ou complexo.
 
 ## 🛠️ Como ocorre
 1. **Raiz de Negativo:** Tentar extrair a raiz quadrada (ou qualquer raiz de índice par) de um número negativo.

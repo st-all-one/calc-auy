@@ -1,6 +1,23 @@
 # Erro: `instance-mismatch` (403 Forbidden)
 
-Este erro ocorre quando há uma tentativa de realizar operações matemáticas ou de união de árvores entre duas instâncias da `CalcAUYLogic` que pertencem a contextos (jurisdições) diferentes e isolados.
+```mermaid
+sequenceDiagram
+    participant App
+    participant Fin as Contexto: Financeiro
+    participant Log as Contexto: Logística
+    activate Fin
+    activate Log
+    App->>Fin: from(100)
+    App->>Log: from(50)
+    App->>Fin: add(Log.from(50))
+    Note over Fin: 26-04-25 10:00 (iso)<br/>Erro de Segurança: instance-mismatch<br/>Mistura de jurisdições sem portal
+    Fin-->>App: Throw CalcAUYError
+    deactivate Fin
+    deactivate Log
+```
+
+Este erro ocorre quando há uma tentativa de realizar operações matemáticas
+ ou de união de árvores entre duas instâncias da `CalcAUYLogic` que pertencem a contextos (jurisdições) diferentes e isolados.
 
 ## 🛠️ Como ocorre
 1. **Mistura de Contextos:** Tentar somar, subtrair ou multiplicar valores criados em instâncias diferentes (ex: somar um valor da instância "Financeiro" em um cálculo da instância "Logística").

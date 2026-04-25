@@ -1,6 +1,18 @@
 # Erro: `invalid-syntax` (400 Bad Request)
 
-O erro `invalid-syntax` ocorre quando a string fornecida à CalcAUY não pode ser interpretada matematicamente. O Parser de Descida Recursiva falha ao tentar construir uma Árvore de Sintaxe Abstrata (AST) devido a violações gramaticais ou caracteres inesperados.
+```mermaid
+sequenceDiagram
+    participant App
+    participant Calc as CalcAUY
+    App->>Calc: parseExpression("10 + * 5")
+    activate Calc
+    Note over Calc: 26-04-25 10:00 (iso)<br/>Erro de Sintaxe: invalid-syntax<br/>Expressão malformada no parser
+    Calc-->>App: Throw CalcAUYError
+    deactivate Calc
+```
+
+O erro `invalid-syntax` ocorre quando a string fornecida à CalcAUY não pode ser interpretada matematicamente.
+ O Parser de Descida Recursiva falha ao tentar construir uma Árvore de Sintaxe Abstrata (AST) devido a violações gramaticais ou caracteres inesperados.
 
 ## 🛠️ Como ocorre
 1. **Operadores Adjacentes:** Uso de múltiplos operadores sem operandos entre eles (ex: `10 + * 5`).

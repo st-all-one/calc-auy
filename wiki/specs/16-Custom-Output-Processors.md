@@ -1,5 +1,12 @@
 # 16 - Processadores de Saída Customizados (Extensibilidade)
 
+```mermaid
+flowchart LR
+    AST[AST Tree] --> Manager[toCustomOutput]
+    Manager --> UserFn["Custom Processor (fn)"]
+    UserFn --> Output[Protobuf / XML / ...]
+```
+
 ## Objetivo
 Prover um mecanismo de "Injeção de Lógica de Saída" que permita à CalcAUY suportar qualquer formato de exportação (Protobuf, XML, Excel, JSON-LD, etc.) sem sobrecarregar o core da biblioteca.
 

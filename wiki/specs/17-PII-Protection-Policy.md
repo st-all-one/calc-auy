@@ -1,5 +1,16 @@
 # Especificação Técnica 17: Política de Proteção de PII e Integridade
 
+```mermaid
+flowchart TD
+    subgraph Config
+        P[Global sensitive: true]
+    end
+    
+    P --> N1[Node 1: Redacted]
+    P --> N2[Node 2: pii: false -> Visible]
+    P --> N3[Node 3: Redacted]
+```
+
 A CalcAUY implementa um sistema de proteção de dados sensíveis (Personally Identifiable Information) e integridade forense em camadas, agora operando sob o modelo de **Jurisdições Isoladas**.
 
 ## Camada 1: Política por Instância (`create`)

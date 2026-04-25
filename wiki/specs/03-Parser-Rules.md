@@ -1,5 +1,13 @@
 # 03 - Gramática e Regras do Parser
 
+```mermaid
+flowchart LR
+    Str["String: '(10+5)*2'"] --> Lexer[Lexer / Tokenizer]
+    Lexer --> Tokens["[LPAREN, NUM(10), PLUS, ...]"]
+    Tokens --> Parser[Recursive Descent Parser]
+    Parser --> AST[AST Immutable Tree]
+```
+
 ## Objetivo
 Transformar expressões em string (ex: `(10 + 5) / 3`) em uma Árvore AST robusta, respeitando o rigor matemático de precedência e identificando erros em tempo de análise através do CalcAUYError.
 

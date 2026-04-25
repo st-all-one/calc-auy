@@ -1,5 +1,25 @@
 # 04 - Motor de Execução e Arredondamento
 
+```mermaid
+sequenceDiagram
+    participant Commit as commit() Trigger
+    participant Engine as evaluate(root)
+    participant L as evaluate(left)
+    participant R as evaluate(right)
+    participant Rat as RationalNumber
+
+    Commit->>Engine: Resolve Tree
+    activate Engine
+    Engine->>L: Resolve Left Child
+    L-->>Engine: Rational(10)
+    Engine->>R: Resolve Right Child
+    R-->>Engine: Rational(5)
+    Engine->>Rat: math_op(10, 5)
+    Rat-->>Engine: Result Rational(15)
+    Engine-->>Commit: Final RationalNumber
+    deactivate Engine
+```
+
 ## Objetivo
 Processar a Árvore AST em um resultado numérico final (`RationalNumber`), garantindo conformidade com regras contábeis e matemáticas rigorosas no motor CalcAUY.
 

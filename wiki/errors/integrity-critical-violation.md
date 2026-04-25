@@ -1,6 +1,19 @@
 # Erro: `integrity-critical-violation` (500 Internal Server Error)
 
-Este é o erro mais grave de segurança da biblioteca. Ele indica que a **Assinatura Digital BLAKE3** não coincide com o conteúdo da árvore ou do rastro de auditoria.
+```mermaid
+sequenceDiagram
+    participant App
+    participant Calc as CalcAUY
+    Note over App: Payload adulterado ou Salt incorreto
+    App->>Calc: hydrate(json, salt)
+    activate Calc
+    Note over Calc: 26-04-25 10:00 (iso)<br/>Erro Crítico: integrity-critical-violation<br/>Lacre Digital BLAKE3 rompido
+    Calc-->>App: Throw CalcAUYError
+    deactivate Calc
+```
+
+Este é o erro mais grave de segurança da biblioteca.
+ Ele indica que a **Assinatura Digital BLAKE3** não coincide com o conteúdo da árvore ou do rastro de auditoria.
 
 ## 🛠️ Como ocorre
 1. **Tampering (Adulteração):** Alguém alterou um valor, metadado ou tipo de operação no JSON após ele ter sido assinado.

@@ -1,5 +1,16 @@
 # 05 - Processadores de Saída e Auditoria Visual
 
+```mermaid
+flowchart LR
+    AST[AST Tree] --> Manager[CalcAUYOutput]
+    Manager --> P1[LaTeX Processor]
+    Manager --> P2[Verbal Processor]
+    Manager --> P3[HTML Processor]
+    P1 --> O1["\text{formula}"]
+    P2 --> O2["'dez mais cinco'"]
+    P3 --> O3["&lt;div&gt;...&lt;/div&gt;"]
+```
+
 ## Objetivo
 Traduzir a estrutura da AST em diferentes formatos de auditoria (LaTeX, HTML, Verbal, Unicode), mantendo total acessibilidade e transparência no rastro de cálculo através do CalcAUY.
 

@@ -1,5 +1,20 @@
 # 20 - Controle e Segurança de Instâncias (Jurisdição)
 
+```mermaid
+flowchart LR
+    subgraph J1 [Jurisdição A]
+        S1[Salt A]
+        Y1[Symbol A]
+    end
+    
+    subgraph J2 [Jurisdição B]
+        S2[Salt B]
+        Y2[Symbol B]
+    end
+    
+    J1 -- instance-mismatch --- J2
+```
+
 ## Objetivo
 Estabelecer o protocolo de isolamento militar entre universos de cálculo da CalcAUY, garantindo que dados de diferentes domínios de negócio nunca se misturem sem um portal explícito e auditável.
 

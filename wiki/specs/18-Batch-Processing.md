@@ -1,5 +1,19 @@
 # 18 - Processamento em Lotes (Batch Processing)
 
+```mermaid
+sequenceDiagram
+    participant Batch as ProcessBatchAUY
+    participant Loop as Event Loop
+    participant CPU as Engine
+    
+    Batch->>CPU: Calc Lote N
+    CPU-->>Batch: Ok
+    Batch->>Loop: scheduler.yield()
+    Note right of Loop: Processa IO/UI
+    Loop-->>Batch: Retoma
+    Batch->>CPU: Calc Lote N+1
+```
+
 ## Objetivo
 Permitir o processamento massivo de cálculos sem comprometer a responsividade do servidor ou da interface do usuário (UI). Esta funcionalidade ajuda os desenvolvedores a seguirem boas práticas em ambientes single-threaded (Deno/Node.js), evitando o bloqueio do Event Loop durante operações intensivas de CPU.
 
