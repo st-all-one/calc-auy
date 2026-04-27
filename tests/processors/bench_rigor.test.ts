@@ -1,8 +1,8 @@
 import { describe, it } from "@std/testing/bdd";
 import { assert, assertEquals } from "@std/assert";
 import { CalcAUY } from "@calcauy";
-import { msgpackHydrator, msgpackProcessor } from "@processor/msgpack";
-import { protobufHydrator, protobufProcessor } from "@processor/protobuffer";
+import { msgpackHydrator, msgpackProcessor } from "@processor/msgpack/processor.msgpack.ts";
+import { protobufHydrator, protobufProcessor } from "@processor/protobuffer/processor.protobuffer.ts";
 
 describe("Stress & Bench: Encoders/Decoders Otimizados", () => {
     const salt = "bench-salt-2026";
@@ -54,8 +54,8 @@ describe("Stress & Bench: Encoders/Decoders Otimizados", () => {
         // Comparamos as assinaturas e o resultado final
         assertEquals(msgDecoded.signature, originalObj.signature, "MsgPack Signature mismatch");
         assertEquals(protoDecoded.signature, originalObj.signature, "Protobuf Signature mismatch");
-        assertEquals(msgDecoded.finalResult.n, originalObj.finalResult.n, "MsgPack Result mismatch");
-        assertEquals(protoDecoded.finalResult.n, originalObj.finalResult.n, "Protobuf Result mismatch");
+        assertEquals(msgDecoded.finalResult?.n, originalObj.finalResult?.n, "MsgPack Result mismatch");
+        assertEquals(protoDecoded.finalResult?.n, originalObj.finalResult?.n, "Protobuf Result mismatch");
 
         // Protobuf deve ser consideravelmente menor que JSON
         assert(protoBuffer.length < jsonBytes, "Protobuf deve ser menor que JSON");

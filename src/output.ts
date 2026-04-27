@@ -16,7 +16,7 @@ import { toSubscript } from "./output_internal/unicode.ts";
 import { renderAST } from "./output_internal/renderer.ts";
 import { performSlice, performSliceByRatio } from "./output_internal/slicer.ts";
 import { renderMermaidSequence } from "./output_internal/mermaid_sequence_renderer.ts";
-import type { OutputOptions } from "./core/types.ts";
+import type { OutputOptions } from "./output_internal/types.ts";
 import { getSubLogger, startSpan } from "./utils/logger.ts";
 import type { InstanceConfig } from "./core/types.ts";
 
@@ -347,8 +347,11 @@ export class CalcAUYOutput {
         return JSON.stringify(res, (_key, value) => typeof value === "bigint" ? value.toString() : value);
     }
 
-    public toCustomOutput<T>(processor: CalcAUYCustomOutput<T>): T {
-        using _span = startSpan("toCustomOutput", logger, {});
+    public toCustomOutput<Toutput, Toptions extends OutputOptions = OutputOptions>(
+        processor: CalcAUYCustomOutput<Toutput, Toptions>,
+        options: Toptions = {} as Toptions,
+    ): Toutput {
+        using _span = startSpan("toCustomOutput", logger, options);
 
         if (!this.#cachedMethods) {
             this.#cachedMethods = Object.freeze({
@@ -369,16 +372,16 @@ export class CalcAUYOutput {
             });
         }
 
-        const context: CalcAUYCustomOutputContext = {
+        const context: CalcAUYCustomOutputContext<Toptions> = {
             result: this.#result,
             ast: this.#ast,
             roundStrategy: this.#roundStrategy,
             audit: {
-                latex: this.toLaTeXInternal(),
-                unicode: this.toUnicodeInternal(),
-                verbal: this.toVerbalA11yInternal(),
+                latex: this.toLaTeXInternal(options),
+                unicode: this.toUnicodeInternal(options),
+                verbal: this.toVerbalA11yInternal(options),
             },
-            options: {},
+            options,
             methods: this.#cachedMethods,
         };
         return processor.call(this, context);

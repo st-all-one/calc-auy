@@ -1,7 +1,7 @@
 import { describe, it } from "@std/testing/bdd";
 import { assert, assertStringIncludes } from "@std/assert";
 import { CalcAUY } from "@calcauy";
-import { imageBufferProcessor } from "@processor/image-buffer";
+import { imageBufferProcessor } from "@processor/image-buffer/processor.imagebuffer.ts";
 
 describe("Processor: ImageBuffer", () => {
     it("deve gerar um Uint8Array contendo um SVG válido", async () => {

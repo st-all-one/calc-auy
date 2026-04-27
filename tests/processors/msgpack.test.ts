@@ -1,7 +1,7 @@
 import { describe, it } from "@std/testing/bdd";
 import { assert, assertEquals } from "@std/assert";
 import { CalcAUY } from "@calcauy";
-import { msgpackProcessor } from "@processor/msgpack";
+import { msgpackProcessor } from "@processor/msgpack/processor.msgpack.ts";
 import { decode } from "@std/msgpack";
 
 describe("Processor: MessagePack", () => {

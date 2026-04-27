@@ -1,7 +1,7 @@
 import { describe, it } from "@std/testing/bdd";
 import { assertEquals } from "@std/assert";
 import { CalcAUY } from "@calcauy";
-import { protobufProcessor } from "@processor/protobuffer";
+import { protobufProcessor } from "@processor/protobuffer/processor.protobuffer.ts";
 import protobuf from "protobufjs";
 
 const PROTO_DEF = `
@@ -32,18 +32,17 @@ message MetadataList { repeated MetadataValue items = 1; }
 message MetadataMap { map<string, MetadataValue> fields = 1; }
 message CalculationNode {
   string kind = 1;
-  string label = 2;
-  map<string, MetadataValue> metadata = 3;
+  map<string, MetadataValue> metadata = 2;
   oneof node_type {
-    LiteralNode literal = 4;
-    OperationNode operation = 5;
-    GroupNode group = 6;
-    ControlNode control = 7;
+    LiteralNode literal = 3;
+    OperationNode operation = 4;
+    GroupNode group = 5;
+    ControlNode control = 6;
   }
 }
 message LiteralNode { RationalValue value = 1; string originalInput = 2; }
 message OperationNode { OperationType type = 1; repeated CalculationNode operands = 2; }
-message GroupNode { CalculationNode child = 1; bool isRedundant = 2; }
+message GroupNode { CalculationNode child = 1; }
 message ControlNode { string type = 1; string previousContextLabel = 2; string previousSignature = 3; string previousRoundStrategy = 4; CalculationNode child = 5; }
 message SerializedCalculation {
   CalculationNode ast = 1;

@@ -66,13 +66,3 @@ export type CalcAUYCurrency =
     | "CNY"
     | "JPY"
     | (string & Record<never, never>);
-
-/**
- * Global configuration options for outputs.
- */
-export type OutputOptions = {
-    decimalPrecision?: number;
-    locale?: CalcAUYLocale;
-    currency?: CalcAUYCurrency;
-    roundStrategy?: RoundingStrategy;
-};

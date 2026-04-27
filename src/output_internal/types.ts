@@ -10,7 +10,19 @@ import type { CalcAUYOutput } from "../output.ts";
 import type { RationalNumber } from "../core/rational.ts";
 import type { CalculationNode } from "../ast/types.ts";
 import type { RoundingStrategy } from "../core/constants.ts";
-import type { OutputOptions } from "../core/types.ts";
+import type { CalcAUYLocale } from "../core/types.ts";
+import type { CalcAUYCurrency } from "../core/types.ts";
+
+/**
+ * Global configuration options for outputs.
+ */
+export type OutputOptions = {
+    decimalPrecision?: number;
+    locale?: CalcAUYLocale;
+    currency?: CalcAUYCurrency;
+    roundStrategy?: RoundingStrategy;
+    [key: string]: unknown;
+};
 
 /**
  * Assinatura para processadores de saída customizados.
@@ -19,10 +31,11 @@ import type { OutputOptions } from "../core/types.ts";
  * sem modificar o core da biblioteca.
  *
  * @typeParam Toutput - O tipo de retorno esperado pelo processador.
+ * @typeParam Toptions - O tipo das opções customizadas (estende OutputOptions).
  */
-export type CalcAUYCustomOutput<Toutput> = (
+export type CalcAUYCustomOutput<Toutput, Toptions extends OutputOptions = OutputOptions> = (
     this: CalcAUYOutput,
-    context: CalcAUYCustomOutputContext,
+    context: CalcAUYCustomOutputContext<Toptions>,
 ) => Toutput;
 
 /**
@@ -30,8 +43,10 @@ export type CalcAUYCustomOutput<Toutput> = (
  *
  * **Engenharia:** Fornece acesso direto à AST e ao RationalNumber (n/d),
  * além de referências pré-bound para todos os métodos de exportação padrão.
+ *
+ * @typeParam Toptions - O tipo das opções customizadas.
  */
-export type CalcAUYCustomOutputContext = {
+export type CalcAUYCustomOutputContext<Toptions extends OutputOptions = OutputOptions> = {
     /** O valor final consolidado em forma racional absoluta. */
     result: RationalNumber;
     /** A árvore de sintaxe completa para reconstrução customizada. */
@@ -45,7 +60,7 @@ export type CalcAUYCustomOutputContext = {
         verbal: string;
     };
     /** Opções de saída ativas. */
-    options: Readonly<OutputOptions>;
+    options: Readonly<Toptions>;
     /** Referências prontas para uso dos métodos de exportação da classe. */
     methods: Pick<
         CalcAUYOutput,

@@ -18,6 +18,7 @@ export type {
     CalcAUYCustomOutput,
     CalcAUYCustomOutputContext,
     CalcAUYLocaleA11y,
+    OutputOptions,
 } from "./src/output_internal/types.ts";
 
 export type { InternalTypes };

@@ -1,7 +1,7 @@
 import { describe, it } from "@std/testing/bdd";
 import { assertStringIncludes } from "@std/assert";
 import { CalcAUY } from "@calcauy";
-import { htmlProcessor } from "@processor/html";
+import { htmlProcessor } from "@processor/html/processor.html.ts";
 
 describe("Processor: HTML", () => {
     it("deve gerar rastro HTML completo usando KaTeX e CSS inlined", async () => {

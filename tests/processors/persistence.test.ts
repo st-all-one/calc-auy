@@ -1,7 +1,7 @@
 import { describe, it } from "@std/testing/bdd";
 import { assertEquals } from "@std/assert";
 import { CalcAUY } from "@calcauy";
-import { persistenceProcessor } from "@processor/persistence";
+import { persistenceProcessor } from "@processor/persistence/processor.persistence.ts";
 
 describe("Processor: Persistence (SQL/Prisma)", () => {
     it("deve achatar o rastro para o formato de colunas do banco", async () => {

@@ -1,7 +1,7 @@
 import { describe, it } from "@std/testing/bdd";
 import { assert, assertEquals } from "@std/assert";
 import { CalcAUY } from "@calcauy";
-import { cborHydrator, cborProcessor } from "@processor/cbor";
+import { cborHydrator, cborProcessor } from "@processor/cbor/processor.cbor.ts";
 
 describe("Processor: CBOR", () => {
     it("deve serializar e reanimar via CBOR mantendo integridade", async () => {
