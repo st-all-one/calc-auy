@@ -17,7 +17,6 @@ rational-value = {
 metadata-value = tstr / number / bool / [ * metadata-value ] / { * tstr => metadata-value }
 
 base-node = (
-  ? label: tstr,
   ? metadata: { * tstr => metadata-value }
 )
 
@@ -38,8 +37,7 @@ operation-node = {
 group-node = {
   base-node,
   kind: "group",
-  child: calculation-node,
-  ? isRedundant: bool
+  child: calculation-node
 }
 
 control-node = {
@@ -57,8 +55,8 @@ control-node = {
 
 serialized-calculation = {
   ast: calculation-node,
-  signature: tstr,
-  contextLabel: tstr,
   finalResult: rational-value,
-  roundStrategy: tstr
+  roundStrategy: tstr,
+  signature: tstr,
+  contextLabel: tstr
 }

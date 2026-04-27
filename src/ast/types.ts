@@ -40,8 +40,6 @@ export type MetadataValue =
 /** Tipo base para todos os nós, garantindo rastreabilidade. */
 export type BaseNode = {
     kind: NodeKind;
-    /** Nome amigável do nó para relatórios de auditoria. */
-    label?: string;
     /** Dados customizados (ex: ID de uma parcela, nome de um imposto). */
     metadata?: Record<string, MetadataValue>;
 };
@@ -64,7 +62,6 @@ export type OperationNode = BaseNode & {
 export type GroupNode = BaseNode & {
     kind: "group";
     child: CalculationNode;
-    isRedundant?: boolean;
 };
 
 /**

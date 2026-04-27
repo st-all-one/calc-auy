@@ -1,31 +1,27 @@
-import {
-    type CalcAUYCustomOutput,
-    InternalType,
-    type OperationType,
-} from "@st-all-one/calc-auy";
+import type { CalcAUYCustomOutput, InternalTypes } from "@calc-auy";
 import protobuf from "protobufjs";
 
-type CalculationNode = InternalType.CalculationNode;
-type SerializedCalculation = InternalType.SerializedCalculation;
-type LiteralNode = InternalType.LiteralNode;
-type OperationNode = InternalType.OperationNode;
-type GroupNode = InternalType.GroupNode;
-type ControlNode = InternalType.ControlNode;
-type MetadataValue = InternalType.MetadataValue;
+type CalculationNode = InternalTypes.ASTTypes.CalculationNode;
+type SerializedCalculation = InternalTypes.ASTTypes.SerializedCalculation;
+type LiteralNode = InternalTypes.ASTTypes.LiteralNode;
+type OperationNode = InternalTypes.ASTTypes.OperationNode;
+type GroupNode = InternalTypes.ASTTypes.GroupNode;
+type ControlNode = InternalTypes.ASTTypes.ControlNode;
+type MetadataValue = InternalTypes.ASTTypes.MetadataValue;
 
 const PROTO_DEF = `
 syntax = "proto3";
 package calc_auy;
 enum OperationType {
-  OPERATION_UNSPECIFIED = 0;
-  OPERATION_ADD = 1;
-  OPERATION_SUB = 2;
-  OPERATION_MUL = 3;
-  OPERATION_DIV = 4;
-  OPERATION_POW = 5;
-  OPERATION_MOD = 6;
-  OPERATION_DIV_INT = 7;
-  OPERATION_CROSS_CONTEXT_ADD = 8;
+  OPERATION_TYPE_UNSPECIFIED = 0;
+  OPERATION_TYPE_ADD = 1;
+  OPERATION_TYPE_SUB = 2;
+  OPERATION_TYPE_MULT = 3;
+  OPERATION_TYPE_DIV = 4;
+  OPERATION_TYPE_POW = 5;
+  OPERATION_TYPE_MOD = 6;
+  OPERATION_TYPE_DIV_INT = 7;
+  OPERATION_TYPE_CROSS_CONTEXT_ADD = 8;
 }
 message RationalValue { string n = 1; string d = 2; }
 message MetadataValue {
@@ -41,25 +37,24 @@ message MetadataList { repeated MetadataValue items = 1; }
 message MetadataMap { map<string, MetadataValue> fields = 1; }
 message CalculationNode {
   string kind = 1;
-  string label = 2;
-  map<string, MetadataValue> metadata = 3;
+  map<string, MetadataValue> metadata = 2;
   oneof node_type {
-    LiteralNode literal = 4;
-    OperationNode operation = 5;
-    GroupNode group = 6;
-    ControlNode control = 7;
+    LiteralNode literal = 3;
+    OperationNode operation = 4;
+    GroupNode group = 5;
+    ControlNode control = 6;
   }
 }
 message LiteralNode { RationalValue value = 1; string originalInput = 2; }
 message OperationNode { OperationType type = 1; repeated CalculationNode operands = 2; }
-message GroupNode { CalculationNode child = 1; bool isRedundant = 2; }
+message GroupNode { CalculationNode child = 1; }
 message ControlNode { string type = 1; string previousContextLabel = 2; string previousSignature = 3; string previousRoundStrategy = 4; CalculationNode child = 5; }
 message SerializedCalculation {
   CalculationNode ast = 1;
   string signature = 2;
-  string context_label = 3;
-  RationalValue final_result = 4;
-  string round_strategy = 5;
+  string contextLabel = 3;
+  RationalValue finalResult = 4;
+  string roundStrategy = 5;
 }
 `;
 
@@ -79,15 +74,23 @@ const OP_MAP: Record<string, number> = {
     crossContextAdd: 8,
 };
 
-const REV_OP_MAP: Record<number, OperationType> = {
+const REV_OP_MAP: Record<string | number, InternalTypes.ASTTypes.OperationType> = {
     1: "add",
+    OPERATION_TYPE_ADD: "add",
     2: "sub",
+    OPERATION_TYPE_SUB: "sub",
     3: "mul",
+    OPERATION_TYPE_MULT: "mul",
     4: "div",
+    OPERATION_TYPE_DIV: "div",
     5: "pow",
+    OPERATION_TYPE_POW: "pow",
     6: "mod",
+    OPERATION_TYPE_MOD: "mod",
     7: "divInt",
+    OPERATION_TYPE_DIV_INT: "divInt",
     8: "crossContextAdd",
+    OPERATION_TYPE_CROSS_CONTEXT_ADD: "crossContextAdd",
 };
 
 /**
@@ -95,11 +98,10 @@ const REV_OP_MAP: Record<number, OperationType> = {
  */
 interface IProtoNode {
     kind: string;
-    label: string;
-    metadata: Record<string, unknown>;
+    metadata: Record<string, InternalTypes.ASTTypes.MetadataValue> | Record<never, never>;
     literal?: { value: { n: string; d: string }; originalInput: string };
-    operation?: { type: number; operands: IProtoNode[] };
-    group?: { child: IProtoNode; isRedundant: boolean };
+    operation?: { type: string | number; operands: IProtoNode[] };
+    group?: { child: IProtoNode };
     control?: {
         type: string;
         child: IProtoNode;
@@ -111,10 +113,10 @@ interface IProtoNode {
 
 interface IProtoPayload {
     ast: IProtoNode;
-    signature: string;
-    contextLabel: string;
     finalResult: { n: string; d: string };
     roundStrategy: string;
+    signature: string;
+    contextLabel: string;
 }
 
 /**
@@ -122,7 +124,7 @@ interface IProtoPayload {
  */
 export const protobufProcessor: CalcAUYCustomOutput<Uint8Array> = function (
     ctx,
-) {
+): Uint8Array {
     const obj = ctx.methods.toLiveTrace();
 
     if (!obj.finalResult || !obj.roundStrategy) {
@@ -133,10 +135,10 @@ export const protobufProcessor: CalcAUYCustomOutput<Uint8Array> = function (
 
     const payload: IProtoPayload = {
         ast: transformNode(obj.ast),
-        signature: obj.signature,
-        contextLabel: obj.contextLabel,
         finalResult: { n: obj.finalResult.n, d: obj.finalResult.d },
         roundStrategy: obj.roundStrategy,
+        signature: obj.signature,
+        contextLabel: obj.contextLabel,
     };
 
     const message = SerializedCalculationMsg.create(payload);
@@ -155,26 +157,24 @@ export function protobufHydrator(buffer: Uint8Array): SerializedCalculation {
         oneofs: true,
     }) as unknown as {
         ast: IProtoNode;
+        finalResult: { n: string; d: string };
+        roundStrategy: string;
         signature: string;
-        context_label: string;
-        final_result: { n: string; d: string };
-        round_strategy: string;
+        contextLabel: string;
     };
 
     return {
         ast: reverseTransformNode(plain.ast),
+        finalResult: plain.finalResult,
+        roundStrategy: plain.roundStrategy,
         signature: plain.signature,
-        contextLabel: plain.context_label,
-        finalResult: plain.final_result,
-        roundStrategy: plain.round_strategy,
+        contextLabel: plain.contextLabel,
     };
 }
 
 function transformNode(node: CalculationNode): IProtoNode {
-    const res: IProtoNode = {
+    const res: any = {
         kind: node.kind,
-        label: node.label || "",
-        metadata: transformMetadata(node.metadata || {}),
     };
 
     if (node.kind === "literal") {
@@ -185,75 +185,74 @@ function transformNode(node: CalculationNode): IProtoNode {
     } else if (node.kind === "operation") {
         res.operation = {
             type: OP_MAP[node.type] || 0,
-            operands: node.operands.map((o: CalculationNode) =>
-                transformNode(o)
-            ),
+            operands: node.operands.map((o: CalculationNode) => transformNode(o)),
         };
     } else if (node.kind === "group") {
         res.group = {
             child: transformNode(node.child),
-            isRedundant: !!node.isRedundant,
         };
     } else if (node.kind === "control") {
         res.control = {
             type: node.type,
-            child: transformNode(node.child),
             previousContextLabel: node.metadata.previousContextLabel,
             previousSignature: node.metadata.previousSignature,
-            previousRoundStrategy:
-                node.metadata.previousRoundStrategy as string || "",
+            previousRoundStrategy: node.metadata.previousRoundStrategy as string || "",
+            child: transformNode(node.child),
         };
     }
-    return res;
+
+    if (node.metadata && Object.keys(node.metadata).length > 0) {
+        res.metadata = transformMetadata(node.metadata);
+    } else {
+        res.metadata = {};
+    }
+
+    return res as IProtoNode;
 }
 
 function reverseTransformNode(node: IProtoNode): CalculationNode {
-    const base = {
-        label: node.label !== "" ? node.label : undefined,
-        metadata: unwrapMetadata(node.metadata),
-    };
+    const metadata = unwrapMetadata(node.metadata);
 
     if (node.literal) {
-        return {
-            ...base,
+        const res: any = {
             kind: "literal",
             value: node.literal.value,
             originalInput: node.literal.originalInput,
-        } as LiteralNode;
+        };
+        if (Object.keys(metadata).length > 0) { res.metadata = metadata; }
+        return res as LiteralNode;
     }
 
     if (node.operation) {
-        return {
-            ...base,
+        const res: any = {
             kind: "operation",
             type: REV_OP_MAP[node.operation.type] || "add",
-            operands: node.operation.operands.map((o) =>
-                reverseTransformNode(o)
-            ),
-        } as OperationNode;
+            operands: node.operation.operands.map((o) => reverseTransformNode(o)),
+        };
+        if (Object.keys(metadata).length > 0) { res.metadata = metadata; }
+        return res as OperationNode;
     }
 
     if (node.group) {
-        return {
-            ...base,
+        const res: any = {
             kind: "group",
             child: reverseTransformNode(node.group.child),
-            isRedundant: node.group.isRedundant,
-        } as GroupNode;
+        };
+        if (Object.keys(metadata).length > 0) { res.metadata = metadata; }
+        return res as GroupNode;
     }
 
     if (node.control) {
         return {
-            ...base,
             kind: "control",
             type: "reanimation_event",
-            child: reverseTransformNode(node.control.child),
             metadata: {
-                ...base.metadata,
+                ...metadata,
                 previousContextLabel: node.control.previousContextLabel,
                 previousSignature: node.control.previousSignature,
                 previousRoundStrategy: node.control.previousRoundStrategy,
             },
+            child: reverseTransformNode(node.control.child),
         } as ControlNode;
     }
 
@@ -273,20 +272,20 @@ function transformMetadata(
 }
 
 function unwrapMetadata(
-    meta: Record<string, any>,
+    meta: Record<string, unknown>,
 ): Record<string, MetadataValue> {
     const res: Record<string, MetadataValue> = {};
-    for (const [key, val] of Object.entries(meta)) {
+    for (const [key, val] of Object.entries(meta || {})) {
         res[key] = unwrapValue(val);
     }
     return res;
 }
 
 function wrapValue(val: MetadataValue): unknown {
-    if (typeof val === "string") return { stringVal: val };
-    if (typeof val === "number") return { doubleVal: val };
-    if (typeof val === "boolean") return { boolVal: val };
-    if (Array.isArray(val)) return { arrayVal: { items: val.map(wrapValue) } };
+    if (typeof val === "string") { return { stringVal: val }; }
+    if (typeof val === "number") { return { doubleVal: val }; }
+    if (typeof val === "boolean") { return { boolVal: val }; }
+    if (Array.isArray(val)) { return { arrayVal: { items: val.map(wrapValue) } }; }
     if (typeof val === "object" && val !== null) {
         const fields: Record<string, unknown> = {};
         for (const [k, v] of Object.entries(val)) {
@@ -297,17 +296,18 @@ function wrapValue(val: MetadataValue): unknown {
     return { stringVal: String(val) };
 }
 
+// deno-lint-ignore no-explicit-any
 function unwrapValue(val: any): MetadataValue {
-    if (val.stringVal !== undefined) return val.stringVal;
-    if (val.doubleVal !== undefined) return val.doubleVal;
-    if (val.boolVal !== undefined) return val.boolVal;
-    if (val.arrayVal !== undefined) return val.arrayVal.items.map(unwrapValue);
+    if (val.stringVal !== undefined) { return val.stringVal; }
+    if (val.doubleVal !== undefined) { return val.doubleVal; }
+    if (val.boolVal !== undefined) { return val.boolVal; }
+    if (val.arrayVal !== undefined) { return val.arrayVal.items.map(unwrapValue); }
     if (val.objectVal !== undefined) {
         const res: Record<string, MetadataValue> = {};
         for (const [k, v] of Object.entries(val.objectVal.fields || {})) {
             res[k] = unwrapValue(v);
         }
-        return { objectVal: res };
+        return res;
     }
     return "";
 }

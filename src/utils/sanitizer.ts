@@ -13,7 +13,7 @@ import { BIRTH_TICKET_MOCK } from "../core/constants.ts";
 const REDACTED = "[PII]";
 
 /** Chaves de objetos que são conhecidas por conter dados sensíveis (PII). */
-const SENSITIVE_KEYS = new Set(["n", "d", "rawInput", "metadata", "label", "value", "originalInput"]);
+const SENSITIVE_KEYS = new Set(["n", "d", "rawInput", "metadata", "value", "originalInput"]);
 
 /** Regex otimizado e seguro para identificar strings que representam números ou percentuais (evita backtracking). */
 const NUMERIC_RE = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?%?$/;
@@ -87,10 +87,6 @@ export function sanitizeAST(
 
     if (node.metadata && node.kind !== "control") {
         sanitized.metadata = hide ? REDACTED : node.metadata;
-    }
-
-    if (node.label) {
-        sanitized.label = hide ? REDACTED : node.label;
     }
 
     return sanitized;

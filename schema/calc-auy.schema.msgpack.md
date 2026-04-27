@@ -38,7 +38,6 @@ Representado como um Map
 
 ### Campos Comuns (Base)
 - `"kind"`: Integer (Enum NodeKind - **Obrigatório**)
-- `"label"`: String (Opcional)
 - `"metadata"`: Map (Opcional, não permite null/undefined)
 
 ### Campos Específicos por `kind`
@@ -53,7 +52,6 @@ Representado como um Map
 
 #### GroupNode (`kind: 3`)
 - `"child"`: `CalculationNode`
-- `"isRedundant"`: Boolean (Opcional)
 
 #### ControlNode (`kind: 4`)
 - `"type"`: String (Fixo: "reanimation_event")
@@ -68,10 +66,10 @@ A estrutura raiz selada. Segue fielmente o contrato de integridade
 - **Tipo**: Map
 - **Chaves Obrigatórias**:
   - `"ast"`: `CalculationNode`
-  - `"signature"`: String (BLAKE3 Hex)
-  - `"contextLabel"`: String
   - `"finalResult"`: `RationalValue`
   - `"roundStrategy"`: String
+  - `"signature"`: String (BLAKE3 Hex)
+  - `"contextLabel"`: String
 
 ## 4. MetadataValue (Estrito)
 O tipo `Nil/Null` é **estritamente proibido**. Suporta:

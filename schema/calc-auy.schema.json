@@ -76,9 +76,6 @@
                 "kind": {
                     "$ref": "#/$defs/NodeKind"
                 },
-                "label": {
-                    "type": "string"
-                },
                 "metadata": {
                     "type": "object",
                     "additionalProperties": {
@@ -154,9 +151,6 @@
                         },
                         "child": {
                             "$ref": "#/$defs/CalculationNode"
-                        },
-                        "isRedundant": {
-                            "type": "boolean"
                         }
                     },
                     "required": [

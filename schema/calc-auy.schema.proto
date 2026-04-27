@@ -9,7 +9,7 @@
 
 syntax = "proto3";
 
-package calcauy;
+package calc_auy;
 
 // --- Enums ---
 enum OperationType {
@@ -51,14 +51,13 @@ message MetadataMap {
 // --- AST ---
 message CalculationNode {
   string kind = 1;
-  string label = 2;
-  map<string, MetadataValue> metadata = 3;
+  map<string, MetadataValue> metadata = 2;
 
   oneof node_type {
-    LiteralNode literal = 4;
-    OperationNode operation = 5;
-    GroupNode group = 6;
-    ControlNode control = 7;
+    LiteralNode literal = 3;
+    OperationNode operation = 4;
+    GroupNode group = 5;
+    ControlNode control = 6;
   }
 }
 
@@ -74,22 +73,21 @@ message OperationNode {
 
 message GroupNode {
   CalculationNode child = 1;
-  bool is_redundant = 2;
 }
 
 message ControlNode {
   string type = 1;
-  string previous_context_label = 2;
-  string previous_signature = 3;
-  string previous_round_strategy = 4;
+  string previousContextLabel = 2;
+  string previousSignature = 3;
+  string previousRoundStrategy = 4;
   CalculationNode child = 5;
 }
 
 // --- Payload Consolidado de Saída (Audit Trace / Hibernação) ---
 message SerializedCalculation {
   CalculationNode ast = 1;
-  string signature = 2;
-  string context_label = 3;
-  RationalValue final_result = 4;
-  string round_strategy = 5;
+  RationalValue finalResult = 2;
+  string roundStrategy = 3;
+  string signature = 4;
+  string contextLabel = 5;
 }

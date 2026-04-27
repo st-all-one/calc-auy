@@ -1,5 +1,3 @@
-// A
-
 /**
  * CSS minificado com fontes woff2 embutidas do projeto KaTeX, v0.16.45.
  * Utilizado para renderização de fórmulas matemáticas auditáveis em HTML sem dependência externa.

@@ -1,9 +1,9 @@
 {
     "name": "@st-all-one/calc-auy-processor-cbor",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "exports": "./processor.cbor.ts",
     "imports": {
-        "@st-all-one/calc-auy": "../../mod.ts",
-        "@std/cbor": "jsr:@std/cbor@^0.1.4"
+        "@calc-auy": "../../mod.ts",
+        "@std/cbor": "jsr:@std/cbor@^0.1.9"
     }
 }

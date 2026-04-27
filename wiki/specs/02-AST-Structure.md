@@ -52,9 +52,8 @@ A AST deve ser facilmente conversível para um objeto JSON plano e reconstruíve
 ```
 
 ## Metadados de Auditoria
-Cada nó deve opcionalmente carregar metadados que auxiliem na reconstrução visual e verbal:
-- `label?: string` (Para identificação em logs ou dashboards)
-- `metadata?: Record<string, unknown>` (Dados extras de contexto de negócio)
+Cada nó pode carregar metadados que auxiliem na reconstrução visual e verbal:
+- `metadata?: Record<string, MetadataValue>` (Dados extras de contexto de negócio)
 
 ## Fluxo de Execução
 A AST é construída incrementalmente durante as chamadas de métodos (`add`, `sub`, etc.) ou de uma vez via `parser`. O cálculo real só ocorre quando o nó raiz é "colapsado" através de um método de execução (commit).

@@ -44,13 +44,11 @@ Interface para nós da AST.
 """
 interface CalculationNode {
   kind: NodeKind!
-  label: String
   metadata: MetadataMap
 }
 
 type LiteralNode implements CalculationNode {
   kind: NodeKind!
-  label: String
   metadata: MetadataMap
   value: RationalValue!
   originalInput: String!
@@ -58,7 +56,6 @@ type LiteralNode implements CalculationNode {
 
 type OperationNode implements CalculationNode {
   kind: NodeKind!
-  label: String
   metadata: MetadataMap
   type: OperationType!
   operands: [CalculationNode!]!
@@ -66,21 +63,14 @@ type OperationNode implements CalculationNode {
 
 type GroupNode implements CalculationNode {
   kind: NodeKind!
-  label: String
   metadata: MetadataMap
   child: CalculationNode!
-  isRedundant: Boolean
 }
-
 type ControlNode implements CalculationNode {
   kind: NodeKind!
-  label: String
   metadata: MetadataMap
   type: String!
   child: CalculationNode!
-  previousContextLabel: String!
-  previousSignature: String!
-  previousRoundStrategy: String!
 }
 
 """

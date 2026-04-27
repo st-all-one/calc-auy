@@ -77,5 +77,5 @@ Root: OperationNode(*)
 ```
 
 ## Validação de Redundância e Inconsistência
-- **Redundância:** Se o usuário fornecer `(2^3)`, o Parser identifica que os parênteses são redundantes e marca o `GroupNode` como `isRedundant: true`, mas mantém a estrutura para auditoria.
+- **Redundância:** Se o usuário fornecer `(2^3)`, o Parser identifica que os parênteses são redundantes e pode optar por mantê-los ou simplificá-los conforme a estratégia de auditoria. No motor CalcAUY, a estrutura é preservada para garantir fidelidade ao input original.
 - **Inconsistência:** O Parser deve disparar `CalcAUYError` imediato para expressões como `10 ^ * 5` ou `(10 + 5))`.

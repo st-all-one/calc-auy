@@ -1,8 +1,8 @@
 {
     "name": "@st-all-one/calc-auy-processor-persistence",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "exports": "./processor.persistence.ts",
     "imports": {
-        "@st-all-one/calc-auy": "../../mod.ts"
+        "@calc-auy": "../../mod.ts"
     }
 }

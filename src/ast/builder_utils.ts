@@ -139,7 +139,6 @@ export function attachOp(target: CalculationNode, type: OperationType, right: Ca
         && target.type === type
         && type !== "pow"
         && !target.metadata
-        && !target.label
     ) {
         // Se exceder a largura máxima, criamos uma nova camada (O(N) construction)
         // em vez de continuar espalhando o array infinitamente (O(N²) cost).

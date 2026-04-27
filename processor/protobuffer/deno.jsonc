@@ -1,9 +1,9 @@
 {
     "name": "@st-all-one/calc-auy-processor-protobuf",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "exports": "./processor.protobuffer.ts",
     "imports": {
-        "@st-all-one/calc-auy": "../../mod.ts",
-        "protobufjs": "npm:protobufjs@^7.4.0"
+        "@calc-auy": "../../mod.ts",
+        "protobufjs": "npm:protobufjs@^8.0.1"
     }
 }

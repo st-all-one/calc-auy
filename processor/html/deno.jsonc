@@ -1,9 +1,9 @@
 {
     "name": "@st-all-one/calc-auy-processor-html",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "exports": "./processor.html.ts",
     "imports": {
-        "@st-all-one/calc-auy": "../../mod.ts",
-        "katex": "npm:katex@^0.16.21"
+        "@calc-auy": "../../mod.ts",
+        "katex": "npm:katex@^0.16.45"
     }
 }

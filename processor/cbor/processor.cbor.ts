@@ -1,21 +1,17 @@
-import {
-    type CalcAUYCustomOutput,
-    InternalType,
-    type OperationType,
-} from "@st-all-one/calc-auy";
+import type { CalcAUYCustomOutput, InternalTypes } from "@calc-auy";
 import { type CborType, decodeCbor, encodeCbor } from "@std/cbor";
 
-type CalculationNode = InternalType.CalculationNode;
-type SerializedCalculation = InternalType.SerializedCalculation;
-type LiteralNode = InternalType.LiteralNode;
-type OperationNode = InternalType.OperationNode;
-type GroupNode = InternalType.GroupNode;
-type ControlNode = InternalType.ControlNode;
+type CalculationNode = InternalTypes.ASTTypes.CalculationNode;
+type SerializedCalculation = InternalTypes.ASTTypes.SerializedCalculation;
+type LiteralNode = InternalTypes.ASTTypes.LiteralNode;
+type OperationNode = InternalTypes.ASTTypes.OperationNode;
+type GroupNode = InternalTypes.ASTTypes.GroupNode;
+type ControlNode = InternalTypes.ASTTypes.ControlNode;
 
 /**
  * Processador oficial para exportação em formato binário CBOR (RFC 8949).
  */
-export const cborProcessor: CalcAUYCustomOutput<Uint8Array> = function (ctx) {
+export const cborProcessor: CalcAUYCustomOutput<Uint8Array> = function (ctx): Uint8Array {
     const obj = ctx.methods.toLiveTrace();
 
     if (!obj.finalResult || !obj.roundStrategy) {
@@ -24,18 +20,16 @@ export const cborProcessor: CalcAUYCustomOutput<Uint8Array> = function (ctx) {
         );
     }
 
-    // Engenharia: Construção rigorosa do payload.
-    // Usamos Record<string, CborType> para garantir compatibilidade com encodeCbor
-    // sem perder a estrutura definida no schema de auditoria.
+    // Engenharia: Construção rigorosa do payload seguindo a ordem canônica.
     const payload: Record<string, CborType> = {
         ast: transformNode(obj.ast),
-        signature: obj.signature,
-        contextLabel: obj.contextLabel,
         finalResult: {
             n: obj.finalResult.n,
             d: obj.finalResult.d,
         } as unknown as CborType,
         roundStrategy: obj.roundStrategy,
+        signature: obj.signature,
+        contextLabel: obj.contextLabel,
     };
 
     return encodeCbor(payload);
@@ -43,25 +37,23 @@ export const cborProcessor: CalcAUYCustomOutput<Uint8Array> = function (ctx) {
 
 interface ICborNode {
     kind: number;
-    label?: string;
-    metadata?: Record<string, unknown>;
     value?: { n: string; d: string };
     originalInput?: string;
     type?: number;
     operands?: ICborNode[];
     child?: ICborNode;
-    isRedundant?: boolean;
     previousContextLabel?: string;
     previousSignature?: string;
     previousRoundStrategy?: string;
+    metadata?: Record<string, InternalTypes.ASTTypes.MetadataValue>;
 }
 
 interface ICborPayload {
     ast: ICborNode;
-    signature: string;
-    contextLabel: string;
     finalResult: { n: string; d: string };
     roundStrategy: string;
+    signature: string;
+    contextLabel: string;
 }
 
 /**
@@ -71,10 +63,10 @@ export function cborHydrator(buffer: Uint8Array): SerializedCalculation {
     const decoded = decodeCbor(buffer) as unknown as ICborPayload;
     return {
         ast: reverseTransformNode(decoded.ast),
-        signature: decoded.signature,
-        contextLabel: decoded.contextLabel,
         finalResult: decoded.finalResult,
         roundStrategy: decoded.roundStrategy,
+        signature: decoded.signature,
+        contextLabel: decoded.contextLabel,
     };
 }
 
@@ -83,31 +75,27 @@ function transformNode(node: CalculationNode): CborType {
         kind: (KIND_MAP[node.kind] || 0) as CborType,
     };
 
-    if (node.label) res.label = node.label;
-    if (node.metadata && Object.keys(node.metadata).length > 0) {
-        res.metadata = node.metadata as unknown as CborType;
-    }
-
     if (node.kind === "literal") {
         res.value = { n: node.value.n, d: node.value.d } as unknown as CborType;
         res.originalInput = node.originalInput;
     } else if (node.kind === "operation") {
         res.type = (OP_MAP[node.type] || 0) as CborType;
-        res.operands = node.operands.map((o: CalculationNode) =>
-            transformNode(o)
-        ) as unknown as CborType;
+        res.operands = node.operands.map((o: CalculationNode) => transformNode(o)) as unknown as CborType;
     } else if (node.kind === "group") {
         res.child = transformNode(node.child);
-        if (node.isRedundant !== undefined) res.isRedundant = node.isRedundant;
     } else if (node.kind === "control") {
         res.type = node.type;
         res.child = transformNode(node.child);
         res.previousContextLabel = node.metadata
             .previousContextLabel as CborType;
         res.previousSignature = node.metadata.previousSignature as CborType;
-        res.previousRoundStrategy =
-            (node.metadata.previousRoundStrategy as string || "") as CborType;
+        res.previousRoundStrategy = (node.metadata.previousRoundStrategy as string || "") as CborType;
     }
+
+    if (node.metadata && Object.keys(node.metadata).length > 0) {
+        res.metadata = node.metadata as unknown as CborType;
+    }
+
     return res as CborType;
 }
 
@@ -136,7 +124,7 @@ const REV_KIND_MAP: Record<number, string> = {
     4: "control",
 };
 
-const REV_OP_MAP: Record<number, OperationType> = {
+const REV_OP_MAP: Record<number, InternalTypes.ASTTypes.OperationType> = {
     1: "add",
     2: "sub",
     3: "mul",
@@ -150,50 +138,46 @@ const REV_OP_MAP: Record<number, OperationType> = {
 function reverseTransformNode(node: ICborNode): CalculationNode {
     const kind = REV_KIND_MAP[node.kind] || "literal";
 
-    const base = {
-        label: node.label,
-        metadata: node.metadata as any,
-    };
-
     if (kind === "literal" && node.value) {
-        return {
-            ...base,
+        const res: any = {
             kind: "literal",
             value: node.value,
             originalInput: node.originalInput || "",
-        } as LiteralNode;
+        };
+        if (node.metadata) { res.metadata = node.metadata; }
+        return res as LiteralNode;
     }
 
     if (kind === "operation" && node.type && node.operands) {
-        return {
-            ...base,
+        const res: any = {
             kind: "operation",
             type: REV_OP_MAP[node.type] || "add",
             operands: node.operands.map((o) => reverseTransformNode(o)),
-        } as OperationNode;
+        };
+        if (node.metadata) { res.metadata = node.metadata; }
+        return res as OperationNode;
     }
 
     if (kind === "group" && node.child) {
-        return {
-            ...base,
+        const res: any = {
             kind: "group",
             child: reverseTransformNode(node.child),
-            isRedundant: node.isRedundant,
-        } as GroupNode;
+        };
+        if (node.metadata) { res.metadata = node.metadata; }
+        return res as GroupNode;
     }
 
     if (kind === "control" && node.child) {
         return {
-            ...base,
             kind: "control",
             type: "reanimation_event",
-            child: reverseTransformNode(node.child),
             metadata: {
-                ...base.metadata,
+                ...(node.metadata || {}),
                 previousContextLabel: node.previousContextLabel || "",
                 previousSignature: node.previousSignature || "",
                 previousRoundStrategy: node.previousRoundStrategy || "",
             },
+            child: reverseTransformNode(node.child),
         } as ControlNode;
     }
 

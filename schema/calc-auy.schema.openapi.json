@@ -69,9 +69,6 @@
                             "control"
                         ]
                     },
-                    "label": {
-                        "type": "string"
-                    },
                     "metadata": {
                         "type": "object",
                         "additionalProperties": {
@@ -160,9 +157,6 @@
                             },
                             "child": {
                                 "$ref": "#/components/schemas/CalculationNode"
-                            },
-                            "isRedundant": {
-                                "type": "boolean"
                             }
                         }
                     }
