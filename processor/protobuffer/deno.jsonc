@@ -5,5 +5,10 @@
     "imports": {
         "@calc-auy": "../../mod.ts",
         "protobufjs": "npm:protobufjs@^8.0.1"
+    },
+    "allowScripts": {
+        "allow": [
+            "npm:protobufjs@8.0.1"
+        ],
     }
 }

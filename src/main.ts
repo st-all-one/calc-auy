@@ -8,6 +8,7 @@
 
 import { CalcAUYLogic } from "./builder.ts";
 import type { CalculationNode } from "./ast/types.ts";
+import { createCacheSession } from "./core/rational.ts";
 import { DEFAULT_INSTANCE_CONFIG, type SignatureEncoder } from "./utils/sanitizer.ts";
 import { generateSignature } from "./utils/security.ts";
 import { CalcAUYError } from "./core/errors.ts";
@@ -56,6 +57,13 @@ export class CalcAUY {
         const instanceId = Symbol(fullConfig.contextLabel);
 
         return new CalcAUYLogic<T["contextLabel"], T>(null, instanceId, fullConfig, null);
+    }
+
+    /**
+     * Inicia uma nova sessão de cache para otimização de memória em cálculos massivos.
+     */
+    public static createCacheSession(): Disposable {
+        return createCacheSession();
     }
 
     /**

@@ -115,13 +115,5 @@
                 "verbatim-module-syntax"
             ]
         }
-    },
-    "allowScripts": {
-        "allow": [
-            "npm:protobufjs@8.0.1"
-        ],
-        "deny": [
-            ""
-        ]
     }
 }

@@ -16,7 +16,7 @@ import type {
     RationalValue,
     SerializedCalculation,
 } from "./ast/types.ts";
-import { createCacheSession, getActiveSession, RationalNumber } from "./core/rational.ts";
+import { getActiveSession, RationalNumber } from "./core/rational.ts";
 import { validateMetadata } from "./core/metadata.ts";
 import type { RoundingStrategy } from "./core/constants.ts";
 import { evaluate } from "./ast/engine.ts";
@@ -91,13 +91,6 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
         this.#instanceId = instanceId;
         this.#config = config;
         this.#birthTime = birthTime;
-    }
-
-    /**
-     * Inicia uma nova sessão de cache para otimização de memória em cálculos massivos.
-     */
-    public static createCacheSession(): Disposable {
-        return createCacheSession();
     }
 
     /**
