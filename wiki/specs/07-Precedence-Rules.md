@@ -59,6 +59,11 @@ Sinais unários (ex: `-5` ou `+10`) possuem precedência superior à exponencia�
 - **Exemplo:** `-2^2` deve ser tratado como `(-2)^2 = 4` se o sinal estiver colado ao literal.
 - **Decisão CalcAUY:** Para evitar ambiguidades financeiras, sinais unários devem sempre vincular-se ao literal imediatamente à direita. Se a intenção for `-(2^2)`, o uso de parênteses é obrigatório.
 
+### 7. Otimização: Hierarchical Flattening (Aplanamento Associativo)
+Em operações lineares massivas do mesmo tipo (ex: somar 1.000 itens consecutivamente), a construção padrão da AST geraria uma árvore de profundidade O(N), resultando em `Stack Overflow` no colapso.
+- **Regra de Otimização:** O método `attachOp` monitora a largura do nó de operação. Ao atingir o limite de **100 operandos** (`MAX_OPERANDS`), o motor cria automaticamente uma nova camada na árvore.
+- **Resultado:** Reduz a profundidade da AST de O(N) para **O(log N)**, mantendo o custo de construção linear e a execução segura em qualquer escala. Esta otimização é ignorada para a operação `pow` devido à sua natureza de associatividade à direita.
+
 ## Representação na AST
 A estrutura da árvore **DEVE** refletir visualmente a precedência através da profundidade dos nós.
 - Operações de **menor precedência** (Soma) ficam mais próximas da **raiz**.

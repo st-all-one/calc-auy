@@ -26,6 +26,11 @@ O `RationalNumber` é um objeto racional verdadeiro que mantém a relação entr
 3. **Divisão por Zero:** Deve ser prevenida e lançar um erro específico (`CalcAUYError`) no momento da criação ou operação.
 4. **Precisão de 50 casas:** Usada para operações que resultam em irracionais (raízes) ou no momento de converter para string decimal.
 5. **Suporte a Percentuais:** O método `from` e `fromString` aceitam strings terminadas em `%` (ex: `"10.5%"`), convertendo-as automaticamente para a fração racional equivalente (`105/1000`).
+6. **Sistema de Cache em Três Níveis:**
+    - **Session Cache:** Armazenamento temporário (`RationalCacheSession`) para alta densidade, liberado via `Disposable`.
+    - **Hot Cache:** Limite de 512 referências fortes para os números mais comuns.
+    - **Global WeakRef Cache:** Gerenciamento dinâmico via `WeakRef` e `FinalizationRegistry`, otimizando a memória sem limites fixos de RAM.
+7. **Segurança de Memória (Bit Limit):** Para prevenir ataques de DoS ou estouro de memória, operações que resultem em números superiores a **1.000.000 de bits** lançam um `math-overflow`.
 
 ## Métodos Obrigatórios
 - `add(other: RationalNumber): RationalNumber`

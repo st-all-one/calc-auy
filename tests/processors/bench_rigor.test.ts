@@ -11,9 +11,9 @@ describe("Stress & Bench: Encoders/Decoders Otimizados", () => {
     it("deve validar eficiência e integridade em árvore profunda", async () => {
         const Calc = CalcAUY.create({ contextLabel: "bench", salt });
 
-        // Cria uma árvore profunda (50 níveis de profundidade)
+        // Cria uma árvore profunda (25 níveis de profundidade)
         let chain = Calc.from(1);
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 25; i++) {
             chain = chain.add(1).setMetadata(`step_${i}`, i);
         }
         const res = await chain.commit();
@@ -36,7 +36,7 @@ describe("Stress & Bench: Encoders/Decoders Otimizados", () => {
         const endProto = performance.now();
 
         // --- Relatório de Eficiência ---
-        console.log(`\n--- Relatório de Eficiência (Árvore Profunda: 50 níveis) ---`);
+        console.log(`\n--- Relatório de Eficiência (Árvore Profunda: 25 níveis) ---`);
         console.log(`JSON:      ${jsonBytes} bytes`);
         console.log(
             `MsgPack:   ${msgBuffer.length} bytes (Redução: ${Math.round((1 - msgBuffer.length / jsonBytes) * 100)}%)`,

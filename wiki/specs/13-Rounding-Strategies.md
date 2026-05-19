@@ -37,8 +37,8 @@ Renderização rica com acessibilidade.
 
 ### 3. Unicode (CLI/Logs)
 Utiliza glifos subscritos para o identificador.
-- **Mapeamento:** `HU` -> `ₕᵤ`, `HE` -> `ₕₑ`, `TR` -> `ₜᵣ`, `CE` -> `꜀ₑ`, `NBR` -> `ₙᵦᵣ`.
-- **Exemplo:** `roundₙᵦᵣ(1.225, 2) = 1.22`
+- **Mapeamento:** `HU` -> `ₕᵤ`, `HE` -> `ₕₑ`, `TR` -> `ₜᵣ`, `CE` -> `꜀ₑ`, `NBR` -> `ₙᵦᵣ₋₅₈₉₁`.
+- **Exemplo:** `roundₙᵦᵣ₋₅₈₉₁(1.225, 2) = 1.22`
 
 ### 4. Verbal (A11y)
 Deve ser por extenso e localizado.

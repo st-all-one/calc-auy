@@ -50,11 +50,13 @@ O método `addFromExternalInstance` é o único portal legítimo para a união d
 4. **Operação Segura:** A união é feita via `crossContextAdd`, protegida por um `GroupNode` automático.
 
 ## 4. O Nó de Controle (`control`)
-Diferente de operações matemáticas, o nó `control` é um carimbo de linhagem forense que marca a entrada de dados externos ou a reanimação de um cálculo.
+Diferente de operações matemáticas, o nó `control` é um carimbo de linhagem forense que marca a entrada de dados externos ou a reanimação de um cálculo. No motor atual, ele utiliza o tipo `reanimation_event`.
 
 ### Metadados de Jurisdição:
 - **`previousContextLabel`**: Nome da jurisdição de onde o dado veio.
 - **`previousSignature`**: Assinatura original do dado antes da integração.
+- **`previousRoundStrategy`**: Estratégia de arredondamento aplicada no contexto anterior (se houver).
+- **`timestamp`**: Carimbo de tempo do momento da integração ou reanimação.
 
 ## 5. Lacre de Fechamento (Timestamp Jurídico)
 A CalcAUY implementa o conceito de **Certidão de Fechamento**. Embora o momento de nascimento do cálculo seja capturado em sua inicialização (via `.from()`, `.parseExpression()` ou `.fromExternalInstance()`), a injeção física deste `timestamp` nos metadados do nó raiz da AST ocorre **exclusivamente** no ato de encerramento (`commit`) ou persistência (`hibernate`).

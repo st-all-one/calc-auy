@@ -16,33 +16,25 @@ import { MAX_RECURSION_DEPTH } from "../core/constants.ts";
 const logger = getSubLogger("engine");
 
 /**
- * Colapsa recursivamente um nó da AST em um resultado final (RationalNumber).
+ * Colapsa um nó da AST em um resultado final (RationalNumber).
  *
  * **Fase de Commit:**
  * Esta função representa o momento da execução real do cálculo. Ela percorre a
- * árvore em profundidade (Post-order Traversal), resolvendo primeiro os operandos
- * e depois aplicando a operação correspondente.
+ * árvore em profundidade (Post-order Traversal) de forma iterativa, utilizando
+ * uma pilha para evitar estouro da pilha de chamadas do sistema (Stack Overflow).
  *
  * @param node Nó raiz da expressão.
- * @param depth Nível atual de recursão (usado para controle de segurança).
+ * @param depth Nível inicial de profundidade (opcional, padrão 0).
  * @returns {RationalNumber} O resultado matemático puro e exato.
  */
 export function evaluate(node: CalculationNode, depth = 0): RationalNumber {
-    if (depth > MAX_RECURSION_DEPTH) {
-        throw new CalcAUYError(
-            "math-overflow",
-            "A profundidade da expressão excedeu o limite de segurança (AST muito complexa).",
-            { partialAST: node },
-        );
-    }
-
     // Modo Produção: Execução direta e rápida sem overhead de telemetria.
     if (!logger.isEnabledFor("debug")) {
-        return evaluateNode(node, depth);
+        return iterativeEvaluate(node, depth);
     }
 
     // Modo Debug: Mede performance e loga estrutura sanitizada para auditoria técnica.
-    const [result, duration] = measureTime(() => evaluateNode(node, depth));
+    const [result, duration] = measureTime(() => iterativeEvaluate(node, depth));
 
     logger.debug("Node evaluated", {
         operation_kind: node.kind,
@@ -55,51 +47,114 @@ export function evaluate(node: CalculationNode, depth = 0): RationalNumber {
 }
 
 /**
- * Lógica interna de avaliação sem telemetria para permitir reuso e performance.
+ * Definição de tarefas para o motor iterativo.
  */
-function evaluateNode(node: CalculationNode, depth: number): RationalNumber {
-    switch (node.kind) {
-        case "literal":
-            return RationalNumber.from(BigInt(node.value.n), BigInt(node.value.d));
+type EvalTask =
+    | { type: "eval"; node: CalculationNode; depth: number }
+    | { type: "apply"; op: OperationType; count: number; parent: CalculationNode; depth: number };
 
-        case "group":
-            return evaluate(node.child, depth + 1);
+/**
+ * Motor de avaliação iterativo (Stack-based Post-order Traversal).
+ */
+function iterativeEvaluate(root: CalculationNode, initialDepth: number): RationalNumber {
+    const workStack: EvalTask[] = [{ type: "eval", node: root, depth: initialDepth }];
+    const resultStack: RationalNumber[] = [];
 
-        case "control":
-            return evaluate(node.child, depth + 1);
+    while (workStack.length > 0) {
+        // deno-lint-ignore no-non-null-assertion
+        const task = workStack.pop()!;
 
-        case "operation":
-            return evaluateOperation(node.type, node.operands, depth + 1, node);
-
-        default: {
+        if (task.depth > MAX_RECURSION_DEPTH) {
             throw new CalcAUYError(
-                "corrupted-node",
-                "Tipo de nó desconhecido na AST.",
-                { partialAST: node },
+                "math-overflow",
+                "A profundidade da expressão excedeu o limite de segurança (AST muito complexa).",
+                { partialAST: task.type === "eval" ? task.node : task.parent },
             );
         }
+
+        if (task.type === "eval") {
+            const node = task.node;
+            switch (node.kind) {
+                case "literal":
+                    resultStack.push(RationalNumber.from(BigInt(node.value.n), BigInt(node.value.d)));
+                    break;
+
+                case "group":
+                case "control":
+                    workStack.push({ type: "eval", node: node.child, depth: task.depth + 1 });
+                    break;
+
+                case "operation": {
+                    const len = node.operands.length;
+                    if (len === 0) {
+                        throw new CalcAUYError("corrupted-node", `Operação '${node.type}' sem operandos.`, {
+                            partialAST: node,
+                        });
+                    }
+
+                    // Agendar a aplicação da operação (ocorre após os operandos serem resolvidos)
+                    workStack.push({
+                        type: "apply",
+                        op: node.type,
+                        count: len,
+                        parent: node,
+                        depth: task.depth,
+                    });
+
+                    // Agendar avaliação dos operandos em ordem inversa
+                    // (Pilha: o primeiro operando será o último a entrar e o primeiro a sair para avaliação)
+                    for (let i = len - 1; i >= 0; i--) {
+                        workStack.push({ type: "eval", node: node.operands[i], depth: task.depth + 1 });
+                    }
+                    break;
+                }
+
+                default: {
+                    throw new CalcAUYError(
+                        "corrupted-node",
+                        "Tipo de nó desconhecido na AST.",
+                        { partialAST: node },
+                    );
+                }
+            }
+        } else {
+            // task.type === "apply"
+            const operands: RationalNumber[] = [];
+            for (let i = 0; i < task.count; i++) {
+                // deno-lint-ignore no-non-null-assertion
+                operands.unshift(resultStack.pop()!);
+            }
+
+            try {
+                const res = applyOperation(task.op, operands, task.parent);
+                resultStack.push(res);
+            } catch (err) {
+                if (err instanceof CalcAUYError) {
+                    if (!err.context.partialAST) {
+                        (err.context as { partialAST: unknown }).partialAST = task.parent;
+                    }
+                }
+                throw err;
+            }
+        }
     }
+
+    // O resultado final é o único item restante na pilha de resultados.
+    return resultStack[0];
 }
 
 /**
- * Resolve internamente uma operação específica entre múltiplos operandos.
+ * Aplica a operação matemática sobre a lista de operandos resolvidos.
  */
-function evaluateOperation(
+function applyOperation(
     type: OperationType,
-    operands: CalculationNode[],
-    depth: number,
+    operands: RationalNumber[],
     parentNode: CalculationNode,
 ): RationalNumber {
     const len = operands.length;
-    if (len === 0) {
-        throw new CalcAUYError("corrupted-node", `Operação '${type}' sem operandos.`, { partialAST: parentNode });
-    }
+    let acc: RationalNumber = operands[0];
 
-    // Resolve o primeiro operando para iniciar o acúmulo.
-    let acc: RationalNumber = evaluate(operands[0], depth);
-
-    // Validação de segurança: garante que o tipo da operação é conhecido,
-    // mesmo para nós com um único operando onde o loop não seria executado.
+    // Validação de segurança: garante que o tipo da operação é conhecido.
     const supportedOps: OperationType[] = ["add", "sub", "mul", "div", "pow", "mod", "divInt", "crossContextAdd"];
     if (!supportedOps.includes(type)) {
         throw new CalcAUYError("corrupted-node", `Operação não suportada: ${type}`, {
@@ -107,53 +162,40 @@ function evaluateOperation(
         });
     }
 
-    try {
-        // Resolve os demais operandos e aplica a operação sequencialmente.
-        // Otimização: Uso de loop for simples evita alocações de arrays temporários (map/slice/reduce).
-        for (let i = 1; i < len; i++) {
-            const val: RationalNumber = evaluate(operands[i], depth);
+    for (let i = 1; i < len; i++) {
+        const val: RationalNumber = operands[i];
 
-            switch (type) {
-                case "add":
-                case "crossContextAdd":
-                    acc = acc.add(val);
-                    break;
-                case "sub":
-                    acc = acc.sub(val);
-                    break;
-                case "mul":
-                    acc = acc.mul(val);
-                    break;
-                case "div":
-                    acc = acc.div(val);
-                    break;
-                case "pow":
-                    acc = acc.pow(val);
-                    break;
-                case "mod":
-                    acc = acc.mod(val);
-                    break;
-                case "divInt":
-                    acc = acc.divInt(val);
-                    break;
-                default: {
-                    const unsupported: never = type;
-                    throw new CalcAUYError("corrupted-node", `Operação não suportada: ${unsupported}`, {
-                        partialAST: parentNode,
-                    });
-                }
+        switch (type) {
+            case "add":
+            case "crossContextAdd":
+                acc = acc.add(val);
+                break;
+            case "sub":
+                acc = acc.sub(val);
+                break;
+            case "mul":
+                acc = acc.mul(val);
+                break;
+            case "div":
+                acc = acc.div(val);
+                break;
+            case "pow":
+                acc = acc.pow(val);
+                break;
+            case "mod":
+                acc = acc.mod(val);
+                break;
+            case "divInt":
+                acc = acc.divInt(val);
+                break;
+            default: {
+                const unsupported: never = type as never;
+                throw new CalcAUYError("corrupted-node", `Operação não suportada: ${unsupported}`, {
+                    partialAST: parentNode,
+                });
             }
         }
-
-        return acc;
-    } catch (err) {
-        if (err instanceof CalcAUYError) {
-            // Enriquece o erro com a AST parcial se ainda não tiver
-            if (!err.context.partialAST) {
-                (err.context as { partialAST: unknown }).partialAST = parentNode;
-            }
-            throw err;
-        }
-        throw err;
     }
+
+    return acc;
 }

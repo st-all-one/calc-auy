@@ -36,7 +36,8 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 6.  **Proteção de Dados e Telemetria (`specs/11`, `specs/17`, `specs/19`):** Sistema de proteção de PII (*Security by Default*) e integridade militar via **BLAKE3**.
 7.  **Qualidade e Rigor (`specs/15`):** Padrões de tipagem estrita e performance.
 8.  **Extensibilidade (`specs/16`):** Processadores de saída customizados e injeção de lógica.
-9.  **Processamento em Massa (`specs/18`):** Utilitários de *Batch Processing* para evitar o bloqueio do Event Loop.
+9.  **Testes e Snapshot (`specs/18`):** Protocolo determinístico para validação de assinaturas.
+10. **Processamento em Massa (`specs/23`):** Utilitários de *Batch Processing* para evitar o bloqueio do Event Loop.
 
 ## Resumo de Métodos Principais
 
@@ -53,14 +54,19 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 - **`commit(roundStrategy)`**: Finaliza, colapsa e assina o cálculo (**Promise**).
 
 ### Classe `CalcAUYOutput` (Result)
-- `toMonetary()`, `toStringNumber()`, `toLaTeX()`, `toHTML()`, `toUnicode()`, `toImageBuffer()`, `toMermaidGraph()`
+- `toMonetary()`, `toStringNumber()`, `toLaTeX()`, `toUnicode()`, `toMermaidGraph()`
 - **`toLiveTrace()`**: Retorna o rastro completo como objeto vivo e tipado (**SerializedCalculation**).
 - **`toSlice()` / `toSliceByRatio()`**: Rateio exato de centavos (Algoritmo de Maior Resto).
 - `toVerbalA11y()`: Tradução humana da fórmula.
 - `toAuditTrace()`: Snapshot JSON completo com metadados e assinatura de integridade.
-- **`toJSON(keys?, katex?, options?)`**: Exportação consolidada com assinatura injetada.
+- **`toJSON(keys?, options?)`**: Exportação consolidada com assinatura injetada.
+- **`toCustomOutput(processor)`**: Gateway para processadores modulares (HTML, Imagem, Protobuf).
 
 ## Pilares de Performance
 1.  **GCD Híbrido:** Uso de atalhos de hardware e operador nativo V8 para simplificação ultra-rápida de frações.
-2.  **Instance Caching (Memoization):** Todos os outputs visual e textuais são calculados apenas uma vez por instância e armazenados em cache.
-3.  **Static Asset Inlining:** CSS e Fontes (Base64) embutidos garantem renderização instantânea e agnóstica de ambiente (offline/backend).
+2.  **Sistema de Cache em Três Níveis:**
+    - **Session Cache:** Cache escopado para processamento em lote.
+    - **Hot Cache:** Referências fortes para valores de alta frequência.
+    - **Global WeakRef Cache:** Reuso inteligente de nós AST e números racionais sem impedir o Garbage Collector.
+3.  **Hierarchical Flattening (O(log N)):** Aplanamento automático de operações lineares massivas, evitando estouro de pilha e garantindo performance estável.
+4.  **Static Asset Inlining:** CSS e Fontes (Base64) embutidos nos processadores modulares garantem renderização instantânea.

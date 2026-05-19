@@ -74,17 +74,17 @@ Diferente das APIs tradicionais, a injeção de uma instância de `CalcAUYLogic`
 ### `hydrate(ast: CalculationNode | string, config?: {salt, encoder}): Promise<CalcAUYLogic>`
 - **Descrição:** Reconstrói uma instância ativa de `CalcAUYLogic` a partir de um estado hibernado, garantindo a continuidade do cálculo sob um lacre criptográfico e carimbando a jurisdição atual.
 - **Comportamento de Injeção (Auto-Grouping):**
-  1. **Como Raiz:** Se for o início de uma cadeia (`instance.hydrate(AST).add(2)`), a instância resultante atua como o ponto de partida original da expressão, sem parênteses adicionais desnecessários.
-  2. **Como Operando:** Se for injetada em um método de outra instância (`base.mult(instance.hydrate(AST))`), ela é tratada como uma instância normal e, portanto, é **automaticamente envolvida em um `GroupNode`** para proteger sua integridade matemática e precedência.
+  1. **Envelopamento de Jurisdição:** A árvore reidratada é envolvida em um nó `control` (tipo `reanimation_event`) que preserva a assinatura e o contexto original.
+  2. **Proteção de Precedência:** Para garantir que o cálculo recuperado seja tratado como uma unidade atômica, ele é automaticamente envolvido em um `GroupNode` antes de permitir novas operações.
 - **Processo Interno de Rigor:**
   1. **Desserialização:** Se a entrada for uma string, converte para objeto JSON seguindo a interface `SerializedCalculation`.
-  2. **Validação de Integridade:** Verifica se todos os nós possuem os campos obrigatórios (`kind`, `type`, `operands` ou `value`).
-  3. **Reconstrução de Tipos:** Converte os objetos `{n, d}` de volta em instâncias de `RationalNumber`.
+  2. **Validação de Integridade:** Verifica a assinatura BLAKE3 contra o salt da jurisdição (ou override).
+  3. **Reconstrução de Tipos:** Valida a estrutura da AST através do `validateASTNode`, garantindo que não exceda limites de profundidade ou número de nós.
   4. **Preservação de Metadados:** Restaura todos os campos de `metadata` originais, injetando o novo nó `control` no topo.
-- **Benefício:** Permite o reaproveitamento de cálculos parciais em diferentes contextos de negócio, mantendo a auditabilidade e precisão absoluta.
 
-## Finalização (Commit)
-
+### `fromExternalInstance(external): Promise<CalcAUYLogic>`
+- **Descrição:** Único portal para unir cálculos de jurisdições diferentes. Carimba a origem via nó `control`.
+- **Protocolo de União:** Se o builder já possuir uma árvore, a nova instância externa é anexada via operação especial `crossContextAdd`, sempre protegida por um `GroupNode` para evitar corrupção de precedência.
 ### `commit(options?): Promise<CalcAUYOutput>`
 - **Ação:** Inicia o colapso da AST em um resultado numérico racional e assina o fato matemático consolidado.
 

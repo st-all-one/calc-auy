@@ -66,21 +66,17 @@ Definir o contrato final de consumo dos resultados do cálculo. A classe `CalcAU
 ### `toUnicode(options?: OutputOptions): string`
 - **Descrição:** Representação visual matemática para logs e terminais usando glifos Unicode.
 
-### `toImageBuffer(katex: IKatex, options?: OutputOptions): Uint8Array`
-- **Descrição:** Gera um buffer binário de uma imagem SVG auto-contida da fórmula.
-- **Otimização:** Reutiliza o LaTeX renderizado e utiliza um encoder estático.
-
-## Auditoria de Rastro e Estrutura
-
 ### `toAuditTrace(): string`
 - **Descrição:** Retorna um snapshot JSON completo da execução (AST + Resultado + Estratégia).
 
-### `toJSON<T extends OutputKey>(outputs?: T[], katex?, options?): string`
+### `toLiveTrace(): SerializedCalculation`
+- **Descrição:** Retorna o rastro completo da execução como um objeto JavaScript "vivo" e tipado para inspeção programática.
+
+### `toJSON<T extends OutputKey>(outputs?: T[], options?): string`
 - **Descrição:** Consolida múltiplos outputs em uma única string JSON.
-- **Tipagem Estática:** Exige a instância de `katex` via generics se `toHTML` ou `toImageBuffer` forem solicitados.
 
 ### `toCustomOutput<Toutput>(processor: CalcAUYCustomOutput<Toutput>): Toutput`
-- **Descrição:** Permite injetar um formatador externo com acesso total ao rastro e ao valor racional.
+- **Descrição:** **Gateway de Extensibilidade.** Permite injetar processadores modulares para gerar formatos como HTML (via KaTeX), Imagem (SVG), Protobuf ou XML. É o método recomendado para qualquer saída não-nativa do core.
 
 ## Interface de Opções
 ```typescript

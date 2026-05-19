@@ -36,6 +36,14 @@ O desenvolvedor pode marcar nós individuais da AST para forçar ou liberar a vi
 -   **Ocultação Forçada:** `.setMetadata("pii", true)` - Garante que o dado NUNCA apareça em logs.
 -   **Liberação de Visibilidade:** `.setMetadata("pii", false)` - Permite que constantes públicas (ex: alíquota de 18%) apareçam nos logs técnicos mesmo em jurisdições sensíveis.
 
+## Camada 3: Herança de Sensibilidade (PII Propagation)
+
+Para otimizar a experiência do desenvolvedor e garantir a segurança por padrão, a CalcAUY implementa um mecanismo de propagação de políticas na árvore:
+
+1.  **Herança de Nós Literais:** Se um nó `literal` não possuir um override explícito de metadado `pii`, ele **herda automaticamente** o estado de ocultação do seu nó pai (`group`, `operation` ou `control`).
+2.  **Propagação em Cascata:** Isso permite que, ao marcar uma operação complexa como sensível, todos os seus componentes internos sejam protegidos recursivamente, a menos que uma liberação explícita (`pii: false`) seja encontrada em um sub-nó.
+3.  **Segurança em Handover:** Durante integrações cross-context, o nó `control` atua como uma barreira ou ponte, mantendo a sensibilidade da jurisdição de origem a menos que o contrato de integração especifique o contrário.
+
 ---
 
 ## Exemplo de Fluxo Isolado

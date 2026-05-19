@@ -29,11 +29,16 @@ O linter está configurado para prevenir padrões de código perigosos ou ambíg
 - **Agnosticismo de IO:** O core da biblioteca não deve depender de APIs específicas de sistema operacional (como `Deno.readFile` ou `fs.readFileSync`) para manter sua natureza "run-anywhere".
 
 ### Otimização de Performance Extrema
-1. **Instance-Level Caching (Memoization):** Todas as transformações custosas (LaTeX, HTML, Unicode, ImageBuffer, AuditTrace) são cacheadas na instância do `CalcAUYOutput`. Chamadas subsequentes possuem custo O(1).
-2. **Otimização de Clonagem (Shallow Copy):** Em operações que exigem o retorno ou modificação da raiz da árvore (ex: `hibernate`, `commit`, `toLiveTrace`), a biblioteca utiliza *shallow copy* do nó raiz em vez de `structuredClone`.
+1. **Sistema de Cache em Três Níveis:**
+    - **Session Cache:** `RationalCacheSession` utiliza o protocolo `using` para limpeza automática de memória após processamentos em lote.
+    - **Extra Cache de Sessão:** Além de números, a sessão armazena instâncias de **nós literais da AST** (`LiteralNode`), evitando alocações redundantes de objetos estruturais para o mesmo valor numérico dentro de um loop de alta frequência.
+    - **Hot Cache:** Referências fortes garantem acesso O(1) sem overhead para valores de alta frequência (limite de 512 itens).
+    - **Global WeakRef Cache:** Utiliza `WeakRef` para permitir que o GC limpe objetos órfãos e `FinalizationRegistry` para remover chaves do cache global automaticamente.
+2. **Hierarchical Flattening (O(log N)):** O método `attachOp` reorganiza automaticamente a AST quando um nó de operação atinge **100 operandos** (`MAX_OPERANDS`), criando uma nova camada. Isso evita o custo O(N²) de cópias de arrays massivos e previne `Stack Overflow`.
+3. **Otimização de Clonagem (Shallow Copy):** Em operações que exigem o retorno ou modificação da raiz da árvore (ex: `hibernate`, `commit`, `toLiveTrace`), a biblioteca utiliza *shallow copy* do nó raiz em vez de `structuredClone`.
  Como os nós são imutáveis por contrato, o reuso das referências dos sub-nós é seguro e elimina a latência recursiva em árvores profundas.
-3. **GCD Híbrido:** Substituição do algoritmo de Euclides puro por uma abordagem híbrida que utiliza o operador `%` nativo do V8 (C++) e fast-paths para números pequenos, otimizando a simplificação de frações.
-3. **Hard Privacy (#):** Uso de campos privados nativos reduz a superfície de ataque e melhora a performance de acesso interno em relação a fechamentos (closures).
+4. **GCD Híbrido:** Substituição do algoritmo de Euclides puro por uma abordagem híbrida que utiliza o operador `%` nativo do V8 (C++) e fast-paths para números pequenos, otimizando a simplificação de frações.
+5. **Hard Privacy (#):** Uso de campos privados nativos reduz a superfície de ataque e melhora a performance de acesso interno em relação a fechamentos (closures).
 
 ## 4. Governança de Testes e Cobertura
 
