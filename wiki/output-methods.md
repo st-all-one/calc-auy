@@ -1,59 +1,56 @@
 # Métodos de Saída (Output)
 
-A fase de saída na CalcAUY é onde a Árvore de Sintaxe Abstrata (AST) é colapsada e transformada no formato desejado. Graças à arquitetura baseada em frações racionais, o arredondamento só ocorre nesta etapa final, garantindo a máxima integridade dos dados.
+A fase de saída na CalcAUY é onde a Árvore de Sintaxe Abstrata (AST) é "projetada" para o formato final. Graças à arquitetura baseada em frações racionais, o arredondamento só ocorre nesta etapa, garantindo a máxima integridade durante todo o processamento.
 
 ## 🚀 Resumo de Métodos
 
-Abaixo estão os métodos disponíveis na classe `CalcAUYOutput` (gerada após o `.commit()`), com exemplos rápidos de uso.
+Os métodos abaixo estão disponíveis na classe `CalcAUYOutput`, retornada após o comando `.commit()`.
 
 ### 🔢 Fundamentos Numéricos
 | Método | Exemplo Rápido | Descrição |
 | :--- | :--- | :--- |
 | [`toStringNumber`](./output-methods/toStringNumber.md) | `res.toStringNumber()` | String decimal plana (ex: `"10.50"`). |
-| [`toFloatNumber`](./output-methods/toFloatNumber.md) | `res.toFloatNumber()` | Converte para `number` nativo do JS. |
-| [`toScaledBigInt`](./output-methods/toScaledBigInt.md) | `res.toScaledBigInt({ p: 2 })` | Retorna centavos como `bigint` (`1050n`). |
-| [`toRawInternalNumber`](./output-methods/toRawInternalNumber.md) | `res.toRawInternalNumber()` | Retorna o objeto racional bruto (n/d). |
+| [`toFloatNumber`](./output-methods/toFloatNumber.md) | `res.toFloatNumber()` | Converte para `number` (IEEE 754) - Cuidado com imprecisão. |
+| [`toScaledBigInt`](./output-methods/toScaledBigInt.md) | `res.toScaledBigInt({ decimalPrecision: 2 })` | Retorna o valor escalonado (centavos) como `bigint`. |
+| [`toRawInternalNumber`](./output-methods/toRawInternalNumber.md) | `res.toRawInternalNumber()` | Retorna o objeto racional bruto `{ n, d }`. |
 
 ### 🏦 Financeiro e Localização
 | Método | Exemplo Rápido | Descrição |
 | :--- | :--- | :--- |
-| [`toMonetary`](./output-methods/toMonetary.md) | `res.toMonetary()` | Formatação de moeda (ex: `R$ 10,50`). |
+| [`toMonetary`](./output-methods/toMonetary.md) | `res.toMonetary()` | Formatação de moeda localizada (ex: `R$ 10,50`). |
+| [`toSlice`](./output-methods/toSlice.md) | `res.toSlice(3)` | Divisão exata em N partes com distribuição de restos. |
+| [`toSliceByRatio`](./output-methods/toSliceByRatio.md) | `res.toSliceByRatio(["70%", "30%"])` | Rateio proporcional baseado em pesos. |
 
-### ⚖️ Auditoria e Rastro
+### ⚖️ Auditoria e Rastro Forense
 | Método | Exemplo Rápido | Descrição |
 | :--- | :--- | :--- |
-| [`toLaTeX`](./output-methods/toLaTeX.md) | `res.toLaTeX()` | Fórmula em sintaxe matemática LaTeX. |
-| [`toUnicode`](./output-methods/toUnicode.md) | `res.toUnicode()` | Fórmula legível em texto puro (Unicode). |
-| [`toLiveTrace`](./output-methods/toLiveTrace.md) | `res.toLiveTrace()` | Objeto de auditoria vivo e tipado (clonado). |
-| [`toAuditTrace`](./output-methods/toAuditTrace.md) | `res.toAuditTrace()` | Snapshot JSON completo da execução. |
+| [`toLaTeX`](./output-methods/toLaTeX.md) | `res.toLaTeX()` | Representação matemática em formato LaTeX. |
+| [`toUnicode`](./output-methods/toUnicode.md) | `res.toUnicode()` | Fórmula legível em texto puro (CLI/Logs). |
+| [`toLiveTrace`](./output-methods/toLiveTrace.md) | `res.toLiveTrace()` | Objeto vivo para inspeção programática. |
+| [`toAuditTrace`](./output-methods/toAuditTrace.md) | `res.toAuditTrace()` | Snapshot JSON assinado digitalmente (Lacre). |
+| [`toMermaidGraph`](./output-methods/toMermaidGraph.md) | `res.toMermaidGraph()` | Diagrama de sequência do fluxo de jurisdição. |
 
-### ♿ Acessibilidade e Web
+### ♿ Acessibilidade (A11y)
 | Método | Exemplo Rápido | Descrição |
 | :--- | :--- | :--- |
-| [`toVerbalA11y`](./output-methods/toVerbalA11y.md) | `res.toVerbalA11y()` | Descrição fonética para leitores de tela. |
-| [`toMermaidGraph`](./output-methods/toMermaidGraph.md) | `res.toMermaidGraph()` | Diagrama de sequência (Ledger-view). |
-| [`toHTML`](./output-methods/toHTML.md) | `res.toHTML(katex)` | Fragmento HTML renderizado com KaTeX. |
-| [`toImageBuffer`](./output-methods/toImageBuffer.md) | `res.toImageBuffer(katex)` | Gera um buffer de imagem SVG do rastro. |
+| [`toVerbalA11y`](./output-methods/toVerbalA11y.md) | `res.toVerbalA11y()` | Tradução fonética para leitores de tela em múltiplos idiomas. |
 
-### 🍕 Distribuição e Rateio
+### 🛠️ Extensibilidade (Processadores)
+Para gerar formatos complexos como HTML rico ou Imagens, utilize processadores especializados através do método `toCustomOutput`.
+
 | Método | Exemplo Rápido | Descrição |
 | :--- | :--- | :--- |
-| [`toSlice`](./output-methods/toSlice.md) | `res.toSlice(3)` | Divide o total em N partes iguais. |
-| [`toSliceByRatio`](./output-methods/toSliceByRatio.md) | `res.toSliceByRatio([0.7, 0.3])` | Rateio proporcional baseado em pesos. |
-
-### 🛠️ Agregação e Extensibilidade
-| Método | Exemplo Rápido | Descrição |
-| :--- | :--- | :--- |
-| [`toJSON`](./output-methods/toJSON.md) | `res.toJSON(["toMonetary"])` | Agrega múltiplos formatos em um JSON. |
-| [`toCustomOutput`](./output-methods/toCustomOutput.md) | `res.toCustomOutput(myFn)` | Injeção de processadores customizados. |
+| [`toHTML`](./output-methods/toHTML.md) | `res.toCustomOutput(htmlProcessor)` | Fragmento HTML renderizado (KaTeX/MathJax). |
+| [`toImageBuffer`](./output-methods/toImageBuffer.md) | `res.toCustomOutput(imageProcessor)` | Buffer de imagem (SVG/PNG) do rastro. |
+| [`toCustomOutput`](./output-methods/toCustomOutput.md) | `res.toCustomOutput(myFn)` | Injeção de lógica de exportação personalizada. |
+| [`toJSON`](./output-methods/toJSON.md) | `res.toJSON(["toMonetary"])` | Agrega múltiplos formatos em um único objeto JSON. |
 
 ---
 
-## 💡 Qual método escolher?
+## 💡 Guia de Decisão
 
-- **Para APIs:** Use `toStringNumber()` ou `toJSON()`.
-- **Para Bancos de Dados:** Use `toScaledBigInt()` para colunas de inteiros.
-- **Para Documentos Legais:** Sempre anexe o resultado do `toAuditTrace()`.
-- **Para Interfaces de Usuário:** Combine `toMonetary()` com `toHTML()`.
+- **Persistência em Banco:** Utilize `toScaledBigInt()` para colunas de inteiros ou `toAuditTrace()` para colunas de auditoria (JSONB).
+- **Exibição em Dashboards:** Combine `toMonetary()` para o valor e `toHTML()` para mostrar a "prova" do cálculo ao passar o mouse.
+- **Relatórios Judiciais:** Sempre utilize `toLaTeX()` e `toAuditTrace()`, garantindo que o rastro possa ser periciado independentemente do sistema.
 
-Para detalhes profundos sobre opções, casos de uso e engenharia de cada método, clique nos links acima.
+Para detalhes profundos sobre opções de cada método, clique nos links acima.

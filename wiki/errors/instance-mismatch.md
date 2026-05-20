@@ -51,14 +51,14 @@ v1.add(v2);
 ```
 
 ## ✅ O que fazer
-- **Use o Portal Cross-Context:** Se você realmente precisa unir dados de jurisdições diferentes, utilize obrigatoriamente o método `addFromExternalInstance()`. Ele validará a integridade externa e carimbará o rastro com um nó de controle.
-- **Centralize a Instância:** Para cálculos dentro do mesmo domínio de negócio, certifique-se de reutilizar a mesma instância retornada pelo `CalcAUY.create()`.
-- **Verifique a Configuração:** Lembre-se que qualquer mudança mínima na configuração (salt, encoder, sensitive) invalida a compatibilidade de tipos e de runtime.
+- **Use o Portal Cross-Context:** Se você precisa unir dados de jurisdições diferentes, utilize o método `fromExternalInstance()`. Ele validará a integridade externa e carimbará o rastro com um nó de controle que prova a transferência de custódia.
+- **Reutilize a Instância:** Para cálculos dentro do mesmo domínio de negócio, certifique-se de utilizar a mesma instância retornada pelo `CalcAUY.create()`.
+- **Verifique Salts e Encoders:** Salts ou Encoders diferentes criam universos matemáticos incompatíveis.
 
 ## 🧠 Reflexão Técnica: Por que isolamos as instâncias?
-A `CalcAUY` não é apenas uma calculadora de BigInt; ela é um **Motor de Prova Forense**. O isolamento por instância garante que um erro de lógica em um módulo do sistema não "contamine" cálculos críticos de outro módulo.
+A `CalcAUY` é um **Motor de Prova Forense**. O isolamento absoluto garante que um erro de lógica em um módulo (ex: "Descontos") não "contamine" cálculos críticos de outro módulo (ex: "Imposto de Renda").
 
-Se permitíssemos a mistura livre de instâncias, um rastro de auditoria poderia conter operações assinadas com segredos (salts) diferentes de forma oculta, quebrando a cadeia de custódia do dado. O bloqueio via `instance-mismatch` força o desenvolvedor a declarar explicitamente quando um dado cruza uma fronteira de jurisdição, tornando a integração visível e auditável na AST final através do nó `control`.
+Se permitíssemos a união livre, um rastro de auditoria poderia conter operações assinadas com segredos (`salts`) diferentes de forma oculta, quebrando a cadeia de custódia. O bloqueio via `instance-mismatch` força a declaração explícita do momento em que um dado cruza uma fronteira de jurisdição.
 
 ---
 
@@ -66,20 +66,20 @@ Se permitíssemos a mistura livre de instâncias, um rastro de auditoria poderia
 
 Para realizar uniões legítimas entre instâncias, siga este protocolo:
 
-### 1. Validação de Fronteira
-Sempre trate dados de outras instâncias como "não confiáveis" até que passem pelo portal de integração. O método `addFromExternalInstance` realiza o *Handshake* de segurança necessário.
+### 1. Handshake de Segurança
+O método `fromExternalInstance()` aceita uma instância viva ou um JSON assinado. Ele realiza um "aperto de mão" criptográfico, garantindo que o valor externo é autêntico antes de permitir sua entrada na jurisdição atual.
 
 ### 2. Exemplo de Integração Segura
 ```typescript
-const Taxa = Finance.from(0.05); // De um contexto financeiro
-const Base = Logistic.from(1000); // De um contexto logístico
+const Taxa = Finance.from(0.05); // Contexto A
+const Base = Logistic.from(1000); // Contexto B
 
-// O portal cria um nó 'control' na AST preservando a origem
-const BaseComImposto = await Base.addFromExternalInstance(Taxa);
+// O portal cria um nó 'control' na AST preservando a linhagem
+const BaseComImposto = await Base.fromExternalInstance(Taxa);
 ```
 
 ### 3. Rastreabilidade de Origem
-Ao exportar o rastro de auditoria (`toAuditTrace`), o sistema incluirá o `previousContextLabel` e a `previousSignature` da instância externa, garantindo que qualquer auditor consiga rastrear o valor até sua jurisdição de origem.
+No `toAuditTrace()`, o sistema incluirá o `previousContextLabel` e a `previousSignature`, permitindo que um auditor rastreie o valor até sua jurisdição original.
 
 ---
 

@@ -27,18 +27,47 @@ Estes erros ocorrem quando a operação é sintaticamente correta, mas matematic
 ### 🛡️ Erros de Integridade e Sistema (403/500)
 Erros críticos relacionados à segurança forense, persistência de dados e isolamento de jurisdição.
 
-| Erro | Descrição Curta |
-| :--- | :--- |
-| [`instance-mismatch`](./errors/instance-mismatch.md) | Tentativa de misturar instâncias de contextos isolados (403). |
-| [`integrity-critical-violation`](./errors/integrity-critical-violation.md) | A assinatura digital BLAKE3 não confere com os dados (500). |
+| [`instance-mismatch`](./errors/instance-mismatch.md) | Mistura de instâncias de diferentes jurisdições (403). |
+| [`integrity-critical-violation`](./errors/integrity-critical-violation.md) | Assinatura digital BLAKE3 inválida - Lacre rompido (500). |
+| [`metadata-overflow`](./errors/metadata-overflow.md) | Metadados excedem o limite de segurança de 16KB (413). |
+| [`circular-dependency`](./errors/circular-dependency.md) | Referência cíclica detectada na estrutura da AST (422). |
 | [`corrupted-node`](./errors/corrupted-node.md) | A estrutura da AST está incompleta ou malformada (500). |
+
+---
+
+## 🔬 Anatomia de um `CalcAUYError` (RFC 7807)
+
+Todos os erros lançados pela engine estendem a classe base `CalcAUYError`, que implementa o padrão **RFC 7807 (Problem Details for HTTP APIs)**. Isso garante que as falhas sejam auto-explicativas e facilmente integráveis em sistemas distribuídos.
+
+| Atributo | Exemplo | Descrição |
+| :--- | :--- | :--- |
+| `type` | `https://.../invalid-syntax.md` | URI única que aponta para esta documentação. |
+| `title` | `"invalid-syntax"` | Categoria curta do erro. |
+| `status` | `400` | Sugestão de código de status HTTP. |
+| `detail` | `"Expected number..."` | Explicação detalhada da ocorrência específica. |
+| `instance` | `urn:uuid:018f...` | **Trace ID Único (UUID-V7)** para correlação em logs. |
+| `context` | `{ operation: "add" }` | Dados técnicos (AST parcial, inputs) para perícia. |
+
+### O Poder do UUID-V7
+Diferente de IDs aleatórios, a CalcAUY utiliza **UUID-V7**, que é ordenado cronologicamente por design. Isso permite que auditores e desenvolvedores ordenem incidentes de erro no tempo de forma precisa, mesmo em ambientes multi-servidor, facilitando a perícia técnica.
 
 ---
 
 ## 💡 Como tratar erros
 
-1.  **Sempre utilize try/catch** ao realizar operações de `parseExpression`, `hydrate` ou `commit`.
-2.  **Verifique o `type`** do erro retornado para fornecer feedback específico ao usuário.
-3.  **Consulte os logs** (via LogTape) para obter o contexto completo (stack trace e metadados) do erro.
+1.  **Captura Segura:** Sempre utilize blocos `try/catch` ao realizar operações de `parseExpression`, `hydrate` ou `commit`.
+2.  **Filtragem de Instância:**
+```typescript
+try {
+    // Lógica de cálculo
+} catch (err) {
+    if (err instanceof CalcAUYError) {
+        console.error(`Falha Técnica [${err.instance}]: ${err.detail}`);
+        // Logar contexto para auditoria (automaticamente sanitizado)
+        sendToSIEM(err.toJSON());
+    }
+}
+```
+3.  **Sanitização Automática:** Os erros da CalcAUY integram-se ao sistema de sensibilidade da biblioteca. Se a instância estiver em modo `sensitive: true`, o rastro de erro (`context`) será automaticamente redigido (`[PII]`) antes de ser enviado para os logs, protegendo dados bancários e pessoais.
 
 Para detalhes profundos sobre cada erro, incluindo exemplos de código e reflexões técnicas, clique nos links acima.

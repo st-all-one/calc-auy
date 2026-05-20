@@ -3,9 +3,9 @@
 ```mermaid
 sequenceDiagram
     participant App
-    participant Calc as CalcAUY
-    Note over App: Payload adulterado ou Salt incorreto
-    App->>Calc: hydrate(json, salt)
+    participant Calc as Instance
+    Note over App: Payload adulterado ou Salt diferente
+    App->>Calc: hydrate(json)
     activate Calc
     Note over Calc: 26-04-25 10:00 (iso)<br/>Erro Crítico: integrity-critical-violation<br/>Lacre Digital BLAKE3 rompido
     Calc-->>App: Throw CalcAUYError
@@ -28,21 +28,28 @@ Este é o erro mais grave de segurança da biblioteca.
 const json = await calc.hibernate();
 const alterado = json.replace('"10"', '"20"');
 // Lança integrity-critical-violation: a assinatura não bate mais!
-await CalcAUY.hydrate(alterado, { salt: "meu_salt" });
+await instance.hydrate(alterado);
 ```
 
 ### Exemplo 2: Salt errado
 ```typescript
-const json = await calc.hibernate(); // Usou salt "A" globalmente
-// Lança violação pois o salt fornecido é o "B"
-await CalcAUY.hydrate(json, { salt: "salt_errado" });
+// Se o rastro foi gerado com Salt "A", mas a instância atual usa Salt "B"
+const FinanceA = CalcAUY.create({ contextLabel: "fin", salt: "A" });
+const FinanceB = CalcAUY.create({ contextLabel: "fin", salt: "B" });
+
+const json = await FinanceA.from(100).hibernate();
+
+// Lança violação crítica no FinanceB
+await FinanceB.hydrate(json);
 ```
 
-### Exemplo 3: Mudança de Estratégia no Rastro
+### Exemplo 3: Mudança de Estratégia no Rastro (Check Estático)
 ```typescript
 const trace = res.toAuditTrace();
 const fraudado = trace.replace("NBR5891", "TRUNCATE");
-// A assinatura do rastro protege inclusive a estratégia de arredondamento
+
+// A assinatura do rastro protege inclusive a estratégia de arredondamento.
+// O método estático checkIntegrity permite validar sem criar uma instância completa.
 await CalcAUY.checkIntegrity(fraudado, { salt: "segredo" });
 ```
 

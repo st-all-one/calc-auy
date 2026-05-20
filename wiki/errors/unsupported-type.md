@@ -25,14 +25,14 @@ O `unsupported-type` é o guardião da camada de entrada.
 ```typescript
 // Ocorre frequentemente ao receber resultado de um cálculo JS nativo falho
 const valorProblematico = Math.sqrt(-1); // NaN
-const calc = CalcAUY.from(valorProblematico);
+const calc = instance.from(valorProblematico);
 ```
 
 ### Exemplo 2: Tipos Complexos
 ```typescript
 // Lança unsupported-type: a lib não adivinha propriedades de objetos
 const input = { preco: "10.50" };
-const calc = CalcAUY.from(input as any);
+const calc = instance.from(input as any);
 ```
 
 ### Exemplo 3: Valores Nulos

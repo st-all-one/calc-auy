@@ -24,21 +24,22 @@ Este erro ocorre quando a lógica do cálculo tenta realizar uma divisão onde o
 
 ### Exemplo 1: Divisão Direta
 ```typescript
-const calc = CalcAUY.from(10).div(0);
+const calc = instance.from(10).div(0);
 // O erro pode ser lançado imediatamente ou no commit()
 ```
 
 ### Exemplo 2: Denominador Calculado
 ```typescript
 // (10 / (5 - 5)) -> Divisão por zero
-const calc = CalcAUY.from(10).div(CalcAUY.from(5).sub(5).group());
+const divisorZero = instance.from(5).sub(5).group();
+const calc = instance.from(10).div(divisorZero);
 await calc.commit(); // Lança division-by-zero
 ```
 
 ### Exemplo 3: Divisão Inteira
 ```typescript
 // divInt também é protegida
-const calc = CalcAUY.from(100).divInt("0");
+const calc = instance.from(100).divInt("0");
 ```
 
 ## ✅ O que fazer

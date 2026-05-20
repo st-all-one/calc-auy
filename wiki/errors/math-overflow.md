@@ -12,13 +12,13 @@ sequenceDiagram
     deactivate Calc
 ```
 
-Embora o `BigInt` do JavaScript suporte números gigantescos,
- a CalcAUY impõe um limite de segurança de **1 milhão de bits** para prevenir exaustão de memória e ataques de negação de serviço (DoS).
+Embora o `BigInt` do JavaScript suporte números gigantescos, a CalcAUY impõe limites de segurança rigorosos para prevenir exaustão de memória e ataques de negação de serviço (DoS) por alocação massiva.
 
 ## 🛠️ Como ocorre
-1. **Torres de Potência:** Exponenciações sucessivas (ex: `10^10^10`).
-2. **Fatoriais ou Cadeias Massivas:** Multiplicações extremamente longas de números muito grandes.
-3. **Recursão Explosiva:** Árvores com profundidade que geram numeradores ou denominadores que excedem a capacidade de bits definida.
+1. **Bit-Limit Guard:** O numerador ou denominador excedeu **1 milhão de bits** (`MAX_BI_BITS`).
+2. **Recursão Explosiva:** A árvore de cálculo atingiu a profundidade máxima de **500 níveis** (`MAX_RECURSION_DEPTH`). Isso protege contra estouro de pilha (Stack Overflow).
+3. **Carga de Operandos:** Um único nó de operação tentou agrupar mais de **100 operandos** (`MAX_OPERANDS`) simultaneamente.
+4. **Torres de Potência:** Exponenciações sucessivas (ex: `10^10^10`).
 
 ## 💻 Exemplos de Código
 

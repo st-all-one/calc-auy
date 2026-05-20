@@ -24,19 +24,19 @@ O erro `invalid-syntax` ocorre quando a string fornecida à CalcAUY não pode se
 ### Exemplo 1: Operadores sem operandos
 ```typescript
 // Lança invalid-syntax: o parser espera um número após o '+'
-const calc = CalcAUY.parseExpression("10 + / 5");
+const calc = instance.parseExpression("10 + / 5");
 ```
 
 ### Exemplo 2: Grupos incompletos
 ```typescript
 // Lança invalid-syntax: parêntese não fechado
-const calc = CalcAUY.parseExpression("(10 + 5 * 2");
+const calc = instance.parseExpression("(10 + 5 * 2");
 ```
 
 ### Exemplo 3: Sujeira na string
 ```typescript
 // Lança invalid-syntax: o parser não sabe lidar com "R$" ou "total"
-const calc = CalcAUY.from("R$ 10.50");
+const calc = instance.from("R$ 10.50");
 ```
 
 ## ✅ O que fazer

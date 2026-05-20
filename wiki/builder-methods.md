@@ -54,7 +54,7 @@ Os métodos são acessados através da instância criada pela factory `CalcAUY.c
 1.  **Crie a Jurisdição**, definindo as políticas em `CalcAUY.create({ contextLabel, salt, sensitive })`.
 2.  **Inicie** o cálculo via `instance.from()` ou `instance.parseExpression()`.
 3.  **Encadeie** as operações, mantendo o rastro forense dentro da mesma instância.
-4.  **Integre contextos** diferentes apenas via `addFromExternalInstance()` para manter a auditabilidade.
+4.  **Integre contextos** diferentes apenas via `fromExternalInstance()` para manter a auditabilidade.
 5.  **Finalize** com `await commit()`.
 
 Para detalhes profundos sobre cada método, incluindo 10 casos de uso reais e anotações de engenharia, clique nos links acima.

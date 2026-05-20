@@ -6,7 +6,7 @@ O `toScaledBigInt()` transforma o valor racional em um `bigint` "escalado" (scal
 
 1.  **Cálculo da Escala:** Determina o fator multiplicador baseado em `decimalPrecision` (ex: precisão 2 = escala 100).
 2.  **Arredondamento:** Aplica a estratégia de arredondamento definida no commit para a escala solicitada.
-3.  **Transformação Inteira:** Executa a operação $(n * 10^p) / d$ utilizando aritmética de inteiros pura.
+3.  **Transformação Inteira:** Executa a operação $(n * 10^{decimalPrecision}) / d$ utilizando aritmética de inteiros pura.
 4.  **Telemetria:** Monitorado por `TelemetrySpan`.
 
 ## 🎯 Propósito

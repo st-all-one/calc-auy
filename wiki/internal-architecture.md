@@ -120,7 +120,7 @@ A `signature` é gerada através de um processo determinístico de quatro etapas
 A integridade é verificada automaticamente durante o `hydrate()` ou via `checkIntegrity()`:
 - A engine reconstrói a assinatura baseada no conteúdo atual e no salt da instância.
 - **Proteção contra Adulteração:** Se um único bit for modificado, a assinatura deixará de coincidir.
-- **Detecção de Mistura:** Tentativas de usar um valor de uma instância A em uma instância B sem o método `addFromExternalInstance()` dispararão o erro `instance-mismatch`.
+- **Detecção de Mistura:** Tentativas de usar um valor de uma instância A em uma instância B sem o método `fromExternalInstance()` dispararão o erro `instance-mismatch`.
 
 ---
 
@@ -139,8 +139,7 @@ classDiagram
     }
     class OperationNode {
         +String type
-        +CalculationNode left
-        +CalculationNode right
+        +CalculationNode[] operands
     }
     class GroupNode {
         +CalculationNode child

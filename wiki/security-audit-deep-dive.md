@@ -9,10 +9,10 @@ A CalcAUY foi concebida sob o paradigma da **Auditabilidade Forense**. Isso sign
 | Vetor de Ataque | Mecanismo de Defesa | Implementação Técnica |
 | :--- | :--- | :--- |
 | **BigInt Memory Exhaustion (DoS)** | Bit-Limit Guard | `MAX_BI_BITS = 1.000.000`. Bloqueia a alocação de inteiros gigantescos que poderiam esgotar a RAM. |
-| **Vazamento de PII em Logs** | Redação por Padrão | `setSecurityPolicy({ sensitive: true })`. Valores são substituídos por `[PII]` em logs técnicos. |
+| **Vazamento de PII em Logs** | Redação por Padrão | `CalcAUY.create({ sensitive: true })`. Valores são substituídos por `[PII]` em logs técnicos. |
 | **Manipulação de Rastro (Tampering)** | **Lacre BLAKE3** | Assinatura digital do estado final (AST + Resultado). Qualquer alteração de 1 bit invalida o rastro. |
 | **Injeção de Código (XSS/RCE)** | Lexer Estrito | O `parseExpression()` utiliza um Parser de Descida Recursiva puro, sem `eval()`. |
-| **Hydration Poisoning** | Signature Confrontation | O método `hydrate()` exige o `salt` original para validar a assinatura antes de reconstruir a árvore. |
+| **Hydration Poisoning** | Signature Confrontation | O método `.hydrate()` da instância exige o `salt` correto para validar a assinatura antes de reconstruir a árvore. |
 
 ---
 
@@ -73,8 +73,12 @@ O processo de `hibernate()` e `hydrate()` foi desenhado para ser resiliente a co
 -   **Serialização Determinística:** As frações são salvas como strings para evitar perdas de precisão em parsers JSON de diferentes linguagens.
 -   **Confronto de Assinatura:**
 ```typescript
-// Recuperação exige o segredo do servidor (Salt)
-const calc = await CalcAUY.hydrate(jsonProtegido, { salt: "meu_segredo" });
+// A validação de integridade pode ser feita sem reconstruir a árvore (Estático)
+await CalcAUY.checkIntegrity(jsonRecebido, { salt: "meu_segredo" });
+
+// Ou durante a re-hidratação de uma instância
+const instance = CalcAUY.create({ contextLabel: "audit", salt: "meu_segredo" });
+const calc = await instance.hydrate(jsonProtegido);
 ```
 Se a assinatura não conferir, a biblioteca lança um erro de categoria `integrity-critical-violation` (Status 500), bloqueando o uso de dados corrompidos.
 

@@ -57,6 +57,7 @@ Entenda a filosofia por trás do projeto e como os dados são tratados intername
 *   [**Arquitetura Interna**](./internal-architecture.md): Detalhamento dos 4 ciclos de vida (Lifetimes) do dado.
 *   [**Guia de Entradas (Inputs)**](./inputs.md): O rigor do parser de ingestão e tipos permitidos.
 *   [**Estratégias de Arredondamento**](./rounding.md): Como a NBR 5891 e outras normas são aplicadas.
+*   [**Otimização e Performance**](./performance-optimization.md): Como o cache de AST e sessões economizam memória.
 
 ### 2. Referência da API (Builder)
 A porta de entrada para criar seus cálculos através da classe `CalcAUY`.
@@ -64,7 +65,7 @@ A porta de entrada para criar seus cálculos através da classe `CalcAUY`.
 *   **Destaques:**
     *   [`create()`](./builder-methods/create.md): O início obrigatório de qualquer jurisdição de cálculo.
     *   [`from()`](./builder-methods/from.md): Ingestão de valores na instância.
-    *   [`addFromExternalInstance()`](./builder-methods/addFromExternalInstance.md): Integração segura entre contextos.
+    *   [`fromExternalInstance()`](./builder-methods/fromExternalInstance.md): Integração segura entre contextos (vivos ou serializados).
     *   [`hydrate()`](./builder-methods/hydrate.md) & [`checkIntegrity()`](./builder-methods/checkIntegrity.md): Segurança e persistência.
 
 ### 3. Referência da API (Output)

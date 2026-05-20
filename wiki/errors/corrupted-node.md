@@ -26,7 +26,7 @@ O `corrupted-node` indica que a estrutura da AST fornecida para hidratação est
 ```typescript
 // Lança corrupted-node no hydrate()
 const astCorrompida = { value: { n: "10", d: "1" } }; // Falta o campo "kind"
-const calc = await CalcAUY.hydrate(astCorrompida as any, { salt: "" });
+const calc = await instance.hydrate(astCorrompida as any);
 ```
 
 ### Exemplo 2: Operação sem operandos
@@ -36,7 +36,7 @@ const ast = {
   type: "add"
   // Faltam os "operands"
 };
-const calc = await CalcAUY.hydrate(ast as any, { salt: "" });
+const calc = await instance.hydrate(ast as any);
 ```
 
 ### Exemplo 3: Valor racional malformado
@@ -45,7 +45,7 @@ const ast = {
   kind: "literal",
   value: { n: "abc" } // "n" deve ser uma string numérica (BigInt)
 };
-const calc = await CalcAUY.hydrate(ast as any, { salt: "" });
+const calc = await instance.hydrate(ast as any);
 ```
 
 ## ✅ O que fazer

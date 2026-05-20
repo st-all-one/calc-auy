@@ -25,19 +25,19 @@ A CalcAUY opera exclusivamente no domínio dos **Números Reais**.
 ### Exemplo 1: Raiz Quadrada de Negativo
 ```typescript
 // √-4 não é um número real
-const calc = CalcAUY.from("-4").pow("0.5");
+const calc = instance.from("-4").pow("0.5");
 await calc.commit();
 ```
 
 ### Exemplo 2: Expoente Fracionário
 ```typescript
 // (-1)^(1/2) -> complex-result
-const calc = CalcAUY.from(-1).pow("1/2");
+const calc = instance.from(-1).pow("1/2");
 ```
 
 ### Exemplo 3: Via Parser
 ```typescript
-const calc = CalcAUY.parseExpression("(-16) ^ (1/4)");
+const calc = instance.parseExpression("(-16) ^ (1/4)");
 ```
 
 ## ✅ O que fazer

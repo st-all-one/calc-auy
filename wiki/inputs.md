@@ -6,7 +6,7 @@ Este documento detalha rigorosamente todos os tipos de entrada permitidos e proi
 
 ## 1. Tipos de Dados Permitidos (Primitives & Objects)
 
-A biblioteca aceita quatro categorias fundamentais de entrada através do método `CalcAUY.from()`:
+A biblioteca aceita quatro categorias fundamentais de entrada através do método `instance.from()`:
 
 | Tipo | Justificativa de Engenharia | Exemplo |
 | :--- | :--- | :--- |
@@ -113,7 +113,7 @@ O método `hydrate()` reconstrói cálculos a partir de objetos JSON assinados. 
 - **Motivação:** O numerador (`n`) e denominador (`d`) devem ser strings representando BigInts válidos. Conteúdo alfanumérico impede a reconstrução matemática.
 
 ### ❌ Ausência de Campos Obrigatórios
-- **Input:** `{ "kind": "operation", "left": { ... } }` (Faltando `right` ou `type`)
+- **Input:** `{ "kind": "operation", "operands": [{ ... }] }` (Faltando operandos necessários para o tipo de operação ou `type`)
 - **Motivação:** Operações binárias são objetos completos. A ausência de um dos ramos da árvore torna a execução impossível.
 
 ---

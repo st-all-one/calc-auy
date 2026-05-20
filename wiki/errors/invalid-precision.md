@@ -22,14 +22,14 @@ Este erro ocorre durante a fase de **Projeção (Output)**
 
 ### Exemplo 1: toStringNumber com precisão negativa
 ```typescript
-const res = await CalcAUY.from(10).commit();
+const res = await instance.from(10).commit();
 // Lança invalid-precision
 res.toStringNumber({ decimalPrecision: -2 });
 ```
 
 ### Exemplo 2: toScaledBigInt inválido
 ```typescript
-const res = await CalcAUY.from(1.5).commit();
+const res = await instance.from(1.5).commit();
 // Não é possível escalar para um número negativo de casas
 res.toScaledBigInt({ decimalPrecision: -5 });
 ```
@@ -46,7 +46,8 @@ res.toStringNumber({ decimalPrecision: 1000000 });
 - **Configuração Global:** Defina a precisão padrão na sua camada de serviço para evitar passar valores errados repetidamente.
 
 ## 🧠 Reflexão Técnica: Por que não resolvemos automaticamente?
-Embora a biblioteca pudesse simplesmente usar `Math.max(0, p)` para tratar precisões negativas, ela opta por lançar um erro para **preservar a intenção do desenvolvedor**. Solicitar uma precisão negativa ou absurdamente alta é geralmente um sinal de erro de cálculo na camada de apresentação.
+Embora a biblioteca pudesse simplesmente usar `Math.max(0, decimalPrecision)` para tratar precisões negativas, ela opta por lançar um erro para **preservar a intenção do desenvolvedor**.
+ Solicitar uma precisão negativa ou absurdamente alta é geralmente um sinal de erro de cálculo na camada de apresentação.
 
 Se a CalcAUY corrigisse isso silenciosamente, o desenvolvedor nunca saberia que sua lógica de formatação está produzindo valores inesperados. A falha explícita garante que a camada de output seja tão rigorosa quanto a camada de cálculo, mantendo a consistência de ponta a ponta.
 
