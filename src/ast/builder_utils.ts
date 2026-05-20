@@ -30,15 +30,16 @@ export const PRECEDENCE: Record<OperationType, number> = {
  */
 type ValidationState = {
     nodeCount: number;
+    seen: Set<unknown>;
 };
 
 /**
  * Valida recursivamente a estrutura de um nó da AST.
- * Lança um erro se encontrar inconsistências ou propriedades faltando.
+ * Lança um erro se encontrar inconsistências, propriedades faltando ou ciclos.
  *
  * @param node O objeto a ser validado.
  * @param depth Nível atual de recursão (interno).
- * @param state Estado compartilhado para contagem de nós (interno).
+ * @param state Estado compartilhado para contagem de nós e detecção de ciclos (interno).
  */
 export function validateASTNode(
     node: unknown,
@@ -46,11 +47,17 @@ export function validateASTNode(
     depth = 0,
     state?: ValidationState,
 ): asserts node is CalculationNode {
-    const s = state ?? { nodeCount: 0 };
+    const s = state ?? { nodeCount: 0, seen: new Set<unknown>() };
 
     if (!node || typeof node !== "object") {
         throw new CalcAUYError("corrupted-node", "O nó da AST deve ser um objeto válido.");
     }
+
+    // Detecção de Dependência Circular
+    if (s.seen.has(node)) {
+        throw new CalcAUYError("circular-dependency", "Dependência circular detectada na estrutura da AST.");
+    }
+    s.seen.add(node);
 
     if (depth > MAX_HYDRATE_DEPTH) {
         throw new CalcAUYError("corrupted-node", "Profundidade máxima da AST excedida na hidratação.");

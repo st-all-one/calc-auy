@@ -7,22 +7,43 @@
  */
 
 import { CalcAUYError } from "./errors.ts";
+import { MAX_METADATA_BYTES } from "./constants.ts";
 
 /**
  * Realiza a validação profunda de metadados para garantir que sejam estritamente
  * serializáveis e livres de lógica ou referências circulares.
  *
  * Proibe tipos não-determinísticos como funções, classes ou BigInts puros.
+ * Também garante que o tamanho total dos metadados não exceda os limites de segurança.
  */
-export function validateMetadata(value: unknown, seen = new Set<unknown>()): void {
+export function validateMetadata(value: unknown): void {
+    const size = validateMetadataRecursive(value, new Set<unknown>());
+    if (size > MAX_METADATA_BYTES) {
+        throw new CalcAUYError(
+            "metadata-overflow",
+            `O tamanho total dos metadados (${size} bytes) excede o limite permitido de ${MAX_METADATA_BYTES} bytes por nó.`,
+            { currentSize: size, limit: MAX_METADATA_BYTES },
+        );
+    }
+}
+
+function validateMetadataRecursive(value: unknown, seen: Set<unknown>): number {
     if (value === null || value === undefined) {
         throw new CalcAUYError("unsupported-type", "Metadados não podem conter null ou undefined.");
     }
 
     const type = typeof value;
 
-    if (type === "string" || type === "number" || type === "boolean") {
-        return;
+    if (type === "string") {
+        return (value as string).length * 2; // Estimativa simples em bytes (UTF-16)
+    }
+
+    if (type === "number") {
+        return 8; // Float64
+    }
+
+    if (type === "boolean") {
+        return 4;
     }
 
     if (type === "bigint") {
@@ -39,9 +60,11 @@ export function validateMetadata(value: unknown, seen = new Set<unknown>()): voi
         }
         seen.add(value);
 
+        let totalSize = 0;
+
         if (Array.isArray(value)) {
             for (const item of value) {
-                validateMetadata(item, seen);
+                totalSize += validateMetadataRecursive(item, seen);
             }
         } else {
             // Garantir que é um objeto plano (não uma classe ou instância especial)
@@ -54,13 +77,14 @@ export function validateMetadata(value: unknown, seen = new Set<unknown>()): voi
 
             for (const key in value) {
                 if (Object.hasOwn(value as object, key)) {
-                    validateMetadata((value as Record<string, unknown>)[key], seen);
+                    totalSize += key.length * 2; // Chave
+                    totalSize += validateMetadataRecursive((value as Record<string, unknown>)[key], seen);
                 }
             }
         }
 
         seen.delete(value);
-        return;
+        return totalSize;
     }
 
     throw new CalcAUYError(

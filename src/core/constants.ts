@@ -50,6 +50,7 @@ export const MAX_RECURSION_DEPTH = 500;
 //Limites de segurança para a estrutura da AST durante a hidratação e construção.
 export const MAX_HYDRATE_DEPTH = 500;
 export const MAX_HYDRATE_NODES = 1000;
+export const MAX_METADATA_BYTES = 16384; // 16KB per node limit
 
 /**
  * Largura máxima de um nó de operação antes de criar uma nova camada (Hierarchical Flattening).

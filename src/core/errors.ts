@@ -22,7 +22,9 @@ export type ErrorCategory =
     | "corrupted-node"
     | "integrity-critical-violation"
     | "instance-mismatch"
-    | "math-overflow";
+    | "math-overflow"
+    | "metadata-overflow"
+    | "circular-dependency";
 
 /** Technical context of the failure for auditing purposes. */
 export type ErrorContext = {
@@ -79,6 +81,8 @@ export class CalcAUYError extends Error {
             "integrity-critical-violation": 500,
             "instance-mismatch": 403,
             "math-overflow": 422,
+            "metadata-overflow": 413,
+            "circular-dependency": 422,
         };
 
         this.status = statusMap[category];
