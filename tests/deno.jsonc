@@ -7,6 +7,7 @@
     },
     "imports": {
         "@calcauy": "../mod.ts",
+        "@calc-auy": "../mod.ts",
         "@src/": "../src/",
         "@processor/": "../processor/",
         "@tools/": "../tools/",
@@ -17,6 +18,7 @@
         "@sqlite": "https://deno.land/x/sqlite@v3.9.1/mod.ts",
         "katex": "npm:katex@^0.16.45",
         "protobufjs": "npm:protobufjs@^8.0.1",
-        "@std/msgpack": "jsr:@std/msgpack@^1.0.3"
+        "@std/msgpack": "jsr:@std/msgpack@^1.0.3",
+        "@std/cbor": "jsr:@std/cbor@^0.1.9"
     }
 }

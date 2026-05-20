@@ -50,7 +50,7 @@ describe("Coverage: Rodada Final - 100% Target", () => {
         );
 
         // Node limit
-        const s = { nodeCount: 999999 };
+        const s = { nodeCount: 999999, seen: new Set<unknown>() };
         assertThrows(
             () => validateASTNode({ kind: "literal", value: { n: "1", d: "1" } }, 0, s),
             CalcAUYError,

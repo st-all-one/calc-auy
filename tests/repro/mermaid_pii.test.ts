@@ -1,5 +1,5 @@
 import { describe, it } from "@std/testing/bdd";
-import { assertFalse, assertStringIncludes } from "@std/assert";
+import { assertStringIncludes } from "@std/assert";
 import { CalcAUY } from "@src/main.ts";
 
 describe("Repro: Mermaid PII Redaction", () => {
