@@ -55,8 +55,8 @@ control-node = {
 
 serialized-calculation = {
   ast: calculation-node,
-  finalResult: rational-value,
-  roundStrategy: tstr,
+  ? finalResult: rational-value,
+  ? roundStrategy: tstr,
   signature: tstr,
   contextLabel: tstr
 }

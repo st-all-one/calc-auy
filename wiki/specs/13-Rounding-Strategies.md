@@ -20,6 +20,7 @@ Definir os algoritmos de arredondamento suportados pela CalcAUY 2.0, garantindo 
 | **Half-Even** | `HE` | `HALF_EVEN` | Bancário: Arredonda para o número par mais próximo (elimina viés estatístico). |
 | **Truncate** | `TR` | `TRUNCATE` | Corte Seco: Simplesmente descarta os decimais excedentes (direção ao zero). |
 | **Ceil** | `CE` | `CEIL` | Teto: Arredonda sempre para o maior inteiro seguinte (direção ao infinito positivo). |
+| **None** | `--` | `NONE` | Nenhum: Mantém o valor racional puro sem arredondamento. Útil para auditoria que exige o valor exato. |
 
 ## Representação nos Outputs
 
@@ -50,7 +51,7 @@ O renderizador SVG deve garantir que o identificador subscrito (NBR, HU, etc.) s
 ## Implementação na AST e RationalNumber
 
 ### Colapso de Arredondamento
-O arredondamento ocorre apenas no método `.commit(roundStrategy)` e é re-executado nos métodos de output se a `decimalPrecision` for alterada.
+O arredondamento **não** ocorre no `commit()` — o método apenas avalia a AST e armazena o `RationalNumber` bruto. A estratégia de arredondamento (definida em `create({ roundStrategy })`) é aplicada apenas nos métodos de saída como `toStringNumber()`, onde a `decimalPrecision` é informada.
 
 1. **Entrada:** `RationalNumber` (n/d) com precisão interna de 50 casas.
 2. **Escalonamento:** Multiplica-se o valor pela potência de 10 da precisão de saída desejada.
@@ -61,6 +62,7 @@ O arredondamento ocorre apenas no método `.commit(roundStrategy)` e é re-execu
    - **Half-Even:** Idêntico ao NBR para casos genéricos, mas rigoroso na paridade do BigInt.
    - **Truncate:** Ignora o resto.
    - **Ceil:** Se houver qualquer resto positivo, soma 1 ao inteiro.
+   - **None:** Retorna o valor racional sem arredondamento. O `toStringNumber()` remove zeros à direita para evitar falsa precisão.
 
 ### Armazenamento na AST (Audit Trace)
 O `ASTSnapshot` gerado pelo `toAuditTrace()` deve incluir a estratégia de arredondamento no nó raiz (CommitNode), permitindo que softwares de terceiros validem o cálculo seguindo a mesma regra.
@@ -72,3 +74,7 @@ O `ASTSnapshot` gerado pelo `toAuditTrace()` deve incluir a estratégia de arred
   "final_value": { "n": "126", "d": "100" }
 }
 ```
+
+---
+
+[↑ Voltar ao índice](../index.md)

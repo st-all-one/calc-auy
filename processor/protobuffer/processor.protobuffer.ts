@@ -36,25 +36,24 @@ message MetadataValue {
 message MetadataList { repeated MetadataValue items = 1; }
 message MetadataMap { map<string, MetadataValue> fields = 1; }
 message CalculationNode {
-  string kind = 1;
-  map<string, MetadataValue> metadata = 2;
+  map<string, MetadataValue> metadata = 1;
   oneof node_type {
-    LiteralNode literal = 3;
-    OperationNode operation = 4;
-    GroupNode group = 5;
-    ControlNode control = 6;
+    LiteralNode literal = 2;
+    OperationNode operation = 3;
+    GroupNode group = 4;
+    ControlNode control = 5;
   }
 }
 message LiteralNode { RationalValue value = 1; string originalInput = 2; }
 message OperationNode { OperationType type = 1; repeated CalculationNode operands = 2; }
 message GroupNode { CalculationNode child = 1; }
-message ControlNode { string type = 1; string previousContextLabel = 2; string previousSignature = 3; string previousRoundStrategy = 4; CalculationNode child = 5; }
+message ControlNode { string previousContextLabel = 1; string previousSignature = 2; string previousRoundStrategy = 3; CalculationNode child = 4; map<string, MetadataValue> extra_metadata = 5; }
 message SerializedCalculation {
   CalculationNode ast = 1;
   string signature = 2;
   string contextLabel = 3;
-  RationalValue finalResult = 4;
-  string roundStrategy = 5;
+  optional RationalValue finalResult = 4;
+  optional string roundStrategy = 5;
 }
 `;
 
@@ -95,15 +94,15 @@ const REV_OP_MAP: Record<string | number, InternalTypes.ASTTypes.OperationType> 
 
 /**
  * Interface rigorosa para representação intermediária do Protobuf.
+ * O tipo do nó é determinado pelo oneof (literal/operation/group/control),
+ * não por um campo `kind` separado.
  */
 interface IProtoNode {
-    kind: string;
     metadata: Record<string, InternalTypes.ASTTypes.MetadataValue> | Record<never, never>;
     literal?: { value: { n: string; d: string }; originalInput: string };
     operation?: { type: string | number; operands: IProtoNode[] };
     group?: { child: IProtoNode };
     control?: {
-        type: string;
         child: IProtoNode;
         previousContextLabel: string;
         previousSignature: string;
@@ -173,9 +172,7 @@ export function protobufHydrator(buffer: Uint8Array): SerializedCalculation {
 }
 
 function transformNode(node: CalculationNode): IProtoNode {
-    const res: any = {
-        kind: node.kind,
-    };
+    const res: Record<string, unknown> = {};
 
     if (node.kind === "literal") {
         res.literal = {
@@ -193,10 +190,9 @@ function transformNode(node: CalculationNode): IProtoNode {
         };
     } else if (node.kind === "control") {
         res.control = {
-            type: node.type,
             previousContextLabel: node.metadata.previousContextLabel,
             previousSignature: node.metadata.previousSignature,
-            previousRoundStrategy: node.metadata.previousRoundStrategy as string || "",
+            previousRoundStrategy: node.metadata.previousRoundStrategy || "",
             child: transformNode(node.child),
         };
     }
@@ -257,7 +253,7 @@ function reverseTransformNode(node: IProtoNode): CalculationNode {
     }
 
     throw new Error(
-        `Invalid node structure during Protobuf hydration: ${node.kind}`,
+        "Invalid node structure during Protobuf hydration: no oneof variant set",
     );
 }
 

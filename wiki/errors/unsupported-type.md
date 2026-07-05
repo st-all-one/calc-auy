@@ -39,14 +39,14 @@ const calc = instance.from(input as any);
 ```typescript
 // Lança unsupported-type: proteção contra erros de "null pointer"
 const val: string | null = null;
-const calc = CalcAUY.from(val as any);
+const calc = CalcAUY.create({ contextLabel: "ex", salt: "fixo" }).from(val as any);
 ```
 
 ## ✅ O que fazer
 - **Verifique os tipos permitidos:** A lib possui uma tabela rigorosa de quais formatos de input são permitidos, verifique elas na especificação de `inputs` na Wiki.
 - **Cast Explícito:** Converta seus dados para `string` ou `bigint` antes da ingestão.
 - **Checagem de Finitude:** Se estiver usando `number`, verifique com `Number.isFinite(val)` antes de chamar a CalcAUY.
-- **Default Values:** Use o operador nullish coalescing (`??`) para evitar passar nulls: `CalcAUY.from(input ?? "0")`.
+- **Default Values:** Use o operador nullish coalescing (`??`) para evitar passar nulls: `calc.from(input ?? "0")`.
 
 ## 🧠 Reflexão Técnica: Por que não resolvemos automaticamente?
 A CalcAUY opera sob um modelo de **Confiança Zero (Zero Trust)** na camada de ingestão. Se permitíssemos o processamento de objetos complexos ou arrays tentando extrair valores numericos automaticamente (ex: pegando a primeira propriedade de um objeto), estaríamos assumindo um risco de negócio que não pertence à biblioteca matemática.
@@ -56,5 +56,9 @@ Valores como `NaN` ou `Infinity` são estados de erro do padrão IEEE 754 que n�
 ---
 
 ## 🔗 Veja também
-- [**Guia de Erros**](../errors.md): Lista completa de exceções da CalcAUY.
-- [**Central de Documentação**](../entrypoint.md): Voltar para a página principal.
+- [**Guia de Erros**](./errors.md): Lista completa de exceções da CalcAUY.
+- [**Central de Documentação**](../index.md): Voltar para a página principal.
+
+---
+
+[↑ Voltar ao índice](../index.md)

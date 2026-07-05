@@ -65,3 +65,7 @@ A biblioteca deve fornecer um utilitário interno de tratamento:
 
 ## Benefícios para Auditoria
 Diferente de um `Error` genérico, o `CalcAUYError` permite que um desenvolvedor capture a exceção e mostre ao usuário final (ou auditor) exatamente qual parte da fórmula causou o problema, incluindo a visualização LaTeX da sub-expressão que falhou.
+
+---
+
+[↑ Voltar ao índice](../index.md)

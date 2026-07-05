@@ -167,12 +167,12 @@
         "result": "R$ 3.958,47"
       }
     ],
-    "float/scaledBigInt": [
+    "scaledBigInt": [
       {
         "title": "Demonstração de output",
-        "context": "Cálculo de juros compostos (visão float)",
-        "code": "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toFloatNumber()",
-        "result": 3958.47
+        "context": "Cálculo de juros compostos (visão toString)",
+        "code": "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toStringNumber()",
+        "result": "3958.47"
       },
       {
         "title": "Demonstração de output",

@@ -60,3 +60,7 @@ Para garantir conformidade com LGPD/GDPR e proteger dados sensíveis:
 
 ## Benefícios para Auditoria
 Ao registrar a AST em cada passo do `engine` no nível `Debug`, é possível reconstruir visualmente a "árvore de decisão" do programador que montou o cálculo, permitindo identificar exatamente onde uma precedência foi mal aplicada ou um agrupamento foi esquecido.
+
+---
+
+[↑ Voltar ao índice](../index.md)

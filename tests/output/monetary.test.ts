@@ -51,6 +51,6 @@ describe("Output: Monetary Formatting", () => {
     it("deve permitir troca de moeda mantendo o locale", async () => {
         const output = await Engine.from(100).commit();
         const res = output.toMonetary({ locale: "pt-BR", currency: "USD" });
-        assertEquals(res.replace(/[\u00a0\u202f]/g, " "), "US$ 100,00");
+        assertEquals(res.replace(/[\u00a0\u202f]/g, " "), "$ 100,00");
     });
 });

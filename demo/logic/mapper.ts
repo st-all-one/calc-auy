@@ -25,7 +25,6 @@ export function mapAllOutputs(
     // 1. Gera outputs via toJSON (Apenas formatos básicos do core)
     const jsonStr = output.toJSON([
         "toStringNumber",
-        "toFloatNumber",
         "toRawInternalNumber",
         "toScaledBigInt",
         "toMonetary",
@@ -57,7 +56,6 @@ export function mapAllOutputs(
 
     return {
         toString: baseData.toStringNumber,
-        toFloatNumber: baseData.toFloatNumber,
         toRawInternalNumber: `${baseData.toRawInternalNumber.n}/${baseData.toRawInternalNumber.d}`,
         toScaledBigInt: baseData.toScaledBigInt,
         toMonetary: baseData.toMonetary,

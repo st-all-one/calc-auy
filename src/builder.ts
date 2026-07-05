@@ -16,14 +16,14 @@ import type {
     RationalValue,
     SerializedCalculation,
 } from "./ast/types.ts";
-import { getActiveSession, RationalNumber } from "./core/rational.ts";
+import { RationalNumber } from "./core/rational.ts";
 import { validateMetadata } from "./core/metadata.ts";
 import type { RoundingStrategy } from "./core/constants.ts";
 import { evaluate } from "./ast/engine.ts";
 import { CalcAUYOutput } from "./output.ts";
 import { Lexer } from "./parser/lexer.ts";
 import { Parser } from "./parser/parser.ts";
-import { attachOp, validateASTNode } from "./ast/builder_utils.ts";
+import { attachOp, flattenASTMetadata, validateASTNode } from "./ast/builder_utils.ts";
 import { getSubLogger, startSpan } from "./utils/logger.ts";
 import { sanitizeAST, type SignatureEncoder } from "./utils/sanitizer.ts";
 import { generateSignature } from "./utils/security.ts";
@@ -73,6 +73,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
     readonly #instanceId: symbol;
     readonly #config: Required<InstanceConfig>;
     readonly #birthTime: string | null;
+    readonly #metadataSize: number;
 
     // Branding for IDE: Prevents mixing instances with different labels or configurations
     // @ts-ignore: Branding field
@@ -86,11 +87,13 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
         instanceId: symbol,
         config: Required<InstanceConfig>,
         birthTime: string | null,
+        metadataSize = 0,
     ) {
         this.#ast = ast;
         this.#instanceId = instanceId;
         this.#config = config;
         this.#birthTime = birthTime;
+        this.#metadataSize = metadataSize;
     }
 
     /**
@@ -135,17 +138,9 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
      * ".5_3456"    // 0.53456
      * ```
      *
-     * @example Calc: Initial Principal
+     * @example
      * ```ts
-     * const SafeBase = CalcAUY.create({
-     *     contextLabel: "calc",
-     *     salt: "secret-salt-2026",
-     *     encoder: "HEX",
-     *     roundStrategy: "NBR5891",
-     * });
-     *
-     * // String (recomended)
-     * const calc = SafeBase.from("1200.75");
+     * CalcAUY.create({contextLabel:"x"}).from("1200.75")
      * ```
      */
     public from(value: InputValue<Context, Config>): CalcAUYLogic<Context, Config> {
@@ -170,22 +165,7 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
             inputStr = value.toString();
         }
 
-        // Priority 1: Session Cache (Scoped)
-        const session = getActiveSession();
-        const sessionCached = session?.getExtra<LiteralNode>(inputStr);
-        if (sessionCached) {
-            if (this.#ast === null) {
-                return new CalcAUYLogic<Context, Config>(
-                    sessionCached,
-                    this.#instanceId,
-                    this.#config,
-                    this.#generateBirthTime(),
-                );
-            }
-            return this.op("add", value);
-        }
-
-        // Priority 2: Hot Cache (Strong References)
+        // Priority 1: Hot Cache (Strong References)
         const hotCached = hotLiteralNodeCache.get(inputStr);
         if (hotCached) {
             if (this.#ast === null) {
@@ -219,15 +199,11 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
 
         const newNode = this.#createBaseNode(inputStr);
 
-        if (session) {
-            session.setExtra(inputStr, newNode);
-        } else {
-            if (hotLiteralNodeCache.size < HOT_CACHE_LIMIT) {
-                hotLiteralNodeCache.set(inputStr, newNode);
-            }
-            globalLiteralNodeCache.set(inputStr, new WeakRef(newNode));
-            astCacheRegistry.register(newNode, inputStr);
+        if (hotLiteralNodeCache.size < HOT_CACHE_LIMIT) {
+            hotLiteralNodeCache.set(inputStr, newNode);
         }
+        globalLiteralNodeCache.set(inputStr, new WeakRef(newNode));
+        astCacheRegistry.register(newNode, inputStr);
 
         if (this.#ast === null) {
             return new CalcAUYLogic<Context, Config>(
@@ -426,11 +402,17 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
     public async hibernate(): Promise<string> {
         const root = this.assertAST();
 
+        // Flatten metadata chain for signing and serialization
+        // IMPORTANT: We flatten BEFORE injecting the timestamp to avoid prototype loss during spread
+        const flattenedRoot = flattenASTMetadata(root);
+
         // Inject the birth ticket only during closure
-        // Optimization: Shallow copy of the root to avoid heavy structuredClone in immutable trees
         const ast = this.#birthTime
-            ? { ...root, metadata: { ...root.metadata, timestamp: this.#birthTime } } as CalculationNode
-            : root;
+            ? {
+                ...flattenedRoot,
+                metadata: { ...flattenedRoot.metadata, timestamp: this.#birthTime },
+            } as CalculationNode
+            : flattenedRoot;
 
         const signature = await generateSignature(ast, this.#config.salt, this.#config.encoder);
         const payload: SerializedCalculation = {
@@ -651,21 +633,25 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
      * ```
      */
     public setMetadata(key: string, value: MetadataValue): CalcAUYLogic<Context, Config> {
-        validateMetadata(value);
+        const valSize = validateMetadata(value);
+        const keySize = key.length * 2;
+        const totalSize = this.#metadataSize + valSize + keySize;
+
         const ast = this.assertAST();
         const newAST: CalculationNode = {
             ...ast,
-            metadata: { ...(ast.metadata), [key]: value },
+            metadata: Object.assign(Object.create(ast.metadata || null), { [key]: value }),
         } as CalculationNode;
 
         if (logger.isEnabledFor("debug")) {
             logger.debug("Metadata Attached", {
                 key,
-                structure: sanitizeAST(newAST, this.#config),
+                // Avoid sanitizing the whole tree in every step if it's just metadata attachment
+                // structure: sanitizeAST(newAST, this.#config),
             });
         }
 
-        return new CalcAUYLogic<Context, Config>(newAST, this.#instanceId, this.#config, this.#birthTime);
+        return new CalcAUYLogic<Context, Config>(newAST, this.#instanceId, this.#config, this.#birthTime, totalSize);
     }
 
     /**
@@ -700,290 +686,31 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
 
     // --- Fluent Operations ---
 
-    /** Adds a value to the current calculation.
-     *
-     * **Inputs allowed:**
-     * ```ts
-     * // String numbers
-     * "1230"        // 1230.00
-     * "1230.45"     // 1230.45
-     * "1_230.45"    // 1230.45
-     * "1_230.4_536" // 1230.4536
-     * "1e3"         // 100.00
-     * "100e-3"      // 0.10
-     *
-     * // Pure numbers
-     * 1230         // 1230.00
-     * 1230.45      // 1230.45
-     * 1_230.45     // 1230.45
-     * 1_230.4_536  // 1230.4536
-     * 1e3          // 100.00
-     * 100e-3       // 0.10
-     *
-     * // Percent numbers
-     * "14%"        // 14/100
-     * "-14%"       // -14/100
-     * "14.5%"      // 145/1000
-     * "-14.5%"     // -145/1000
-     *
-     * // Rational Numbers
-     * "3/7"        // 3/7 => 0.428571...
-     * "-3/7"       // -3/7 => -0.428571...
-     * "-3/-7"      // 3/7 => 0.428571...
-     *
-     * // Left-zero ommited notation
-     * ".53"        // 0.53
-     * "-.53"       // -0.53
-     * "+.53"       // 0.53
-     * ".5_3456"    // 0.53456
-     * ```
-     */
+    /** Adds a value. @see from for input types. */
     public add(value: InputValue<Context, Config>): CalcAUYLogic<Context, Config> {
         return this.op("add", value);
     }
-    /** Subtracts a value from the current calculation.
-     *
-     * **Inputs allowed:**
-     * ```ts
-     * // String numbers
-     * "1230"        // 1230.00
-     * "1230.45"     // 1230.45
-     * "1_230.45"    // 1230.45
-     * "1_230.4_536" // 1230.4536
-     * "1e3"         // 100.00
-     * "100e-3"      // 0.10
-     *
-     * // Pure numbers
-     * 1230         // 1230.00
-     * 1230.45      // 1230.45
-     * 1_230.45     // 1230.45
-     * 1_230.4_536  // 1230.4536
-     * 1e3          // 100.00
-     * 100e-3       // 0.10
-     *
-     * // Percent numbers
-     * "14%"        // 14/100
-     * "-14%"       // -14/100
-     * "14.5%"      // 145/1000
-     * "-14.5%"     // -145/1000
-     *
-     * // Rational Numbers
-     * "3/7"        // 3/7 => 0.428571...
-     * "-3/7"       // -3/7 => -0.428571...
-     * "-3/-7"      // 3/7 => 0.428571...
-     *
-     * // Left-zero ommited notation
-     * ".53"        // 0.53
-     * "-.53"       // -0.53
-     * "+.53"       // 0.53
-     * ".5_3456"    // 0.53456
-     * ```
-     */
+    /** Subtracts a value. @see from for input types. */
     public sub(value: InputValue<Context, Config>): CalcAUYLogic<Context, Config> {
         return this.op("sub", value);
     }
-    /** Multiplies the current calculation by a value.
-     *
-     * **Inputs allowed:**
-     * ```ts
-     * // String numbers
-     * "1230"        // 1230.00
-     * "1230.45"     // 1230.45
-     * "1_230.45"    // 1230.45
-     * "1_230.4_536" // 1230.4536
-     * "1e3"         // 100.00
-     * "100e-3"      // 0.10
-     *
-     * // Pure numbers
-     * 1230         // 1230.00
-     * 1230.45      // 1230.45
-     * 1_230.45     // 1230.45
-     * 1_230.4_536  // 1230.4536
-     * 1e3          // 100.00
-     * 100e-3       // 0.10
-     *
-     * // Percent numbers
-     * "14%"        // 14/100
-     * "-14%"       // -14/100
-     * "14.5%"      // 145/1000
-     * "-14.5%"     // -145/1000
-     *
-     * // Rational Numbers
-     * "3/7"        // 3/7 => 0.428571...
-     * "-3/7"       // -3/7 => -0.428571...
-     * "-3/-7"      // 3/7 => 0.428571...
-     *
-     * // Left-zero ommited notation
-     * ".53"        // 0.53
-     * "-.53"       // -0.53
-     * "+.53"       // 0.53
-     * ".5_3456"    // 0.53456
-     * ```
-     */
+    /** Multiplies by a value. @see from for input types. */
     public mult(value: InputValue<Context, Config>): CalcAUYLogic<Context, Config> {
         return this.op("mul", value);
     }
-    /** Divides the current calculation by a value.
-     *
-     * **Inputs allowed:**
-     * ```ts
-     * // String numbers
-     * "1230"        // 1230.00
-     * "1230.45"     // 1230.45
-     * "1_230.45"    // 1230.45
-     * "1_230.4_536" // 1230.4536
-     * "1e3"         // 100.00
-     * "100e-3"      // 0.10
-     *
-     * // Pure numbers
-     * 1230         // 1230.00
-     * 1230.45      // 1230.45
-     * 1_230.45     // 1230.45
-     * 1_230.4_536  // 1230.4536
-     * 1e3          // 100.00
-     * 100e-3       // 0.10
-     *
-     * // Percent numbers
-     * "14%"        // 14/100
-     * "-14%"       // -14/100
-     * "14.5%"      // 145/1000
-     * "-14.5%"     // -145/1000
-     *
-     * // Rational Numbers
-     * "3/7"        // 3/7 => 0.428571...
-     * "-3/7"       // -3/7 => -0.428571...
-     * "-3/-7"      // 3/7 => 0.428571...
-     *
-     * // Left-zero ommited notation
-     * ".53"        // 0.53
-     * "-.53"       // -0.53
-     * "+.53"       // 0.53
-     * ".5_3456"    // 0.53456
-     * ```
-     */
+    /** Divides by a value. @see from for input types. */
     public div(value: InputValue<Context, Config>): CalcAUYLogic<Context, Config> {
         return this.op("div", value);
     }
-    /** Raises the current calculation to the power of a value.
-     *
-     * **Inputs allowed:**
-     * ```ts
-     * // String numbers
-     * "1230"        // 1230.00
-     * "1230.45"     // 1230.45
-     * "1_230.45"    // 1230.45
-     * "1_230.4_536" // 1230.4536
-     * "1e3"         // 100.00
-     * "100e-3"      // 0.10
-     *
-     * // Pure numbers
-     * 1230         // 1230.00
-     * 1230.45      // 1230.45
-     * 1_230.45     // 1230.45
-     * 1_230.4_536  // 1230.4536
-     * 1e3          // 100.00
-     * 100e-3       // 0.10
-     *
-     * // Percent numbers
-     * "14%"        // 14/100
-     * "-14%"       // -14/100
-     * "14.5%"      // 145/1000
-     * "-14.5%"     // -145/1000
-     *
-     * // Rational Numbers
-     * "3/7"        // 3/7 => 0.428571...
-     * "-3/7"       // -3/7 => -0.428571...
-     * "-3/-7"      // 3/7 => 0.428571...
-     *
-     * // Left-zero ommited notation
-     * ".53"        // 0.53
-     * "-.53"       // -0.53
-     * "+.53"       // 0.53
-     * ".5_3456"    // 0.53456
-     * ```
-     */
+    /** Raises to a power. @see from for input types. */
     public pow(value: InputValue<Context, Config>): CalcAUYLogic<Context, Config> {
         return this.op("pow", value);
     }
-    /** Calculates the remainder of division by a value.
-     *
-     * **Inputs allowed:**
-     * ```ts
-     * // String numbers
-     * "1230"        // 1230.00
-     * "1230.45"     // 1230.45
-     * "1_230.45"    // 1230.45
-     * "1_230.4_536" // 1230.4536
-     * "1e3"         // 100.00
-     * "100e-3"      // 0.10
-     *
-     * // Pure numbers
-     * 1230         // 1230.00
-     * 1230.45      // 1230.45
-     * 1_230.45     // 1230.45
-     * 1_230.4_536  // 1230.4536
-     * 1e3          // 100.00
-     * 100e-3       // 0.10
-     *
-     * // Percent numbers
-     * "14%"        // 14/100
-     * "-14%"       // -14/100
-     * "14.5%"      // 145/1000
-     * "-14.5%"     // -145/1000
-     *
-     * // Rational Numbers
-     * "3/7"        // 3/7 => 0.428571...
-     * "-3/7"       // -3/7 => -0.428571...
-     * "-3/-7"      // 3/7 => 0.428571...
-     *
-     * // Left-zero ommited notation
-     * ".53"        // 0.53
-     * "-.53"       // -0.53
-     * "+.53"       // 0.53
-     * ".5_3456"    // 0.53456
-     * ```
-     */
+    /** Remainder of division. @see from for input types. */
     public mod(value: InputValue<Context, Config>): CalcAUYLogic<Context, Config> {
         return this.op("mod", value);
     }
-    /** Performs integer division of the current calculation by a value.
-     *
-     * **Inputs allowed:**
-     * ```ts
-     * // String numbers
-     * "1230"        // 1230.00
-     * "1230.45"     // 1230.45
-     * "1_230.45"    // 1230.45
-     * "1_230.4_536" // 1230.4536
-     * "1e3"         // 100.00
-     * "100e-3"      // 0.10
-     *
-     * // Pure numbers
-     * 1230         // 1230.00
-     * 1230.45      // 1230.45
-     * 1_230.45     // 1230.45
-     * 1_230.4_536  // 1230.4536
-     * 1e3          // 100.00
-     * 100e-3       // 0.10
-     *
-     * // Percent numbers
-     * "14%"        // 14/100
-     * "-14%"       // -14/100
-     * "14.5%"      // 145/1000
-     * "-14.5%"     // -145/1000
-     *
-     * // Rational Numbers
-     * "3/7"        // 3/7 => 0.428571...
-     * "-3/7"       // -3/7 => -0.428571...
-     * "-3/-7"      // 3/7 => 0.428571...
-     *
-     * // Left-zero ommited notation
-     * ".53"        // 0.53
-     * "-.53"       // -0.53
-     * "+.53"       // 0.53
-     * ".5_3456"    // 0.53456
-     * ```
-     */
+    /** Integer division. @see from for input types. */
     public divInt(value: InputValue<Context, Config>): CalcAUYLogic<Context, Config> {
         return this.op("divInt", value);
     }
@@ -1095,10 +822,17 @@ export class CalcAUYLogic<Context extends string, Config extends InstanceConfig 
         using _span = startSpan("commit", logger);
         const root = this.assertAST();
 
-        // Optimization: Shallow copy of the root for timestamp injection, preserving the original tree
+        // Flatten metadata chain for signing and serialization
+        // IMPORTANT: We flatten BEFORE injecting the timestamp to avoid prototype loss during spread
+        const flattenedRoot = flattenASTMetadata(root);
+
+        // Inject the birth ticket only during closure
         const ast = this.#birthTime
-            ? { ...root, metadata: { ...root.metadata, timestamp: this.#birthTime } } as CalculationNode
-            : root;
+            ? {
+                ...flattenedRoot,
+                metadata: { ...flattenedRoot.metadata, timestamp: this.#birthTime },
+            } as CalculationNode
+            : flattenedRoot;
 
         const roundStrategy: RoundingStrategy = this.#config.roundStrategy;
         const result: RationalNumber = evaluate(ast);

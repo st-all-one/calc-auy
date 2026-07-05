@@ -54,11 +54,12 @@ Representado como um Map
 - `"child"`: `CalculationNode`
 
 #### ControlNode (`kind: 4`)
-- `"type"`: String (Fixo: "reanimation_event")
+- `"type"`: String (Fixo: `"reanimation_event"`)
 - `"child"`: `CalculationNode`
 - `"previousContextLabel"`: String
 - `"previousSignature"`: String
 - `"previousRoundStrategy"`: String
+- Metadados extras: quaisquer chaves adicionais no map (via campo `metadata` no nó pai)
 
 ## 3. SerializedCalculation (Raiz)
 A estrutura raiz selada. Segue fielmente o contrato de integridade
@@ -66,11 +67,12 @@ A estrutura raiz selada. Segue fielmente o contrato de integridade
 - **Tipo**: Map
 - **Chaves Obrigatórias**:
   - `"ast"`: `CalculationNode`
-  - `"finalResult"`: `RationalValue`
-  - `"roundStrategy"`: String
   - `"signature"`: String (BLAKE3 Hex)
   - `"contextLabel"`: String
+- **Chaves Opcionais**:
+  - `"finalResult"`: `RationalValue` (presente apenas em audit traces)
+  - `"roundStrategy"`: String (presente apenas em audit traces)
 
 ## 4. MetadataValue (Estrito)
 O tipo `Nil/Null` é **estritamente proibido**. Suporta:
-- Boolean, Integer, Float, String (UTF-8), Array
+- Boolean, Integer, Float, String (UTF-8), Array, Map

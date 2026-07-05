@@ -18,18 +18,18 @@ describe("Builder: Logic (Fluent API)", () => {
 
     it("deve suportar diferentes tipos de entrada no .from()", async () => {
         // String decimal
-        assertEquals((await Finance.from("10.5").commit()).toFloatNumber(), 10.5);
+        assertEquals((await Finance.from("10.5").commit()).toStringNumber(), "10.50");
         // String percentual
-        assertEquals((await Finance.from("10%").commit()).toFloatNumber(), 0.1);
+        assertEquals((await Finance.from("10%").commit()).toStringNumber(), "0.10");
         // String racional
-        assertEquals((await Finance.from("1/4").commit()).toFloatNumber(), 0.25);
+        assertEquals((await Finance.from("1/4").commit()).toStringNumber(), "0.25");
         // Número puro
-        assertEquals((await Finance.from(100).commit()).toFloatNumber(), 100);
+        assertEquals((await Finance.from(100).commit()).toStringNumber(), "100.00");
         // BigInt
-        assertEquals((await Finance.from(100n).commit()).toFloatNumber(), 100);
+        assertEquals((await Finance.from(100n).commit()).toStringNumber(), "100.00");
         // Outra instância do mesmo contexto
         const other = Finance.from(50);
-        assertEquals((await Finance.from(other).commit()).toFloatNumber(), 50);
+        assertEquals((await Finance.from(other).commit()).toStringNumber(), "50.00");
     });
 
     it("deve suportar encadeamento imutável (Fluent API)", () => {
@@ -55,7 +55,7 @@ describe("Builder: Logic (Fluent API)", () => {
         // 2^2 = 4
         // 2*2 = 4; 4/4 = 1; 1%10 = 1; 1//2 = 0
         // 10 + 5 - 0 = 15
-        assertEquals(res.toFloatNumber(), 15);
+        assertEquals(res.toStringNumber(), "15.00");
     });
 
     it("deve permitir adicionar metadados em qualquer etapa e acumulá-los", async () => {
@@ -81,12 +81,12 @@ describe("Builder: Logic (Fluent API)", () => {
         // (10 + 5) * 2 = 30
         const calc1 = Finance.from(10).add(5).group().mult(2);
         const res1 = await calc1.commit();
-        assertEquals(res1.toFloatNumber(), 30);
+        assertEquals(res1.toStringNumber(), "30.00");
 
         // 10 + (5 * 2) = 20
         const calc2 = Finance.from(10).add(Finance.from(5).mult(2).group());
         const res2 = await calc2.commit();
-        assertEquals(res2.toFloatNumber(), 20);
+        assertEquals(res2.toStringNumber(), "20.00");
     });
 
     it("deve lançar erro ao tentar misturar instâncias de contextos diferentes", () => {
@@ -112,14 +112,14 @@ describe("Builder: Logic (Fluent API)", () => {
         // O builder por padrão anexa operações respeitando PEMDAS via attachOp.
         const res = await Finance.from(10).add(5).mult(2).commit();
         // 10 + (5 * 2) = 20
-        assertEquals(res.toFloatNumber(), 20);
+        assertEquals(res.toStringNumber(), "20.00");
     });
 
     it("deve suportar operações com instâncias do mesmo contexto", async () => {
         const a = Finance.from(10);
         const b = Finance.from(20);
         const res = await a.add(b).commit();
-        assertEquals(res.toFloatNumber(), 30);
+        assertEquals(res.toStringNumber(), "30.00");
     });
 
     it("deve permitir o uso de .from() para adotar o AST de outra instância se a atual for vazia", async () => {
@@ -127,7 +127,7 @@ describe("Builder: Logic (Fluent API)", () => {
         const inner = Finance.from(10).add(5);
         const outer = Finance.from(inner);
         const res = await outer.commit();
-        assertEquals(res.toFloatNumber(), 15);
+        assertEquals(res.toStringNumber(), "15.00");
     });
 
     it("deve validar tipos de metadados", () => {

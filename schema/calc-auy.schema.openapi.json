@@ -2,9 +2,11 @@
     "openapi": "3.1.1",
     "info": {
         "title": "CalcAUY - OpenAPI Schema",
-        "description": "Estrutura de dados da CalcAUY",
-        "copyright": "Create by Stallone L. S. (@st-all-one) - 2026 - License: MPL-2.0",
-        "copyright_message": "Copyright (c) 2026, Stallone L. S. (@st-all-one) This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.",
+        "description": "Estrutura de dados da CalcAUY. Copyright (c) 2026, Stallone L. S. (@st-all-one) — MPL-2.0.",
+        "license": {
+            "name": "MPL-2.0",
+            "url": "https://mozilla.org/MPL/2.0/"
+        },
         "version": "1.0.0"
     },
     "components": {
@@ -201,6 +203,9 @@
                                     "previousRoundStrategy": {
                                         "type": "string"
                                     }
+                                },
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/MetadataValue"
                                 }
                             }
                         }
@@ -230,11 +235,13 @@
                 "type": "object",
                 "required": [
                     "ast",
-                    "finalResult",
-                    "roundStrategy",
                     "signature",
                     "contextLabel"
                 ],
+                "dependentRequired": {
+                    "finalResult": ["roundStrategy"],
+                    "roundStrategy": ["finalResult"]
+                },
                 "additionalProperties": false,
                 "properties": {
                     "ast": {

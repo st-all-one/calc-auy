@@ -132,7 +132,7 @@ describe("CalcAUY - Stress Tests", () => {
             const raw = output.toRawInternalNumber();
             report["1.1_den_digits"] = `${raw.d.toString().length} digits`;
 
-            expect(output.toFloatNumber()).toBeGreaterThan(0);
+            expect(Number(output.toStringNumber())).toBeGreaterThan(0);
         });
     });
 
@@ -190,7 +190,7 @@ describe("CalcAUY - Stress Tests", () => {
             const end = performance.now();
 
             report["3.1_power_tower_structure"] = `${(end - start).toFixed(6)}ms`;
-            expect(output.toFloatNumber()).toBeGreaterThan(1);
+            expect(Number(output.toStringNumber())).toBeGreaterThan(1);
         });
     });
 
@@ -247,7 +247,7 @@ describe("CalcAUY - Stress Tests", () => {
             const end = performance.now();
 
             report["5.1_nested_roots_huge_numbers"] = `${(end - start).toFixed(6)}ms`;
-            expect(output.toFloatNumber()).toBeGreaterThan(0);
+            expect(Number(output.toStringNumber())).toBeGreaterThan(0);
         });
     });
 

@@ -50,3 +50,7 @@ Durante o colapso, o motor deve confiar na simplificação automática (MDC) do 
 
 ## Segurança em Runtime
 - **Prevenção de Overflow/Underflow:** Embora o BigInt suporte precisão arbitrária, o motor deve monitorar o tamanho do numerador e denominador para evitar consumo excessivo de memória em dízimas periódicas complexas, forçando o colapso para 50 casas decimais quando necessário (ex: em operações de potência e raízes n-ésimas).
+
+---
+
+[↑ Voltar ao índice](../index.md)

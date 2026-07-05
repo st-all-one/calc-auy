@@ -41,7 +41,7 @@ O Parser deve tratar o conteúdo do expoente como uma sub-expressão completa ap
 ### 3. O Método Especial `.group()` (Fluent API)
 No encadeamento de métodos, o `.group()` atua como um "colapsador léxico" da AST construída até aquele momento, isolando as operações anteriores.
 - **Comportamento:** Ele envolve toda a AST acumulada em um `GroupNode`.
-- **Exemplo:** `CalcAUY.from(10).add(5).group().mult(2)`
+- **Exemplo:** `CalcAUY.create({ contextLabel: "ex", salt: "fixo" }).from(10).add(5).group().mult(2)`
 - **Resultado:** Produz `(10 + 5) * 2 = 30`. Sem o `.group()`, a chamada `.mult(2)` resultaria em `10 + (5 * 2) = 20` devido à precedência natural da multiplicação.
 
 ### 4. Operações Multiplicativas (Mesmo Nível)
@@ -84,3 +84,7 @@ Root: OperationNode(*)
 ## Validação de Redundância e Inconsistência
 - **Redundância:** Se o usuário fornecer `(2^3)`, o Parser identifica que os parênteses são redundantes e pode optar por mantê-los ou simplificá-los conforme a estratégia de auditoria. No motor CalcAUY, a estrutura é preservada para garantir fidelidade ao input original.
 - **Inconsistência:** O Parser deve disparar `CalcAUYError` imediato para expressões como `10 ^ * 5` ou `(10 + 5))`.
+
+---
+
+[↑ Voltar ao índice](../index.md)

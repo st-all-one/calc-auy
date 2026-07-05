@@ -51,5 +51,9 @@ Permitir metadados ilimitados abriria brechas para ataques de **Memory Exhaustio
 ---
 
 ## 🔗 Veja também
-- [**Guia de Metadados**](../builder-methods/setMetadata.md): Como usar metadados corretamente.
-- [**Limites de Segurança**](../internal/security-guards.md): Outros limites técnicos da engine.
+- [**API do Builder**](../api/builder-methods.md): Como usar metadados corretamente.
+- [**Segurança**](../security/security.md): Outros limites técnicos da engine.
+
+---
+
+[↑ Voltar ao índice](../index.md)

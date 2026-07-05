@@ -38,3 +38,7 @@ A biblioteca deve manter-se ultra-leve, possuindo como única dependência o **L
 - **Branded Types:** Se possível, utilizar "Branded Types" para distinguir entre diferentes unidades de medida ou tipos de números se o projeto crescer (ex: `CurrencyAmount`, `UnitValue`).
 - **No Any:** O uso de `any` é terminantemente proibido. Devem ser utilizadas interfaces genéricas ou uniões de tipos literais.
 - **Checklists de A11y:** Durante a implementação, seguir as diretrizes de acessibilidade matemática definidas em `.agents/guidelines/`.
+
+---
+
+[↑ Voltar ao índice](../index.md)

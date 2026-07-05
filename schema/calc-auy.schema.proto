@@ -50,14 +50,13 @@ message MetadataMap {
 
 // --- AST ---
 message CalculationNode {
-  string kind = 1;
-  map<string, MetadataValue> metadata = 2;
+  map<string, MetadataValue> metadata = 1;
 
   oneof node_type {
-    LiteralNode literal = 3;
-    OperationNode operation = 4;
-    GroupNode group = 5;
-    ControlNode control = 6;
+    LiteralNode literal = 2;
+    OperationNode operation = 3;
+    GroupNode group = 4;
+    ControlNode control = 5;
   }
 }
 
@@ -76,18 +75,18 @@ message GroupNode {
 }
 
 message ControlNode {
-  string type = 1;
-  string previousContextLabel = 2;
-  string previousSignature = 3;
-  string previousRoundStrategy = 4;
-  CalculationNode child = 5;
+  string previousContextLabel = 1;
+  string previousSignature = 2;
+  string previousRoundStrategy = 3;
+  CalculationNode child = 4;
+  map<string, MetadataValue> extra_metadata = 5;
 }
 
 // --- Payload Consolidado de Saída (Audit Trace / Hibernação) ---
 message SerializedCalculation {
   CalculationNode ast = 1;
-  RationalValue finalResult = 2;
-  string roundStrategy = 3;
+  optional RationalValue finalResult = 2;
+  optional string roundStrategy = 3;
   string signature = 4;
   string contextLabel = 5;
 }

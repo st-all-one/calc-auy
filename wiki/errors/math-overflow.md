@@ -25,13 +25,13 @@ Embora o `BigInt` do JavaScript suporte números gigantescos, a CalcAUY impõe l
 ### Exemplo 1: Explosão de Potência
 ```typescript
 // Lança math-overflow: o resultado excede 1M de bits rapidamente
-const calc = CalcAUY.from(10).pow(10).pow(10).pow(10);
+const calc = CalcAUY.create({ contextLabel: "ex", salt: "fixo" }).from(10).pow(10).pow(10).pow(10);
 await calc.commit();
 ```
 
 ### Exemplo 2: Multiplicação Gigante
 ```typescript
-let calc = CalcAUY.from("1e100000"); // Número já muito grande
+let calc = CalcAUY.create({ contextLabel: "ex", salt: "fixo" }).from("1e100000"); // Número já muito grande
 calc = calc.mult(calc).mult(calc);
 await calc.commit();
 ```
@@ -55,5 +55,9 @@ O limite de **1 milhão de bits** é uma guarda de segurança necessária para m
 ---
 
 ## 🔗 Veja também
-- [**Guia de Erros**](../errors.md): Lista completa de exceções da CalcAUY.
-- [**Central de Documentação**](../entrypoint.md): Voltar para a página principal.
+- [**Guia de Erros**](./errors.md): Lista completa de exceções da CalcAUY.
+- [**Central de Documentação**](../index.md): Voltar para a página principal.
+
+---
+
+[↑ Voltar ao índice](../index.md)

@@ -14,32 +14,139 @@ import { encodeBase58 } from "@std/encoding/base58";
 import type { SignatureEncoder } from "./sanitizer.ts";
 
 /**
- * Converte um dado qualquer em uma string canônica (determinística).
- * Implementa k-sort (ordenação alfabética de chaves) recursivo.
+ * Serializa um valor para string canônica segundo RFC 8785 (JSON Canonicalization Scheme — JCS).
  *
- * @param data Dado a ser canonizado.
- * @returns String estável para geração de hash.
+ * Type guards rejeitam tipos não-JSON que causariam assinatura silenciosamente divergente:
+ * BigInt, Date, function, symbol, Infinity, NaN, undefined como valor raiz.
+ *
+ * Regras JCS:
+ * - `null` → `null`
+ * - `boolean` → `true` / `false`
+ * - `number` → formato decimal canônico, sem expoente, sem zeros à esquerda/direita
+ * - `string` → JSON string escapado (U+0022, U+005C, U+0000–U+001F)
+ * - `Array` → `[...]` sem whitespace extra
+ * - `Object` → chaves ordenadas por UTF-8 code point, sem whitespace
+ * - `undefined` em valor de objeto → chave omitida
  */
 export function canonicalString(data: unknown): string {
-    if (data === null || typeof data !== "object") {
-        return String(data);
+    const parts: string[] = [];
+    serialize(parts, data, 0);
+    return parts.join("");
+}
+
+const MAX_SERIALIZE_DEPTH = 1000;
+
+/**
+ * Expande notação científica (ex: `1e+21`) para decimal literal (`1000000000000000000000`).
+ * Segue o algoritmo exigido por RFC 8785 — IEEE 754 doubles que toString() representa
+ * com expoente são expandidos para sua forma decimal mínima.
+ */
+function expandScientificNotation(s: string): string {
+    const match = s.match(/^(-?)(\d)(?:\.(\d*))?[eE]([+-]?\d+)$/);
+    if (!match) {
+        throw new TypeError(`Cannot expand scientific notation: ${s}`);
     }
 
-    if (data instanceof Date) {
-        return data.toISOString();
+    const [, sign, intDigit, fracPart, expStr] = match;
+    const exp = parseInt(expStr, 10);
+    const digits = intDigit + (fracPart ?? "");
+    const decimalShift = exp - (fracPart?.length ?? 0);
+
+    if (decimalShift >= 0) {
+        return sign + digits + "0".repeat(decimalShift);
     }
 
-    if (Array.isArray(data)) {
-        return "[" + data.map(canonicalString).join(",") + "]";
+    const absShift = -decimalShift;
+    if (absShift < digits.length) {
+        const insertAt = digits.length - absShift;
+        let result = sign + digits.slice(0, insertAt) + "." + digits.slice(insertAt);
+        result = result.replace(/(\..*?)0+$/, "$1");
+        result = result.replace(/\.$/, "");
+        return result;
     }
 
-    const keys = Object.keys(data as object).sort();
-    return "{"
-        + keys.map((key) => {
+    const leadingZeros = "0".repeat(absShift - digits.length);
+    let result = sign + "0." + leadingZeros + digits;
+    result = result.replace(/(\..*?)0+$/, "$1");
+    return result;
+}
+
+/**
+ * Serializa um número seguindo as regras de RFC 8785:
+ * - Sem expoente (notação científica expandida)
+ * - Sem zeros à esquerda
+ * - Sem zeros à direita após ponto decimal
+ * - Sem ponto decimal para inteiros
+ * - `-0` → `0`
+ */
+function serializeNumber(n: number): string {
+    if (!Number.isFinite(n)) {
+        throw new TypeError(
+            `Cannot canonicalize non-finite number: ${
+                n === Infinity ? "Infinity" : n === -Infinity ? "-Infinity" : "NaN"
+            }`,
+        );
+    }
+
+    const s = n.toString();
+
+    if (Object.is(n, -0)) { return "0"; }
+
+    if (s.includes("e") || s.includes("E")) {
+        return expandScientificNotation(s);
+    }
+
+    return s;
+}
+
+function serialize(parts: string[], data: unknown, depth: number): void {
+    if (depth > MAX_SERIALIZE_DEPTH) {
+        throw new TypeError("Excessive depth in canonicalString");
+    }
+    const nd = depth + 1;
+
+    if (data === null) {
+        parts.push("null");
+    } else if (typeof data === "boolean") {
+        parts.push(data ? "true" : "false");
+    } else if (typeof data === "number") {
+        parts.push(serializeNumber(data));
+    } else if (typeof data === "string") {
+        parts.push(JSON.stringify(data));
+    } else if (Array.isArray(data)) {
+        parts.push("[");
+        for (let i = 0; i < data.length; i++) {
+            if (i > 0) { parts.push(","); }
+            serialize(parts, data[i], nd);
+        }
+        parts.push("]");
+    } else if (typeof data === "object" && data !== null) {
+        // type guards — rejeita wrapper objects que distorceriam a canônica
+        if (data instanceof Date || data instanceof RegExp) {
+            const typeName = data instanceof Date ? "Date" : "RegExp";
+            throw new TypeError(`"${typeName}" values are not allowed in canonical data; convert to string first`);
+        }
+
+        parts.push("{");
+        const keys = Object.keys(data as Record<string, unknown>).sort();
+        let first = true;
+        for (const key of keys) {
             const val = (data as Record<string, unknown>)[key];
-            return `"${key}":${canonicalString(val)}`;
-        }).join(",")
-        + "}";
+            if (val === undefined) { continue; }
+            if (!first) { parts.push(","); }
+            parts.push(JSON.stringify(key));
+            parts.push(":");
+            serialize(parts, val, nd);
+            first = false;
+        }
+        parts.push("}");
+    } else {
+        // bigint, function, symbol — rejeita para evitar assinatura divergente
+        const typeName = typeof data;
+        throw new TypeError(
+            `Values of type "${typeName}" are not allowed in canonical data`,
+        );
+    }
 }
 
 /**

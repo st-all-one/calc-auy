@@ -67,3 +67,7 @@ Input: `"1_000.50 / (1/3)"`
 
 ## 6. Diferencial de Auditoria (Original Input)
 Cada `LiteralNode` na AST **DEVE** preservar a string original de entrada (`originalInput`). Isso permite que, no rastro de auditoria, possamos mostrar exatamente o que o usuário digitou (ex: `"1/3"`) em vez do valor processado (ex: `0.333...`).
+
+---
+
+[↑ Voltar ao índice](../index.md)

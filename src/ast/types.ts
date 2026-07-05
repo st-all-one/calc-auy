@@ -74,6 +74,7 @@ export type ControlNode = BaseNode & {
     metadata: {
         previousContextLabel: string;
         previousSignature: string;
+        previousRoundStrategy: string;
     } & Record<string, MetadataValue>;
     child: CalculationNode;
 };

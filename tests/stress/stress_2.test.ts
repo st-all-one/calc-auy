@@ -38,7 +38,7 @@ describe("CalcAUY - Stress Tests 3", () => {
 
             const end = performance.now();
             report["1.2_cpu_fractional_roots"] = `${(end - start).toFixed(6)}ms`;
-            expect(output.toFloatNumber()).toBeGreaterThan(0);
+            expect(Number(output.toStringNumber())).toBeGreaterThan(0);
         });
 
         it("GCD Explosion: Large Prime Denominators", async () => {
@@ -193,7 +193,7 @@ describe("CalcAUY - Stress Tests 3", () => {
             const end = performance.now();
 
             report["4.2_metadata_bloat_5k"] = `${(end - start).toFixed(6)}ms`;
-            expect(output.toFloatNumber()).toBe(100);
+            expect(output.toStringNumber()).toBe("100.00");
         });
     });
 

@@ -64,7 +64,6 @@ export type CalcAUYCustomOutputContext<Toptions extends OutputOptions = OutputOp
     methods: Pick<
         CalcAUYOutput,
         | "toStringNumber"
-        | "toFloatNumber"
         | "toScaledBigInt"
         | "toRawInternalNumber"
         | "toLiveTrace"

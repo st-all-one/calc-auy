@@ -54,5 +54,9 @@ Se a CalcAUY corrigisse isso silenciosamente, o desenvolvedor nunca saberia que 
 ---
 
 ## 🔗 Veja também
-- [**Guia de Erros**](../errors.md): Lista completa de exceções da CalcAUY.
-- [**Central de Documentação**](../entrypoint.md): Voltar para a página principal.
+- [**Guia de Erros**](./errors.md): Lista completa de exceções da CalcAUY.
+- [**Central de Documentação**](../index.md): Voltar para a página principal.
+
+---
+
+[↑ Voltar ao índice](../index.md)

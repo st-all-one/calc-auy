@@ -268,25 +268,25 @@ export const manualExamples: RawExample[] = [
         ).commit().then((o) => o.toMonetary()),
     },
 
-    // float/ScaledBigInt
+    // ScaledBigInt
     {
         group: "outputs",
-        key: "float/scaledBigInt",
+        key: "scaledBigInt",
         title: "Demonstração de output",
-        context: "Cálculo de juros compostos (visão float)",
+        context: "Cálculo de juros compostos (visão toString)",
         code:
-            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toFloatNumber()",
+            "CalcAUY.from(1_000).mult(CalcAUY.from(1).add('14.75%').group().pow(10)).setMetadata('meta', { id: 1, date: new Date().toISOString() }).commit().toStringNumber()",
         result: await CalcAUY.from(1_000).mult(CalcAUY.from(1).add("14.75%").group().pow(10)).setMetadata(
             "meta",
             {
                 id: 1,
                 date: "2026-04-14T00:17:35.163Z",
             },
-        ).commit().then((o) => o.toFloatNumber()),
+        ).commit().then((o) => o.toStringNumber()),
     },
     {
         group: "outputs",
-        key: "float/scaledBigInt",
+        key: "scaledBigInt",
         title: "Demonstração de output",
         context: "Cálculo de juros compostos (visão scaledBigInt)",
         code:

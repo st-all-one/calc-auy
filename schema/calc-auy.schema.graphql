@@ -74,12 +74,15 @@ type ControlNode implements CalculationNode {
 }
 
 """
-Estrutura final
+Estrutura final.
+`finalResult` e `roundStrategy` são opcionais:
+- Presentes em audit traces (commit / toAuditTrace)
+- Ausentes em snapshots de hibernação (hibernate)
 """
 type AuditTrace {
   ast: CalculationNode!
-  finalResult: RationalValue!
-  roundStrategy: String!
+  finalResult: RationalValue
+  roundStrategy: String
   signature: String!
   contextLabel: String!
 }

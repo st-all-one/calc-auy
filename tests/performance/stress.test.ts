@@ -18,15 +18,13 @@ describe("Performance: Stress & Load Testing", () => {
         }
 
         const output = await builder.commit();
-        assertEquals(output.toFloatNumber(), depth + 1);
+        assertEquals(output.toStringNumber(), `${depth + 1}.00`);
     });
 
     it("deve lidar com milhares de operações em lote usando cache", async () => {
         const iterations = 5000;
         const baseValue = 100;
-        const multiplier = "1.05"; // Taxa constante para testar cache
-
-        using _session = CalcAUY.createCacheSession();
+        const multiplier = "1.05";
 
         const startTime = performance.now();
         for (let i = 0; i < iterations; i++) {
@@ -35,7 +33,6 @@ describe("Performance: Stress & Load Testing", () => {
         const endTime = performance.now();
 
         console.log(`\n  >> Processamento de ${iterations} cálculos em: ${(endTime - startTime).toFixed(6)}ms`);
-        // Apenas valida que não houve erro
         assertEquals(true, true);
     });
 
@@ -43,18 +40,15 @@ describe("Performance: Stress & Load Testing", () => {
         const iterations = 1000;
         const taxRate = "0.15";
 
-        using _session = CalcAUY.createCacheSession();
-
         const results = [];
         for (let i = 0; i < iterations; i++) {
-            // Reutiliza o nó "0.15" mil vezes
             const res = await Engine.from(100).mult(taxRate).commit();
             results.push(res);
         }
 
         assertEquals(results.length, iterations);
         // Verifica se o último resultado está correto
-        assertEquals(results[iterations - 1].toFloatNumber(), 15);
+        assertEquals(results[iterations - 1].toStringNumber(), "15.00");
     });
 
     it("deve calcular raízes e potências complexas com alta precisão", async () => {
@@ -83,6 +77,6 @@ describe("Performance: Stress & Load Testing", () => {
 
         const output = await finalBuilder.commit();
         // Soma de 0 a 99 = (99 * 100) / 2 = 4950
-        assertEquals(output.toFloatNumber(), 4950);
+        assertEquals(output.toStringNumber(), "4950.00");
     });
 });

@@ -38,3 +38,7 @@ O parser deve disparar um `CalcAUYError` diante de qualquer uma das seguintes si
 - **Lexer:** Transforma a string em uma lista de tokens.
 - **Parser (Recursive Descent):** Constrói a árvore AST a partir da lista de tokens, garantindo que a hierarquia de nós respeite as precedências definidas.
 - **Validator:** Percorre a árvore recém-criada para identificar redundâncias léxicas antes de retorná-la.
+
+---
+
+[↑ Voltar ao índice](../index.md)

@@ -37,65 +37,6 @@ const hotLiteralCache = new Map<string | bigint, RationalNumber>();
  */
 const globalLiteralCache = new Map<string | bigint, WeakRef<RationalNumber>>();
 
-/** Pilha de sessões ativas para cache local. */
-const sessionStack: RationalCacheSession[] = [];
-
-/**
- * RationalCacheSession - Gerenciador de Cache Escopado.
- *
- * **Engenharia:** Permite criar um cache temporário para operações de alta densidade.
- * Ao final do escopo 'using', todos os objetos cacheados nesta sessão são liberados,
- * evitando a fragmentação do heap e o crescimento indefinido do cache global.
- */
-export class RationalCacheSession implements Disposable {
-    readonly #cache = new Map<string | bigint, RationalNumber>();
-    readonly #extraCache = new Map<string, unknown>();
-
-    constructor() {
-        sessionStack.push(this);
-    }
-
-    /** Busca um valor no cache da sessão. */
-    get(key: string | bigint): RationalNumber | undefined {
-        return this.#cache.get(key);
-    }
-
-    /** Armazena um valor no cache da sessão. */
-    set(key: string | bigint, value: RationalNumber): void {
-        this.#cache.set(key, value);
-    }
-
-    /** Busca um objeto genérico no cache extra da sessão. */
-    getExtra<T>(key: string): T | undefined {
-        return this.#extraCache.get(key) as T;
-    }
-
-    /** Armazena um objeto genérico no cache extra da sessão. */
-    setExtra(key: string, value: unknown): void {
-        this.#extraCache.set(key, value);
-    }
-
-    [Symbol.dispose](): void {
-        this.#cache.clear();
-        this.#extraCache.clear();
-        sessionStack.pop();
-    }
-}
-
-/**
- * Retorna a sessão de cache ativa, se houver.
- */
-export function getActiveSession(): RationalCacheSession | undefined {
-    return sessionStack[sessionStack.length - 1];
-}
-
-/**
- * Inicia uma nova sessão de cache para uso com 'using'.
- */
-export function createCacheSession(): RationalCacheSession {
-    return new RationalCacheSession();
-}
-
 /** Regex para validar formatos numéricos permitidos (Rigor specs/08). */
 const BIGINT_RE = /^[+-]?\d+(?:_\d+)*n?$/;
 const FRACTION_RE = /^[+-]?\d+(?:_\d+)*\/[+-]?\d+(?:_\d+)*$/;
@@ -226,16 +167,11 @@ export class RationalNumber {
 
             const strVal = value.toString();
 
-            // Prioridade 1: Cache de Sessão (Escopado)
-            const activeSession = sessionStack[sessionStack.length - 1];
-            const sessionCached = activeSession?.get(strVal);
-            if (sessionCached) { return sessionCached; }
-
-            // Prioridade 2: Hot Cache (Referências Fortes)
+            // Prioridade 1: Hot Cache (Referências Fortes)
             const hotCached = hotLiteralCache.get(strVal);
             if (hotCached) { return hotCached; }
 
-            // Prioridade 3: Cold Cache (WeakRef)
+            // Prioridade 2: Cold Cache (WeakRef)
             const globalRef = globalLiteralCache.get(strVal);
             const globalCached = globalRef?.deref();
             if (globalCached) {
@@ -245,14 +181,9 @@ export class RationalNumber {
 
             const res = new RationalNumber(value, 1n);
 
-            // Armazenamento
-            if (activeSession) {
-                activeSession.set(strVal, res);
-            } else {
-                if (hotLiteralCache.size < HOT_CACHE_LIMIT) { hotLiteralCache.set(strVal, res); }
-                globalLiteralCache.set(strVal, new WeakRef(res));
-                cacheRegistry.register(res, strVal);
-            }
+            if (hotLiteralCache.size < HOT_CACHE_LIMIT) { hotLiteralCache.set(strVal, res); }
+            globalLiteralCache.set(strVal, new WeakRef(res));
+            cacheRegistry.register(res, strVal);
 
             return res;
         }
@@ -274,16 +205,11 @@ export class RationalNumber {
     private static fromString(input: string): RationalNumber {
         const trimmed = input.trim();
 
-        // Prioridade 1: Cache de Sessão
-        const activeSession = sessionStack[sessionStack.length - 1];
-        const sessionCached = activeSession?.get(trimmed);
-        if (sessionCached) { return sessionCached; }
-
-        // Prioridade 2: Hot Cache
+        // Prioridade 1: Hot Cache
         const hotCached = hotLiteralCache.get(trimmed);
         if (hotCached) { return hotCached; }
 
-        // Prioridade 3: Cold Cache
+        // Prioridade 2: Cold Cache
         const globalRef = globalLiteralCache.get(trimmed);
         const globalCached = globalRef?.deref();
         if (globalCached) {
@@ -348,14 +274,9 @@ export class RationalNumber {
             result = result.div(RationalNumber.from(100n));
         }
 
-        // Armazenamento
-        if (activeSession) {
-            activeSession.set(trimmed, result);
-        } else {
-            if (hotLiteralCache.size < HOT_CACHE_LIMIT) { hotLiteralCache.set(trimmed, result); }
-            globalLiteralCache.set(trimmed, new WeakRef(result));
-            cacheRegistry.register(result, trimmed);
-        }
+        if (hotLiteralCache.size < HOT_CACHE_LIMIT) { hotLiteralCache.set(trimmed, result); }
+        globalLiteralCache.set(trimmed, new WeakRef(result));
+        cacheRegistry.register(result, trimmed);
 
         return result;
     }

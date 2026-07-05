@@ -29,9 +29,7 @@ O linter está configurado para prevenir padrões de código perigosos ou ambíg
 - **Agnosticismo de IO:** O core da biblioteca não deve depender de APIs específicas de sistema operacional (como `Deno.readFile` ou `fs.readFileSync`) para manter sua natureza "run-anywhere".
 
 ### Otimização de Performance Extrema
-1. **Sistema de Cache em Três Níveis:**
-    - **Session Cache:** `RationalCacheSession` utiliza o protocolo `using` para limpeza automática de memória após processamentos em lote.
-    - **Extra Cache de Sessão:** Além de números, a sessão armazena instâncias de **nós literais da AST** (`LiteralNode`), evitando alocações redundantes de objetos estruturais para o mesmo valor numérico dentro de um loop de alta frequência.
+1. **Sistema de Cache em Dois Níveis:**
     - **Hot Cache:** Referências fortes garantem acesso O(1) sem overhead para valores de alta frequência (limite de 512 itens).
     - **Global WeakRef Cache:** Utiliza `WeakRef` para permitir que o GC limpe objetos órfãos e `FinalizationRegistry` para remover chaves do cache global automaticamente.
 2. **Hierarchical Flattening (O(log N)):** O método `attachOp` reorganiza automaticamente a AST quando um nó de operação atinge **100 operandos** (`MAX_OPERANDS`), criando uma nova camada. Isso evita o custo O(N²) de cópias de arrays massivos e previne `Stack Overflow`.
@@ -53,3 +51,7 @@ O código deve seguir rigorosamente o `deno fmt`:
 - **Indentação:** 4 espaços (não tabs).
 - **Semicolons:** Obrigatórios.
 - **Braces:** Sempre na mesma linha (`sameLine`).
+
+---
+
+[↑ Voltar ao índice](../index.md)

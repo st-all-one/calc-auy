@@ -16,7 +16,7 @@ import { MAX_METADATA_BYTES } from "./constants.ts";
  * Proibe tipos não-determinísticos como funções, classes ou BigInts puros.
  * Também garante que o tamanho total dos metadados não exceda os limites de segurança.
  */
-export function validateMetadata(value: unknown): void {
+export function validateMetadata(value: unknown): number {
     const size = validateMetadataRecursive(value, new Set<unknown>());
     if (size > MAX_METADATA_BYTES) {
         throw new CalcAUYError(
@@ -25,6 +25,7 @@ export function validateMetadata(value: unknown): void {
             { currentSize: size, limit: MAX_METADATA_BYTES },
         );
     }
+    return size;
 }
 
 function validateMetadataRecursive(value: unknown, seen: Set<unknown>): number {

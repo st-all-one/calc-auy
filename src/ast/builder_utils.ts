@@ -6,7 +6,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import type { CalculationNode, OperationType } from "./types.ts";
+import type { CalculationNode, MetadataValue, OperationType } from "./types.ts";
 import { CalcAUYError } from "../core/errors.ts";
 import { MAX_HYDRATE_DEPTH, MAX_HYDRATE_NODES, MAX_OPERANDS } from "../core/constants.ts";
 
@@ -121,9 +121,88 @@ export function validateASTNode(
         }
     }
 }
+/**
+ * Achata a cadeia de protótipos dos metadados em um objeto plano de nível único.
+ * Engenharia: Necessário para serialização (JSON) e assinatura digital, pois
+ * essas APIs não enxergam propriedades herdadas via Object.create().
+ *
+ * @param metadata Objeto de metadados encadeado.
+ * @returns Objeto plano ou undefined.
+ */
+export function flattenMetadata(metadata: Record<string, unknown> | undefined): Record<string, unknown> | undefined {
+    if (!metadata) { return undefined; }
+
+    const result: Record<string, unknown> = {};
+    const chain: Record<string, unknown>[] = [];
+    let current: unknown = metadata;
+
+    // Coleta a hierarquia (do mais recente para o mais antigo)
+    while (current && current !== Object.prototype) {
+        chain.push(current as Record<string, unknown>);
+        current = Object.getPrototypeOf(current);
+    }
+
+    // Aplica na ordem reversa (antigo -> novo) para garantir a sobreposição correta
+    for (let i = chain.length - 1; i >= 0; i--) {
+        const obj = chain[i];
+        const keys = Object.keys(obj);
+        for (let j = 0; j < keys.length; j++) {
+            const key = keys[j];
+            result[key] = obj[key];
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Percorre recursivamente toda a AST e achata os metadados de cada nó.
+ * Retorna uma nova árvore (Deep Copy das estruturas de nó, mas shallow copy dos valores imutáveis).
+ *
+ * @param node Raiz da AST a ser achatada.
+ * @returns Nova árvore com metadados planos.
+ */
+export function flattenASTMetadata(node: CalculationNode): CalculationNode {
+    if (!node) { return node; }
+
+    const flattenedMeta = flattenMetadata(node.metadata as Record<string, unknown>) as
+        | Record<string, MetadataValue>
+        | undefined;
+
+    if (node.kind === "literal") {
+        return { ...node, metadata: flattenedMeta };
+    }
+
+    if (node.kind === "group") {
+        return {
+            ...node,
+            metadata: flattenedMeta,
+            child: flattenASTMetadata(node.child),
+        };
+    }
+
+    if (node.kind === "operation") {
+        return {
+            ...node,
+            metadata: flattenedMeta,
+            operands: node.operands.map((op) => flattenASTMetadata(op)),
+        };
+    }
+
+    if (node.kind === "control") {
+        return {
+            ...node,
+            metadata: flattenedMeta,
+            child: flattenASTMetadata(node.child),
+        };
+    }
+
+    return node;
+}
 
 /**
  * Anexa recursivamente uma nova operação à árvore, respeitando as regras de
+...
  * precedência (PEMDAS) e associatividade.
  *
  * **Engenharia de Construção:**

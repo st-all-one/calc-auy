@@ -21,7 +21,6 @@ function updateInteractiveDisplay(data) {
 
     const mapping = {
         toString: data.toString,
-        toFloatNumber: data.toFloatNumber,
         toRawInternalNumber: data.toRawInternalNumber,
         toScaledBigInt: data.toScaledBigInt,
         toMonetary: data.toMonetary,
@@ -86,7 +85,7 @@ const methodTitles = {
     "metadata": "Metadados",
     "hibernate/hydrate": "Persistência",
     "string/monetary": "Texto/Moeda",
-    "float/scaledBigInt": "Num/BigInt",
+    "scaledBigInt": "BigInt",
     "unicode/html": "Unicode/HTML",
     "LaTeX/rawInternalBigInt": "LaTeX/Bits",
     "verbalA11y": "Voz (A11y)",
@@ -137,8 +136,7 @@ function renderCategory(examplesByKey, container, navList) {
                 } else {
                     resultView = `<div class="card-result-text">${res}</div>`;
                 }
-            } else if (typeof res === "number") {
-                // FIX: Trata toFloatNumber que chega como tipo number
+                } else if (typeof res === "number") {
                 resultView = `<div class="card-result-text">${res.toString()}</div>`;
             } else {
                 resultView = `<div class="card-result-text">${JSON.stringify(res)}</div>`;

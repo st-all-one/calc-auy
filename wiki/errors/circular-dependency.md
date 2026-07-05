@@ -50,5 +50,9 @@ Detectar isso preventivamente na fase de `hydrate()` ou `attachOp()` protege a e
 ---
 
 ## 🔗 Veja também
-- [**Guia de Estrutura AST**](../internal/ast-architecture.md): Como a árvore é montada.
+- [**Arquitetura**](../architecture.md): Como a árvore é montada.
 - [**Erros de Hidratação**](./corrupted-node.md): Outras falhas de reconstrução.
+
+---
+
+[↑ Voltar ao índice](../index.md)

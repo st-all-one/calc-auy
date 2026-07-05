@@ -57,3 +57,7 @@ Cada nó pode carregar metadados que auxiliem na reconstrução visual e verbal:
 
 ## Fluxo de Execução
 A AST é construída incrementalmente durante as chamadas de métodos (`add`, `sub`, etc.) ou de uma vez via `parser`. O cálculo real só ocorre quando o nó raiz é "colapsado" através de um método de execução (commit).
+
+---
+
+[↑ Voltar ao índice](../index.md)

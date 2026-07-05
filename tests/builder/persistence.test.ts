@@ -19,7 +19,7 @@ describe("Builder: Persistence (Hibernate/Hydrate)", () => {
         const result = await restored.mult(2).commit();
 
         // (1000 + 500) * 2 = 3000
-        assertEquals(result.toFloatNumber(), 3000);
+        assertEquals(result.toStringNumber(), "3000.00");
     });
 
     it("deve lançar erro se a assinatura for violada", async () => {
@@ -43,7 +43,7 @@ describe("Builder: Persistence (Hibernate/Hydrate)", () => {
         const resumed = await System.hydrate(auditTrace);
         const final = await resumed.add(5).commit();
 
-        assertEquals(final.toFloatNumber(), 125);
+        assertEquals(final.toStringNumber(), "125.00");
     });
 
     it("deve registrar evento de reanimação no rastro de auditoria", async () => {
@@ -71,7 +71,7 @@ describe("Builder: Persistence (Hibernate/Hydrate)", () => {
         const hqCalc = await HQ.fromExternalInstance(branchCalc);
         const result = await hqCalc.add(100).commit();
 
-        assertEquals(result.toFloatNumber(), 1300);
+        assertEquals(result.toStringNumber(), "1300.00");
 
         // Verifica se o rastro contém o handover
         const trace = result.toLiveTrace();
@@ -97,7 +97,7 @@ describe("Builder: Persistence (Hibernate/Hydrate)", () => {
         const hqCalc = await HQ.fromExternalInstance(signed);
         const result = await hqCalc.mult(2).commit();
 
-        assertEquals(result.toFloatNumber(), 1000);
+        assertEquals(result.toStringNumber(), "1000.00");
     });
 
     it("deve lançar erro em fromExternalInstance se a assinatura estiver ausente", async () => {

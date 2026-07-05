@@ -57,7 +57,7 @@ describe("Audit: Forensic Integrity & Scale", () => {
         const hqCalc = await HQ.fromExternalInstance(branchCalc);
         const result = await hqCalc.add(200).commit();
 
-        assertEquals(result.toFloatNumber(), 1200);
+        assertEquals(result.toStringNumber(), "1200.00");
 
         const trace = result.toLiveTrace();
         // Verifica o handover no rastro

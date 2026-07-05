@@ -58,11 +58,6 @@ describe("Output: Formats (Unicode, LaTeX, JSON)", () => {
         assertEquals(output.toStringNumber({ decimalPrecision: 2 }), "10.12");
     });
 
-    it("toFloatNumber: deve retornar um primitivo number", async () => {
-        const output = await Engine.from("123.45").commit();
-        assertEquals(output.toFloatNumber(), 123.45);
-    });
-
     it("toScaledBigInt: deve retornar o valor escalonado", async () => {
         const output = await Engine.from("10.50").commit();
         assertEquals(output.toScaledBigInt({ decimalPrecision: 2 }), 1050n);

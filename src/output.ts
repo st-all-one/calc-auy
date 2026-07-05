@@ -16,6 +16,7 @@ import { toSubscript } from "./output_internal/unicode.ts";
 import { renderAST } from "./output_internal/renderer.ts";
 import { performSlice, performSliceByRatio } from "./output_internal/slicer.ts";
 import { renderMermaidSequence } from "./output_internal/mermaid_sequence_renderer.ts";
+import { flattenASTMetadata } from "./ast/builder_utils.ts";
 import type { OutputOptions } from "./output_internal/types.ts";
 import { getSubLogger, startSpan } from "./utils/logger.ts";
 import type { InstanceConfig } from "./core/types.ts";
@@ -27,7 +28,6 @@ const logger = getSubLogger("output");
  */
 export type OutputKey =
     | "toStringNumber"
-    | "toFloatNumber"
     | "toScaledBigInt"
     | "toRawInternalNumber"
     | "toMonetary"
@@ -59,8 +59,6 @@ export class CalcAUYOutput {
     #cachedLiveTrace: SerializedCalculation | null = null;
     #cachedMethods: CalcAUYCustomOutputContext["methods"] | null = null;
     #cachedResultJSON: RationalValue | null = null;
-
-    static readonly #formatterCache = new Map<string, Intl.NumberFormat>();
 
     public constructor(
         result: RationalNumber,
@@ -133,32 +131,6 @@ export class CalcAUYOutput {
 
         this.#outputCache.set(cacheKey, finalResult);
         return finalResult;
-    }
-
-    /**
-     * Returns the result as a primitive float number.
-     *
-     * **NOTE**: This method is **NOT RECOMMENDED** for mid-process usage.
-     * Float numbers are subject to `IEEE 754 imprecision`.
-     *
-     * @param options - Output options.
-     * @returns The result as a number (IEEE 754).
-     *
-     * @example Healthcare: Threshold Monitoring for Dosage Safety
-     * ```ts
-     * const Pharmacy = CalcAUY.create({ contextLabel: "drug-safety", salt: "vault-01" });
-     *
-     * const dose = await Pharmacy.from(12.5) // Patient weight
-     *   .mult(0.15) // Dosage factor
-     *   .commit();
-     *
-     * // Using float for quick comparison or external charting libraries
-     * if (dose.toFloatNumber() > 1.5) alert("Critical Level Detected");
-     * ```
-     */
-    public toFloatNumber(options?: OutputOptions): number {
-        using _span = startSpan("toFloatNumber", logger, options);
-        return Number.parseFloat(this.toStringNumberInternal(options));
     }
 
     /**
@@ -236,8 +208,8 @@ export class CalcAUYOutput {
     private toLiveTraceInternal(): SerializedCalculation {
         if (!this.#cachedLiveTrace) {
             this.#cachedLiveTrace = {
-                // Optimization: Shallow copy of the root. AST nodes are immutable by design.
-                ast: { ...this.#ast },
+                // Optimization: Deeply flatten metadata chain for external consumption
+                ast: flattenASTMetadata(this.#ast),
                 finalResult: this.getResultJSON(),
                 roundStrategy: this.#roundStrategy,
                 signature: this.#signature,
@@ -280,22 +252,40 @@ export class CalcAUYOutput {
         const currency: string = options?.currency ?? loc.currency;
         const val: string = this.toStringNumberInternal(options);
 
-        const numberValue = Number.parseFloat(val);
-        if (Number.isNaN(numberValue)) { return val; }
+        const cacheKey = `toMonetary:${loc.locale}:${currency}:${p}:${this.#roundStrategy === "NONE"}`;
+        const cached = this.#outputCache.get(cacheKey) as string | undefined;
+        if (cached !== undefined) { return cached; }
 
-        const cacheKey = `${loc.locale}:${currency}:${p}:${this.#roundStrategy === "NONE"}`;
-        let formatter = CalcAUYOutput.#formatterCache.get(cacheKey);
-        if (!formatter) {
-            formatter = new Intl.NumberFormat(loc.locale, {
-                style: "currency",
-                currency,
-                minimumFractionDigits: p,
-                maximumFractionDigits: p,
-            });
-            CalcAUYOutput.#formatterCache.set(cacheKey, formatter);
-        }
+        const dot = val.indexOf(".");
+        const intPart = dot === -1 ? val : val.slice(0, dot);
+        const fracPart = dot === -1 ? "" : val.slice(dot + 1);
 
-        return formatter.format(numberValue);
+        const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, loc.thousandSeparator);
+
+        const numberStr = fracPart ? grouped + loc.decimalSeparator + fracPart : grouped;
+
+        const fmt = CalcAUYOutput.#getCurrencyFormat(currency);
+        const isNative = currency === loc.currency;
+        const space = (isNative ? fmt.space : true) ? "\u00a0" : "";
+        const result = fmt.prefix ? fmt.symbol + space + numberStr : numberStr + space + fmt.symbol;
+
+        this.#outputCache.set(cacheKey, result);
+        return result;
+    }
+
+    static readonly #currencyFormats: Record<string, { symbol: string; prefix: boolean; space: boolean }> = {
+        BRL: { symbol: "R$", prefix: true, space: true },
+        USD: { symbol: "$", prefix: true, space: false },
+        EUR: { symbol: "€", prefix: false, space: true },
+        RUB: { symbol: "\u20BD", prefix: false, space: true },
+        CNY: { symbol: "\u00A5", prefix: true, space: false },
+        JPY: { symbol: "\u00A5", prefix: true, space: false },
+    };
+
+    static #getCurrencyFormat(currency: string): { symbol: string; prefix: boolean; space: boolean } {
+        const fmt = CalcAUYOutput.#currencyFormats[currency];
+        if (fmt) { return fmt; }
+        return { symbol: currency, prefix: true, space: false };
     }
 
     /**
@@ -642,7 +632,6 @@ export class CalcAUYOutput {
         if (!this.#cachedMethods) {
             this.#cachedMethods = Object.freeze({
                 toStringNumber: this.toStringNumber.bind(this),
-                toFloatNumber: this.toFloatNumber.bind(this),
                 toScaledBigInt: this.toScaledBigInt.bind(this),
                 toRawInternalNumber: this.toRawInternalNumber.bind(this),
                 toLiveTrace: this.toLiveTrace.bind(this),

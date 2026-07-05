@@ -18,7 +18,7 @@ flowchart LR
     end
 ```
 
-> **Nota:** Este documento é um espelho do `docs/PANORAMA.md` e serve como ponto de entrada para as especificações técnicas (specs/01 a specs/14).
+> **Nota:** Este documento serve como ponto de entrada para as especificações técnicas detalhadas.
 
 ## Essência do Projeto
 A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **documento persistente e contextualizado**.
@@ -37,7 +37,7 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 7.  **Qualidade e Rigor (`specs/15`):** Padrões de tipagem estrita e performance.
 8.  **Extensibilidade (`specs/16`):** Processadores de saída customizados e injeção de lógica.
 9.  **Testes e Snapshot (`specs/18`):** Protocolo determinístico para validação de assinaturas.
-10. **Processamento em Massa (`specs/23`):** Utilitários de *Batch Processing* para evitar o bloqueio do Event Loop.
+10. **Governança e Manutenção (`specs/15`):** Padrões de código, testes determinísticos e performance.
 
 ## Resumo de Métodos Principais
 
@@ -51,7 +51,7 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 - **`fromExternalInstance(ext)`**: Portal de integração entre jurisdições.
 - **`hibernate()`**: Serializa a árvore atual selada (**Promise<string>**).
 - **`hydrate(ast, {salt})`**: Reconstrói a instância validando assinatura digital (**Promise**).
-- **`commit(roundStrategy)`**: Finaliza, colapsa e assina o cálculo (**Promise**).
+- **`commit()`**: Finaliza, colapsa e assina o cálculo. A estratégia de arredondamento é definida em `create()` e aplicada nos métodos de saída (**Promise**).
 
 ### Classe `CalcAUYOutput` (Result)
 - `toMonetary()`, `toStringNumber()`, `toLaTeX()`, `toUnicode()`, `toMermaidGraph()`
@@ -64,9 +64,12 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 
 ## Pilares de Performance
 1.  **GCD Híbrido:** Uso de atalhos de hardware e operador nativo V8 para simplificação ultra-rápida de frações.
-2.  **Sistema de Cache em Três Níveis:**
-    - **Session Cache:** Cache escopado para processamento em lote.
-    - **Hot Cache:** Referências fortes para valores de alta frequência.
-    - **Global WeakRef Cache:** Reuso inteligente de nós AST e números racionais sem impedir o Garbage Collector.
+2.  **Sistema de Cache em Dois Níveis:**
+    - **Hot Cache (512 entradas):** Referências fortes para valores de alta frequência.
+    - **Cold Cache (WeakRef):** Reuso inteligente de valores via `FinalizationRegistry`, permitindo coleta pelo GC quando não referenciados.
 3.  **Hierarchical Flattening (O(log N)):** Aplanamento automático de operações lineares massivas, evitando estouro de pilha e garantindo performance estável.
 4.  **Static Asset Inlining:** CSS e Fontes (Base64) embutidos nos processadores modulares garantem renderização instantânea.
+
+---
+
+[↑ Voltar ao índice](../index.md)

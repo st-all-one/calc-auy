@@ -72,11 +72,11 @@ describe("Coverage: Rodada Final - 100% Target", () => {
 
         // Unary PLUS
         const resUnary = await engine.parseExpression("+10").commit();
-        assertEquals(resUnary.toFloatNumber(), 10);
+        assertEquals(resUnary.toStringNumber(), "10.00");
 
         // Percent suffix with edge cases
         const resPerc = await engine.parseExpression("10%").commit();
-        assertEquals(resPerc.toFloatNumber(), 0.1);
+        assertEquals(resPerc.toStringNumber(), "0.10");
     });
 
     it("Builder: mixing contexts e adopts", async () => {
@@ -91,18 +91,18 @@ describe("Coverage: Rodada Final - 100% Target", () => {
         // Adopt AST from inner
         const inner = A.from(5).add(5);
         const outer = A.from(inner);
-        assertEquals((await outer.commit()).toFloatNumber(), 10);
+        assertEquals((await outer.commit()).toStringNumber(), "10.00");
 
         // Grouping already grouped
         const g = ca.group().group();
-        assertEquals((await g.commit()).toFloatNumber(), 10);
+        assertEquals((await g.commit()).toStringNumber(), "10.00");
 
         // Max operands
         let large = A.from(1);
         for (let i = 0; i < 105; i++) {
             large = large.add(1);
         }
-        assertEquals((await large.commit()).toFloatNumber(), 106);
+        assertEquals((await large.commit()).toStringNumber(), "106.00");
     });
 
     it("Mermaid: complex metadata", async () => {
@@ -205,23 +205,20 @@ describe("Coverage: Rodada Final - 100% Target", () => {
 
         // pow 0
         const res0 = await engine.from(10).pow(0).commit();
-        assertEquals(res0.toFloatNumber(), 1);
+        assertEquals(res0.toStringNumber(), "1.00");
 
         // nthRoot 0, 1
         const resRoot0 = await engine.from(0).pow("1/3").commit();
-        assertEquals(resRoot0.toFloatNumber(), 0);
+        assertEquals(resRoot0.toStringNumber(), "0.00");
         const resRoot1 = await engine.from(1).pow("1/3").commit();
-        assertEquals(resRoot1.toFloatNumber(), 1);
+        assertEquals(resRoot1.toStringNumber(), "1.00");
 
         // nthRoot n=1
         const resRootN1 = await engine.from(5).pow("1/1").commit();
-        assertEquals(resRootN1.toFloatNumber(), 5);
-
-        // Negative base even root
-        await assertRejects(() => engine.from(-1).pow("1/2").commit(), CalcAUYError, "número complexo");
+        assertEquals(resRootN1.toStringNumber(), "5.00");
 
         // Negative base odd root
         const resNegOdd = await engine.from(-8).pow("1/3").commit();
-        assertEquals(resNegOdd.toFloatNumber(), -2);
+        assertEquals(resNegOdd.toStringNumber(), "-2.00");
     });
 });

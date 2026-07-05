@@ -7,6 +7,7 @@
  */
 
 import type { CalculationNode } from "../ast/types.ts";
+import { flattenMetadata } from "../ast/builder_utils.ts";
 import type { InstanceConfig } from "../core/types.ts";
 import { BIRTH_TICKET_MOCK } from "../core/constants.ts";
 
@@ -86,7 +87,8 @@ export function sanitizeAST(
     }
 
     if (node.metadata && node.kind !== "control") {
-        sanitized.metadata = hide ? sanitizeObject(node.metadata, { ...config, sensitive: true }) : node.metadata;
+        const flatMeta = flattenMetadata(node.metadata as Record<string, unknown>);
+        sanitized.metadata = hide ? sanitizeObject(flatMeta, { ...config, sensitive: true }) : flatMeta;
     }
 
     return sanitized;

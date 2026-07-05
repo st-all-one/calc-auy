@@ -68,7 +68,7 @@ describe("Security: Cryptographic Integrity & Determinism", () => {
 
         // Deve hidratar com sucesso
         const rehydrated = await Vault.hydrate(auditTrace);
-        assertEquals((await rehydrated.commit()).toFloatNumber(), 150);
+        assertEquals((await rehydrated.commit()).toStringNumber(), "150.00");
 
         // Violação na estratégia de arredondamento no rastro
         const corruptedTrace = auditTrace.replace('"TRUNCATE"', '"NBR5891"');

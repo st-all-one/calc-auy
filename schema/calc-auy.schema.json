@@ -189,7 +189,10 @@
                                 "previousContextLabel",
                                 "previousSignature",
                                 "previousRoundStrategy"
-                            ]
+                            ],
+                            "additionalProperties": {
+                                "$ref": "#/$defs/MetadataValue"
+                            }
                         },
                         "child": {
                             "$ref": "#/$defs/CalculationNode"
@@ -240,10 +243,12 @@
     },
     "required": [
         "ast",
-        "finalResult",
         "signature",
-        "contextLabel",
-        "roundStrategy"
+        "contextLabel"
     ],
+    "dependentRequired": {
+        "finalResult": ["roundStrategy"],
+        "roundStrategy": ["finalResult"]
+    },
     "additionalProperties": false
 }

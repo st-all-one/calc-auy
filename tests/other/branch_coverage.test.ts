@@ -171,20 +171,17 @@ describe("Branch Coverage: Rodada Especial", () => {
 
         // from(value) on non-empty builder
         const b2 = b1.from(20); // Hits op("add", value) in from()
-        assertEquals((await b2.commit()).toFloatNumber(), 30);
+        assertEquals((await b2.commit()).toStringNumber(), "30.00");
 
         // parseExpression on non-empty
         const b4 = b1.parseExpression(" + 20");
-        assertEquals((await b4.commit()).toFloatNumber(), 30);
+        assertEquals((await b4.commit()).toStringNumber(), "30.00");
 
         // Caching in from()
-        {
-            using _session = CalcAUY.createCacheSession();
-            const b5 = engine.from(50); // first call
-            const b6 = engine.from(50); // second call, hits if (this.#ast === null) in from() cache check
-            assertEquals((await b5.commit()).toFloatNumber(), 50);
-            assertEquals((await b6.commit()).toFloatNumber(), 50);
-        }
+        const b5 = engine.from(50);
+        const b6 = engine.from(50);
+        assertEquals((await b5.commit()).toStringNumber(), "50.00");
+        assertEquals((await b6.commit()).toStringNumber(), "50.00");
 
         // Enable debug log to hit Metadata Attached branch
         // @ts-ignore
@@ -195,7 +192,7 @@ describe("Branch Coverage: Rodada Especial", () => {
             reset: true,
         });
         const b7 = engine.from(100).setMetadata("test", true);
-        assertEquals((await b7.commit()).toFloatNumber(), 100);
+        assertEquals((await b7.commit()).toStringNumber(), "100.00");
     });
 
     it("Builder: hydrate edge branches", async () => {
@@ -205,11 +202,11 @@ describe("Branch Coverage: Rodada Especial", () => {
 
         // hydrate an audit trace (contains finalResult and roundStrategy)
         const rehydrated = await engine.hydrate(trace);
-        assertEquals((await rehydrated.commit()).toFloatNumber(), 10);
+        assertEquals((await rehydrated.commit()).toStringNumber(), "10.00");
 
         // hydrate with explicit salt/encoder
         const rehydrated2 = await engine.hydrate(trace, { salt: "s", encoder: "HEX" });
-        assertEquals((await rehydrated2.commit()).toFloatNumber(), 10);
+        assertEquals((await rehydrated2.commit()).toStringNumber(), "10.00");
     });
 
     it("Builder: hydrate without signature", async () => {

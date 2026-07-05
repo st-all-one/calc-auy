@@ -38,7 +38,7 @@ describe("CalcAUY - Singularity Blackhole (Architecture Demolition)", () => {
             report["1.1_hydra_nexus_latency"] = `${(end - start).toFixed(6)}ms`;
             report["1.1_hydra_result"] = output.toStringNumber({ decimalPrecision: 0 });
 
-            expect(output.toFloatNumber()).toBeGreaterThan(0);
+            expect(Number(output.toStringNumber())).toBeGreaterThan(0);
         });
     });
 
@@ -67,7 +67,7 @@ describe("CalcAUY - Singularity Blackhole (Architecture Demolition)", () => {
 
             report["2.1_multiverse_link_latency"] = `${(end - start).toFixed(6)}ms`;
             expect(output.toAuditTrace()).toContain("reanimation_event");
-            expect(output.toFloatNumber()).toBeGreaterThan(100);
+            expect(Number(output.toStringNumber())).toBeGreaterThan(100);
         });
     });
 
@@ -135,7 +135,7 @@ describe("CalcAUY - Singularity Blackhole (Architecture Demolition)", () => {
             const end = performance.now();
 
             report["5.1_blackhole_roots_latency"] = `${(end - start).toFixed(6)}ms`;
-            expect(output.toFloatNumber()).toBeGreaterThan(0);
+            expect(Number(output.toStringNumber())).toBeGreaterThan(0);
         });
     });
 
