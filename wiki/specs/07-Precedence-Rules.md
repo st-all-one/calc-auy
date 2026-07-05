@@ -43,6 +43,21 @@ No encadeamento de métodos, o `.group()` atua como um "colapsador léxico" da A
 - **Comportamento:** Ele envolve toda a AST acumulada em um `GroupNode`.
 - **Exemplo:** `CalcAUY.create({ contextLabel: "ex", salt: "fixo" }).from(10).add(5).group().mult(2)`
 - **Resultado:** Produz `(10 + 5) * 2 = 30`. Sem o `.group()`, a chamada `.mult(2)` resultaria em `10 + (5 * 2) = 20` devido à precedência natural da multiplicação.
+- **Código real:** Em `src/builder.ts:667`, o método `group()` cria um `GroupNode` com `kind: "group"` encapsulando a AST atual. Se o nó já for `group` ou `literal`, retorna `this` (idempotente):
+
+```ts
+public group(): CalcAUYLogic<Context, Config> {
+    const ast = this.assertAST();
+    if (ast.kind === "group" || ast.kind === "literal") {
+        return this;
+    }
+    const node: GroupNode = { kind: "group", child: ast };
+    // ...
+    return new CalcAUYLogic<Context, Config>(node, this.#instanceId, this.#config, this.#birthTime);
+}
+```
+
+- **Código real — `attachOp`:** Em `src/ast/builder_utils.ts`, a função `attachOp(ast, type, rightNode)` é o motor central que aplica a precedência. O operando direito NUNCA é simplesmente anexado — ele é inserido respeitando a hierarquia dos operadores. Se o nó atual for uma operação de menor precedência, o novo operador assume a raiz.
 
 ### 4. Operações Multiplicativas (Mesmo Nível)
 Divisão (`/`), Divisão Inteira (`//`) e Módulo (`%`) compartilham o mesmo nível de precedência da multiplicação.
@@ -62,7 +77,11 @@ Sinais unários (ex: `-5` ou `+10`) possuem precedência superior à exponencia�
 ### 7. Otimização: Hierarchical Flattening (Aplanamento Associativo)
 Em operações lineares massivas do mesmo tipo (ex: somar 1.000 itens consecutivamente), a construção padrão da AST geraria uma árvore de profundidade O(N), resultando em `Stack Overflow` no colapso.
 - **Regra de Otimização:** O método `attachOp` monitora a largura do nó de operação. Ao atingir o limite de **100 operandos** (`MAX_OPERANDS`), o motor cria automaticamente uma nova camada na árvore.
-- **Resultado:** Reduz a profundidade da AST de O(N) para **O(log N)**, mantendo o custo de construção linear e a execução segura em qualquer escala. Esta otimização é ignorada para a operação `pow` devido à sua natureza de associatividade à direita.
+- **Constante real:** `MAX_OPERANDS = 100` em `src/core/constants.ts:60`:
+```ts
+export const MAX_OPERANDS = 100;
+```
+- **Mecanismo:** Quando `operands.length >= MAX_OPERANDS`, o `attachOp` reorganiza os operandos existentes em uma sub-árvore balanceada, reduzindo a profundidade de O(N) para **O(log N)**, mantendo o custo de construção linear e a execução segura em qualquer escala. Esta otimização é ignorada para a operação `pow` devido à sua natureza de associatividade à direita.
 
 ## Representação na AST
 A estrutura da árvore **DEVE** refletir visualmente a precedência através da profundidade dos nós.
@@ -83,7 +102,19 @@ Root: OperationNode(*)
 
 ## Validação de Redundância e Inconsistência
 - **Redundância:** Se o usuário fornecer `(2^3)`, o Parser identifica que os parênteses são redundantes e pode optar por mantê-los ou simplificá-los conforme a estratégia de auditoria. No motor CalcAUY, a estrutura é preservada para garantir fidelidade ao input original.
-- **Inconsistência:** O Parser deve disparar `CalcAUYError` imediato para expressões como `10 ^ * 5` ou `(10 + 5))`.
+- **Inconsistência:** O Parser deve disparar `CalcAUYError` imediato para expressões como `10 ^ * 5` ou `(10 + 5))`. As regras de lint do projeto, configuradas em `deno.jsonc:73-102`, incluem `no-eval`, `no-throw-literal`, `eqeqeq` (igualdade estrita), `explicit-function-return-type`, `explicit-module-boundary-types` e `verbatim-module-syntax` para garantir que a implementação seja rigorosa e sem ambiguidades.
+
+### Tipos de Nó na AST
+A hierarquia de precedência é refletida nos tipos definidos em `src/ast/types.ts`:
+
+```ts
+export type NodeKind = "literal" | "operation" | "group" | "control";
+
+export type OperationType =
+    | "add" | "sub" | "mul" | "div" | "pow" | "mod" | "divInt" | "crossContextAdd";
+```
+
+O `group` (kind `"group"`) corresponde ao Nível 1 da tabela. O `operation` com `type: "pow"` (Nível 2) tem associatividade à direita. Mul/div/mod/divInt (Nível 3) e add/sub (Nível 4) têm associatividade à esquerda, implementada pela lógica de `attachOp` que insere novos operandos na posição correta da árvore.
 
 ---
 

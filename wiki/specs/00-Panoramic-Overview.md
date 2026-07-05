@@ -65,10 +65,11 @@ A **CalcAUY** trata o cálculo não como um resultado volátil, mas como um **do
 ## Pilares de Performance
 1.  **GCD Híbrido:** Uso de atalhos de hardware e operador nativo V8 para simplificação ultra-rápida de frações.
 2.  **Sistema de Cache em Dois Níveis:**
-    - **Hot Cache (512 entradas):** Referências fortes para valores de alta frequência.
-    - **Cold Cache (WeakRef):** Reuso inteligente de valores via `FinalizationRegistry`, permitindo coleta pelo GC quando não referenciados.
-3.  **Hierarchical Flattening (O(log N)):** Aplanamento automático de operações lineares massivas, evitando estouro de pilha e garantindo performance estável.
-4.  **Static Asset Inlining:** CSS e Fontes (Base64) embutidos nos processadores modulares garantem renderização instantânea.
+    - **Hot Cache (512 entradas):** Referências fortes (`Map<string, LiteralNode>`) para valores de alta frequência. Limite definido em `HOT_CACHE_LIMIT = 512` (`src/core/constants.ts:41`).
+    - **Cold Cache (WeakRef):** Reuso inteligente de valores via `FinalizationRegistry` (`src/builder.ts:39-41`), permitindo coleta pelo GC quando não referenciados. Usa `WeakRef<LiteralNode>` com limpeza automática (`src/builder.ts:55`).
+3.  **Hierarchical Flattening (O(log N)):** Aplanamento automático de operações quando o número de operandos ultrapassa `MAX_OPERANDS = 100` (`src/core/constants.ts:60`), evitando estouro de pilha e garantindo performance estável.
+4.  **Segurança de Memória:** `MAX_BI_BITS = 1_000_000` (`src/core/constants.ts:39`) como teto máximo de bits para BigInt, evitando consumo excessivo de memória em dízimas periódicas complexas.
+5.  **Static Asset Inlining:** CSS e Fontes (Base64) embutidos nos processadores modulares garantem renderização instantânea.
 
 ---
 
