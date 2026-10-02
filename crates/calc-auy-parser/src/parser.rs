@@ -237,7 +237,12 @@ impl<'a, 'limits> Parser<'a, 'limits> {
                 self.bump();
                 let inner = self.parse_expression(0)?;
                 self.expect(TokenKind::RParen)?;
-                Ok(inner)
+                self.builder
+                    .group(inner)
+                    .map_err(|error| ParseError::Limit {
+                        error,
+                        span: token.span,
+                    })
             }
             TokenKind::Minus => {
                 self.bump();

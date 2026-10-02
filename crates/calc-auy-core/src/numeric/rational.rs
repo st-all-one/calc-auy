@@ -15,7 +15,7 @@ use num_traits::{One, Signed, ToPrimitive, Zero};
 use crate::error::CalcAuyError;
 use crate::limits::Limits;
 
-use super::gcd::{gcd_bigint, gcd_u128};
+use super::gcd::{gcd_bigint, gcd_u64, gcd_u128};
 
 /// Racional exato. A semântica é única; a representação é adaptativa.
 ///
@@ -171,6 +171,43 @@ impl Rational {
         Self {
             repr: Repr::Small { n: value, d: 1 },
         }
+    }
+
+    /// Retorna os componentes `(n, d)` se ambos couberem em `u64`.
+    #[must_use]
+    pub const fn as_small(&self) -> Option<(u64, u64)> {
+        match &self.repr {
+            Repr::Small { n, d } => Some((*n, *d)),
+            Repr::Large { .. } => None,
+        }
+    }
+
+    /// Cria um racional a partir de um par `u64`, normalizando e validando.
+    ///
+    /// # Errors
+    ///
+    /// Retorna [`CalcAuyError::DivisionByZero`] se `denominator` for zero e
+    /// [`CalcAuyError::LimitExceeded`] se os limites forem excedidos.
+    pub fn from_u64_pair(
+        numerator: u64,
+        denominator: u64,
+        limits: &Limits,
+    ) -> Result<Self, CalcAuyError> {
+        if denominator == 0 {
+            return Err(CalcAuyError::DivisionByZero);
+        }
+        if numerator == 0 {
+            return Ok(Self::ZERO);
+        }
+        let divisor = gcd_u64(numerator, denominator);
+        let n = numerator.checked_div(divisor).unwrap_or(numerator);
+        let d = denominator.checked_div(divisor).unwrap_or(denominator);
+        let numerator_bits = 64_u32.saturating_sub(n.leading_zeros());
+        let denominator_bits = 64_u32.saturating_sub(d.leading_zeros());
+        limits.check_bits(u64::from(numerator_bits.max(denominator_bits)))?;
+        Ok(Self {
+            repr: Repr::Small { n, d },
+        })
     }
 
     /// Cria um racional a partir de um `BigInt`.

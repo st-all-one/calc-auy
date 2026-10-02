@@ -1,4 +1,4 @@
-.PHONY: check fmt clippy test doc
+.PHONY: check fmt fmt-check clippy lint-all test doc deny audit miri fuzz bench release
 
 # Verificação completa: fmt → clippy → test
 check: fmt clippy test
@@ -24,14 +24,33 @@ lint-all:
 test:
 	@cargo test --workspace
 
-# Documentação
+# Documentação (rustdoc sem warnings)
 doc:
-	@cargo doc --no-deps --workspace
+	@RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --workspace
 
-# Miri (requer nightly + componente miri; não disponível no toolchain pinado)
+# Licenças, bans, advisories e fontes (T13.3)
+deny:
+	@cargo deny check
+
+# Vulnerabilidades conhecidas (T13.3)
+audit:
+	@cargo audit
+
+# Miri é EXPERIMENTAL e NÃO obrigatório (T13.3): requer nightly, é lento e o
+# proptest exige desligar o isolamento. Divergências aqui não bloqueiam o gate.
 miri:
-	@cargo +nightly miri test -p calc-auy-core || echo "miri indisponível; use proptests como substituto"
+	@MIRIFLAGS="-Zmiri-disable-isolation" cargo +nightly miri test -p calc-auy-core --lib \
+		|| echo "miri é opcional; use proptests/differential como substituto"
 
-# Fuzz (requer cargo-fuzz; não disponível no toolchain pinado)
+# Fuzz (requer cargo-fuzz; indisponível no toolchain atual)
 fuzz:
-	@cd fuzz && cargo fuzz run deserialize -- -runs=10000 || echo "cargo-fuzz indisponível; use proptests como substituto"
+	@cd fuzz && cargo fuzz run deserialize -- -runs=10000 \
+		|| echo "cargo-fuzz indisponível; differential/proptest cobrem o mesmo alvo"
+
+# Benchmarks
+bench:
+	@cargo bench -p calc-auy-core --bench rational
+
+# Relatório de release (T13.6)
+release:
+	@cargo run -q -p xtask -- release

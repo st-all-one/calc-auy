@@ -1,0 +1,19 @@
+   Compiling calc-auy-builder v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-builder)
+   Compiling calc-auy-api v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-api)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.37s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_api-628eb8979a113997)
+
+running 2 tests
+test tests::facade_ingests_without_f64 ... ok
+test tests::facade_parses_and_commits ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_api
+
+running 1 test
+test crates/calc-auy-api/src/lib.rs - CalcAuy (line 24) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.23s; merged doctests compilation took 0.23s

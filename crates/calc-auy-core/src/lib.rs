@@ -6,6 +6,7 @@
 extern crate self as calc_auy_core;
 
 pub mod ast;
+pub mod batch;
 pub mod canonical;
 pub mod clock;
 pub mod diag;
@@ -17,6 +18,7 @@ pub mod meta_value;
 pub mod numeric;
 
 pub use ast::{AstBuilder, FlatAst, Metadata, NodeData, NodeId, NodeKind, OperationType};
+pub use batch::{DEFAULT_TILE, SmallBatch, TileConfig, eval_batch};
 pub use clock::{Clock, MockClock, SystemClock};
 pub use engine::{Committed, EvalCache, commit, eval, eval_memoized};
 pub use error::{CalcAuyError, ProblemDetails};

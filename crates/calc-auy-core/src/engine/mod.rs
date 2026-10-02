@@ -5,6 +5,9 @@ pub mod commit;
 pub mod eval;
 
 #[cfg(test)]
+mod differential;
+
+#[cfg(test)]
 mod proptests;
 
 pub use cache::EvalCache;

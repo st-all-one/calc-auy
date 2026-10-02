@@ -1,0 +1,23 @@
+=== xtask release ===
+release: versão 0.1.0
+release: licença MPL-2.0 OK
+release: target/release/calc-auy: 1455360 bytes, blake3 a4d94ad0c1f11082a28040ec6cf7e623c1ef0b9fa8919895f6d419ea164b796c
+release: target/wasm32-unknown-unknown/release/calc_auy_wasm.wasm: 736997 bytes, blake3 500814ce08656a93bb4129e65de9cbad32db672600459095e92ecfab933ed85f
+release: publish = false (publicação desabilitada por política; use `cargo package` local)
+
+=== LICENSE ===
+Mozilla Public License Version 2.0
+
+=== CHANGELOG ===
+# Changelog
+
+Todas as mudanças relevantes do CalcAUY são documentadas aqui.
+
+O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o
+projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+
+## [0.1.0] — 2024-01-01
+
+Primeira versão oficial. Especificação executável (corpus), hardening e
+release preparado.
+

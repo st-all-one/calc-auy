@@ -6,6 +6,7 @@ pub mod backend;
 pub mod gcd;
 pub mod parse;
 pub mod rational;
+pub mod reduce;
 pub mod rounding;
 
 pub use backend::Numeric;

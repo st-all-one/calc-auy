@@ -1,0 +1,17 @@
+=== cargo doc (RUSTDOCFLAGS=-D warnings) ===
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.71s
+   Generated /home/one/projects/one/calc-auy/target/doc/calc_auy/index.html and 11 other files
+
+=== mdbook build ===
+ INFO Running the html backend
+ INFO HTML book written to `/home/one/projects/one/calc-auy/docs/book/book`
+
+=== mdbook test ===
+ INFO Testing chapter 'ADRs': "adr.md"
+exit=0
+
+=== exemplo executável ===
+decimal:  15109.78
+monetário: R$ 15.109,78
+latex:    \text{round}_{\text{nbr5891}}(10000 \times \left( 1 + 14.75 \times \frac{1}{100} \right)^{3}, 2) = 15109.78
+assinatura: e48b579ff09cf712b9d94bee38bf9d3d22c578838f731854b22a3ba1a0421144

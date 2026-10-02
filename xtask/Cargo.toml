@@ -10,6 +10,12 @@ description = "Task runner para CI, benchmarks, schema, corpus"
 [dependencies]
 anyhow = "1"
 clap = { version = "4", features = ["derive"] }
+calc-auy-core = { path = "../crates/calc-auy-core", features = ["parallel"] }
+calc-auy-processors = { path = "../crates/calc-auy-processors" }
+calc-auy-parser = { path = "../crates/calc-auy-parser" }
+blake3.workspace = true
+serde_json.workspace = true
+rayon.workspace = true
 
 [lints]
 workspace = true

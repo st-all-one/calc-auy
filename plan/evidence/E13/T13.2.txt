@@ -1,0 +1,7 @@
+=== differential vs oráculo BigInt + soak ===
+test engine::differential::engine_matches_bigint_oracle ... ok
+test engine::differential::soak_stress_is_deterministic ... ok
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 154 filtered out; finished in 0.26s
+
+=== proptests de equivalência Small/Large (numeric) ===
+test result: ok. 50 passed; 0 failed; 0 ignored; 0 measured; 106 filtered out; finished in 0.13s

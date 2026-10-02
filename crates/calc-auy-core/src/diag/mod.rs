@@ -4,7 +4,7 @@
 //!
 //! - **Logs sempre estruturados**: um registo é um **identificador estável** (do catálogo
 //!   [`events`]) + **campos tipados**; nunca texto livre interpolado.
-//! - **Custo zero por defeito**: sem `feature = "instrument"`, [`span!`] e [`event!`] são *no-op*.
+//! - **Custo zero por defeito**: sem `feature = "instrument"`, `span!` e `event!` são *no-op*.
 //! - **On-demand**: com a feature, liga-se em runtime (`CALC_AUY_INSTRUMENT=1`).
 
 pub mod events;

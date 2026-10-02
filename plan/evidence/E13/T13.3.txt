@@ -1,0 +1,15 @@
+=== cargo deny check ===
+advisories ok, bans ok, licenses ok, sources ok
+
+=== cargo audit ===
+      Loaded 1280 security advisories (from /home/one/.cargo/advisory-db)
+    Updating crates.io index
+    Scanning Cargo.lock for vulnerabilities (177 crate dependencies)
+exit=0
+
+=== Miri (experimental, opcional) ===
+miri 0.1.0 disponível em nightly; NÃO obrigatório (ver Makefile/CI: continue-on-error).
+proptest exige MIRIFLAGS=-Zmiri-disable-isolation; execução completa é lenta.
+
+=== CI ===
+ci.yml

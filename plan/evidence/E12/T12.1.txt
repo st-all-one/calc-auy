@@ -1,0 +1,6 @@
+test tests::srl_collects_literals_and_operations ... ok
+test number::tests::writes_decimals ... ok
+test number::tests::uses_feminine_units ... ok
+test number::tests::writes_portuguese_numbers ... ok
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

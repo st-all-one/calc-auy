@@ -16,6 +16,10 @@ wasm-bindgen = "0.2"
 serde-wasm-bindgen = "0.6"
 js-sys = "0.3"
 web-sys = { version = "0.3", features = ["console"] }
+serde.workspace = true
+serde_json.workspace = true
+num-traits.workspace = true
+uuid = { version = "1", features = ["v7"] }
 
 [lints]
 workspace = true

@@ -1,0 +1,14 @@
+   Compiling calc-auy-parser v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-parser)
+   Compiling calc-auy-nlg v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-nlg)
+   Compiling calc-auy-output v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-output)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.37s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_output-aee565d4c19b20f5)
+
+running 4 tests
+test decimal::tests::formats_fixed_point ... ok
+test monetary::tests::splits_decimal ... ok
+test decimal::tests::formats_decimal_with_rounding ... ok
+test decimal::tests::scaled_matches_decimal ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+

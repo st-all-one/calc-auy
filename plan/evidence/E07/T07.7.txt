@@ -1,0 +1,105 @@
+warning: unused import: `OperationType`
+ --> crates/calc-auy-output/tests/common/mod.rs:6:76
+  |
+6 |     AstBuilder, CalcAuyError, Committed, CustodyVerifier, FlatAst, Limits, OperationType, Rational,
+  |                                                                            ^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unreachable `pub` item
+  --> crates/calc-auy-output/tests/common/mod.rs:11:1
+   |
+11 | pub struct AcceptAll;
+   | ---^^^^^^^^^^^^^^^^^
+   | |
+   | help: consider restricting its visibility: `pub(crate)`
+   |
+   = help: or consider exporting it for use by other crates
+   = note: requested on the command line with `-W unreachable-pub`
+
+warning: unreachable `pub` item
+  --> crates/calc-auy-output/tests/common/mod.rs:25:1
+   |
+25 | pub fn limits() -> Limits {
+   | ---^^^^^^^^^^^^^^^^^^^^^^
+   | |
+   | help: consider restricting its visibility: `pub(crate)`
+   |
+   = help: or consider exporting it for use by other crates
+
+warning: unreachable `pub` item
+  --> crates/calc-auy-output/tests/common/mod.rs:30:1
+   |
+30 | pub fn commit_ast(ast: FlatAst, decimals: u32) -> Committed {
+   | ---^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   | |
+   | help: consider restricting its visibility: `pub(crate)`
+   |
+   = help: or consider exporting it for use by other crates
+
+warning: unreachable `pub` item
+  --> crates/calc-auy-output/tests/common/mod.rs:46:1
+   |
+46 | pub fn commit_expression(expression: &str, decimals: u32) -> Committed {
+   | ---^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   | |
+   | help: consider restricting its visibility: `pub(crate)`
+   |
+   = help: or consider exporting it for use by other crates
+
+warning: unreachable `pub` item
+  --> crates/calc-auy-output/tests/common/mod.rs:53:1
+   |
+53 | pub fn commit_value(value: Rational, decimals: u32) -> Committed {
+   | ---^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   | |
+   | help: consider restricting its visibility: `pub(crate)`
+   |
+   = help: or consider exporting it for use by other crates
+
+warning: `calc-auy-output` (test "proptests") generated 6 warnings (run `cargo fix --test "proptests" -p calc-auy-output` to apply 6 suggestions)
+warning: `calc-auy-output` (test "snapshots") generated 6 warnings (6 duplicates)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_output-aee565d4c19b20f5)
+
+running 10 tests
+test decimal::tests::formats_fixed_point ... ok
+test decimal::tests::formats_decimal_with_rounding ... ok
+test decimal::tests::scaled_matches_decimal ... ok
+test monetary::tests::groups_thousands ... ok
+test slicer::tests::distribute_prefers_largest_remainders ... ok
+test monetary::tests::splits_decimal ... ok
+test latex::tests::escapes_fractions_and_percent ... ok
+test unicode::tests::converts_super_and_subscripts ... ok
+test unicode::tests::normalizes_leading_dot ... ok
+test mermaid::tests::sanitizes_labels ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/proptests.rs (target/debug/deps/proptests-5aa5824c0a38b57b)
+
+running 3 tests
+test decimal_round_trips ... ok
+test ratio_slices_sum_to_total ... ok
+test equal_slices_sum_to_total ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/snapshots.rs (target/debug/deps/snapshots-813c99b4e6a18291)
+
+running 4 tests
+test monetary_snapshots ... ok
+test slice_snapshots ... ok
+test audit_snapshots ... ok
+test representation_snapshots ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_output
+
+running 1 test
+test crates/calc-auy-output/src/monetary.rs - monetary::Output<'_>::to_monetary (line 32) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.25s; merged doctests compilation took 0.24s

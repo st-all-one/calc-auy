@@ -1,0 +1,5 @@
+PGO indisponível: `llvm-profdata` não encontrado.
+Instale com: rustup component add llvm-tools-preview
+Etapas: RUSTFLAGS="-Cprofile-generate=target/pgo" cargo test -p calc-auy-core --release
+        llvm-profdata merge -o target/pgo/merged.profdata target/pgo
+        RUSTFLAGS="-Cprofile-use=target/pgo/merged.profdata" cargo build --release -p calc-auy

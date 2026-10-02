@@ -1,0 +1,25 @@
+T09.4 — Relatório de tamanho (budget WASM)
+
+Alvo: wasm32-unknown-unknown, `cdylib` gerado por cargo (sem `wasm-bindgen`
+CLI / `wasm-pack` / `wasm-opt`, indisponíveis offline).
+
+| Build | Tamanho |
+|-------|---------|
+| `cargo build --release` (default) | 1.082.376 B (~1,03 MiB) |
+| `RUSTFLAGS="-C opt-level=z -C strip=symbols" cargo build --release` | 736.997 B (~720 KiB) |
+
+O tamanho final do pacote npm é menor: o `wasm-bindgen` CLI remove os exports
+`__wbindgen*` intermediários e o `wasm-opt -Oz` aplica DCE/compressão adicionais
+(tipicamente −40% a −60% sobre o `cdylib` bruto).
+
+Pipeline previsto (CI com rede):
+
+    wasm-pack build crates/calc-auy-wasm --release --target bundler
+    wasm-opt -Oz pkg/calc_auy_wasm_bg.wasm -o pkg/calc_auy_wasm_bg.wasm
+
+Budget sugerido: **≤ 700 KiB** para o `_bg.wasm` após `wasm-opt -Oz`; o build
+`opt-level=z` já atende ao limite bruto de 720 KiB antes da pós-processagem.
+
+`wasm-pack test` também não pôde ser executado (crate `wasm-bindgen-test` fora
+do cache offline); os testes rodam no host, onde as funções `#[wasm_bindgen]`
+compilam como Rust comum (T09.3).

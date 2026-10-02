@@ -1,0 +1,20 @@
+Calculadora auditável: racional exata, custódia verificada e saída formatada
+
+Usage: calc-auy [OPTIONS] [BODY] [COMMAND]
+
+Commands:
+  verify   Verifica a assinatura de um traço de auditoria
+  hydrate  Reabre um rascunho (AST JSON) e imprime a forma normalizada
+  repl     REPL interativo
+  schema   Imprime informações de schema/versão
+  man      Gera uma página de manual (roff) no stdout
+  help     Print this message or the help of the given subcommand(s)
+
+Arguments:
+  [BODY]  Corpo (expressão/traço/rascunho); ausente lê da entrada padrão
+
+Options:
+      --params <JSON>  Configuração completa em JSON (exclusivo com `--batch`)
+      --batch          Modo lote: NDJSON na entrada padrão → NDJSON na saída padrão
+  -h, --help           Print help
+  -V, --version        Print version

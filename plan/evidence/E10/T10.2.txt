@@ -1,0 +1,14 @@
+== formato padrão (body) ==
+3.00
+== divisão por zero ==
+erro: divisão por zero
+exit=5
+== params + json ==
+{"type":"https://calc-auy.dev/errors/division-by-zero","title":"Divisão por zero","status":400,"detail":"A operação tentou dividir por zero.","instance":"01a0fdcb-59fd-7383-beb1-eb17f7fcfa0b"}
+exit=5
+== params inválido ==
+erro: parâmetros inválidos em `--params`: unknown field `foo`, expected one of `op`, `salt`, `decimals`, `rounding`, `locale`, `mode`, `error_format`, `deterministic` at line 1 column 6
+exit=2
+== params + batch ==
+erro: `--params` e `--batch` são mutuamente exclusivos
+exit=2

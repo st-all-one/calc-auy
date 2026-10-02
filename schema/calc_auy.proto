@@ -1,0 +1,113 @@
+// Schema canônico do payload assinado (CalcAUY), versão 1.
+//
+// Fonte de verdade dos processadores binários (ADR-013). Campos são aditivos:
+// nunca remova/renumere sem incrementar `trace_version`.
+syntax = "proto3";
+
+package calc_auy.v1;
+
+// Racional exato como numerador/denominador decimais (BigInt).
+message Rational {
+  string numerator = 1;
+  string denominator = 2;
+}
+
+// Valor nulo de metadata.
+message Null {}
+
+// Valor de metadata (sem ponto flutuante).
+message MetaValue {
+  oneof kind {
+    Null null = 1;
+    bool bool_value = 2;
+    sint64 int_value = 3;
+    uint64 uint_value = 4;
+    string str_value = 5;
+    MetaArray array = 6;
+    MetaObject object = 7;
+  }
+}
+
+// Lista ordenada de valores de metadata.
+message MetaArray {
+  repeated MetaValue items = 1;
+}
+
+// Objeto de metadata com chaves ordenadas.
+message MetaObject {
+  repeated MetaEntry entries = 1;
+}
+
+// Entrada chave/valor de metadata.
+message MetaEntry {
+  string key = 1;
+  MetaValue value = 2;
+}
+
+// Tipos de operação da AST.
+enum OperationType {
+  OPERATION_TYPE_UNSPECIFIED = 0;
+  OPERATION_ADD = 1;
+  OPERATION_SUB = 2;
+  OPERATION_MUL = 3;
+  OPERATION_DIV = 4;
+  OPERATION_POW = 5;
+  OPERATION_MOD = 6;
+  OPERATION_DIV_INT = 7;
+  OPERATION_CROSS_CONTEXT_ADD = 8;
+}
+
+// Estratégias de arredondamento.
+enum RoundingStrategy {
+  ROUNDING_STRATEGY_UNSPECIFIED = 0;
+  ROUNDING_NBR5891 = 1;
+  ROUNDING_HALF_UP = 2;
+  ROUNDING_HALF_EVEN = 3;
+  ROUNDING_TRUNCATE = 4;
+  ROUNDING_CEIL = 5;
+  ROUNDING_NONE = 6;
+}
+
+// Nó da AST na forma recursiva.
+message Node {
+  oneof kind {
+    Literal literal = 1;
+    Operation operation = 2;
+    Group group = 3;
+    Control control = 4;
+  }
+  repeated MetaEntry metadata = 5;
+}
+
+// Valor literal com a entrada original preservada.
+message Literal {
+  Rational value = 1;
+  string original_input = 2;
+}
+
+// Operação com operandos ordenados.
+message Operation {
+  OperationType op = 1;
+  repeated Node operands = 2;
+}
+
+// Agrupamento lógico (parênteses).
+message Group {
+  Node child = 1;
+}
+
+// Nó de controle de custódia.
+message Control {
+  Node child = 1;
+  string previous_context_label = 2;
+  string previous_signature = 3;
+  RoundingStrategy previous_round_strategy = 4;
+}
+
+// Payload assinado (v1).
+message Payload {
+  Node ast = 1;
+  Rational final_result = 2;
+  RoundingStrategy round_strategy = 3;
+  uint32 trace_version = 4;
+}

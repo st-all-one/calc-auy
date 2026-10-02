@@ -1,5 +1,18 @@
-//! Formatadores de saída: monetary, latex, unicode, audit, mermaid.
+//! Formatadores de saída sobre cálculos selados.
 //!
-//! Este crate será implementado no épico E07.
+//! Todos os formatos derivam de um [`calc_auy_core::Committed`] (estado selado):
+//! decimal, monetário, LaTeX, Unicode, Mermaid, rateio e rastro de auditoria.
+//! A descrição verbal usa o *seam* de NLG (`VerbalRealizer`).
 
-// Placeholder para os outputs
+pub mod decimal;
+pub mod latex;
+pub mod mermaid;
+pub mod monetary;
+pub mod options;
+pub mod output;
+pub mod slicer;
+pub mod unicode;
+
+pub use decimal::{MAX_DECIMALS, format_decimal};
+pub use options::{Currency, CurrencyPosition, Locale, LocaleData, OutputOptions};
+pub use output::Output;

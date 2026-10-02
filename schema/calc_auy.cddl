@@ -1,0 +1,51 @@
+; Schema canônico do payload assinado (CalcAUY), versão 1.
+; Campos são aditivos: nunca remova/renumere sem incrementar `trace_version`.
+
+payload = {
+  ast: node,
+  final_result: rational,
+  round_strategy: rounding-strategy,
+  trace_version: uint .ge 1,
+}
+
+rational = { n: tstr, d: tstr }
+
+operation-type =
+    "add" / "sub" / "mul" / "div" / "pow" / "mod" / "div_int" / "cross_context_add"
+
+rounding-strategy =
+    "nbr5891" / "half_up" / "half_even" / "truncate" / "ceil" / "none"
+
+meta-value = null / bool / int / tstr / [* meta-value] / { * tstr => meta-value }
+metadata = { * tstr => meta-value }
+
+node = literal / operation / group / control
+
+literal = {
+  kind: "literal",
+  value: rational,
+  original_input: tstr,
+  ? metadata: metadata,
+}
+
+operation = {
+  kind: "operation",
+  op_type: operation-type,
+  operands: [* node],
+  ? metadata: metadata,
+}
+
+group = {
+  kind: "group",
+  child: node,
+  ? metadata: metadata,
+}
+
+control = {
+  kind: "control",
+  child: node,
+  previous_context_label: tstr,
+  previous_signature: tstr,
+  previous_round_strategy: rounding-strategy,
+  ? metadata: metadata,
+}

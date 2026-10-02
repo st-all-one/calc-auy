@@ -1,0 +1,13 @@
+{
+  "budgets_ns": {
+    "parse_ns": 1000000,
+    "rational_add_ns": 100,
+    "rational_create_ns": 50,
+    "signature_ns": 100000
+  },
+  "commit_ns": 18412,
+  "parse_ns": 16562,
+  "passed": true,
+  "rational_add_ns": 84,
+  "rational_create_ns": 45
+}

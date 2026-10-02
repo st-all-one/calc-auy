@@ -1,0 +1,10 @@
+=== en-US ===
+ten thousand times open parenthesis one plus fourteen point seventy-five times one over one hundred close parenthesis equals fifteen thousand one hundred nine point seventy-eight. Rounding: nbr5891 to 2 decimal places.
+=== en-EU ===
+ten thousand times open parenthesis one plus fourteen point seventy-five times one over one hundred close parenthesis equals fifteen thousand one hundred and nine point seventy-eight. Rounding: nbr5891 to 2 decimal places.
+=== es-ES ===
+diez mil por abre paréntesis uno más catorce coma setenta y cinco por uno sobre cien cierra paréntesis es igual a quince mil ciento nueve coma setenta y ocho. Redondeo: nbr5891 a 2 decimales.
+=== fr-FR ===
+dix mille fois ouvre parenthèse un plus quatorze virgule sept cinq fois un sur cent ferme parenthèse est égal à quinze mille cent neuf virgule sept huit. Arrondi : nbr5891 à 2 décimales.
+=== de-DE ===
+zehntausend mal Klammer auf eins plus vierzehn Komma sieben fünf mal eins geteilt durch einhundert Klammer zu ist gleich fünfzehntausendeinhundertneun Komma sieben acht. Rundung: nbr5891 auf 2 Nachkommastellen.

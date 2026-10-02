@@ -1,0 +1,2 @@
+dot_products_safe       time:   [2.4186 µs 2.4462 µs 2.4767 µs]
+dot_products_unchecked  time:   [2.4350 µs 2.4775 µs 2.5171 µs]

@@ -1,0 +1,18 @@
+== man (roff) ==
+.TH CALC-AUY 1 "" "calc-auy"
+.SH NAME
+calc-auy \- Calculadora auditável: racional exata, custódia verificada e saída formatada
+.SH SYNOPSIS
+.B calc-auy
+[\fIOPTIONS\fR] \fICOMMAND\fR [\fIARGS\fR]
+.SH COMMANDS
+.TP
+== completions bash ==
+# completions para bash: eval "$(calc-auy man --completions bash)"
+_calc_auy() {
+    local cur
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    local words="verify hydrate repl schema man --params --batch --help --version"
+    COMPREPLY=( $(compgen -W "$words" -- "$cur") )
+}
+complete -F _calc_auy calc-auy

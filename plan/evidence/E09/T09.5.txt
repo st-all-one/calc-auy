@@ -1,0 +1,15 @@
+T09.5 — Guia de uso JS
+
+Documento: `crates/calc-auy-wasm/README.md`.
+
+Conteúdo:
+- Compilação (`rustup target add wasm32-unknown-unknown`, `wasm-pack build`,
+  `wasm-opt -Oz`).
+- Exemplo equivalente ao quick-start: `new WasmCalc(sal, casas, estratégia,
+  locale)`, `parse`, `format`, `monetary`, `scaled`, `commit`, `signature`,
+  `verify`, `hydrate`, `from`, `registerContext`.
+- Erros como `ProblemDetails` (RFC 7807).
+- Relógio do host (`nowMillis`/`nowRfc3339`).
+
+O README é publicável no pacote npm/JSR e serve de documentação de referência.
+Os métodos têm `# Errors` na doc Rust (`missing_docs`/`clippy` verdes).

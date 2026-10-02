@@ -1,0 +1,24 @@
+{
+  "results": [
+    {
+      "nanos": 2788456,
+      "threads": 1
+    },
+    {
+      "nanos": 1381202,
+      "threads": 2
+    },
+    {
+      "nanos": 817085,
+      "threads": 4
+    },
+    {
+      "nanos": 520814,
+      "threads": 8
+    },
+    {
+      "nanos": 473112,
+      "threads": 16
+    }
+  ]
+}

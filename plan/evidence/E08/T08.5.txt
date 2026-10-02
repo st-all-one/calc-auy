@@ -1,0 +1,10 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8c7ce44791e96544)
+
+running 3 tests
+test batch::unchecked::tests::empty_inputs_agree ... ok
+test batch::unchecked::tests::mismatched_lengths_agree ... ok
+test batch::unchecked::tests::safe_and_unsafe_agree ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 151 filtered out; finished in 0.00s
+

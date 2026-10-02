@@ -9,7 +9,19 @@ description = "API fluente com typestate para construção de cálculos"
 
 [dependencies]
 calc-auy-core = { path = "../calc-auy-core" }
+calc-auy-output = { path = "../calc-auy-output" }
+num-bigint.workspace = true
+serde_json.workspace = true
+smallvec.workspace = true
 thiserror.workspace = true
+
+[dev-dependencies]
+trybuild.workspace = true
+criterion.workspace = true
+
+[[bench]]
+name = "builder"
+harness = false
 
 [lints]
 workspace = true

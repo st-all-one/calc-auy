@@ -1,0 +1,15 @@
+T08.6 — Alocação e localidade
+
+- `SmallBatch::with_capacity` pré-aloca `Vec<u64>` paralelos (SoA), evitando
+  realocações e intercalação (sem *false sharing* de campos num mesmo cache
+  line).
+- `SmallBatch::to_rationals` pré-aloca o `Vec<Rational>` de saída.
+- `AstBuilder::with_capacity` (E02) pré-aloca nós/metadata/profundidades.
+- Redução em árvore (`numeric::reduce`) mantém denominadores intermediários
+  pequenos — a dobra linear explodia o LCM e era ~36× mais lenta.
+- Alocadores alternativos (`tikv-jemallocator`, `mimalloc`) NÃO estão
+  disponíveis no cache offline do toolchain pinado; ficam como opção futura.
+  O ganho medido do caminho `unsafe` (get_unchecked) foi nulo (dentro do ruído),
+  então o caminho seguro foi mantido (ver T08.5).
+- Threads do rayon usam arenas próprias por tarefa (o `Vec` de cada `eval` é
+  local); não há estado compartilhado mutável no caminho quente.

@@ -1,0 +1,5 @@
+== determinismo (params) ==
+{"type":"https://calc-auy.dev/errors/division-by-zero","title":"Divisão por zero","status":400,"detail":"A operação tentou dividir por zero.","instance":"00000000-0000-0700-0000-000000000000"}
+{"type":"https://calc-auy.dev/errors/division-by-zero","title":"Divisão por zero","status":400,"detail":"A operação tentou dividir por zero.","instance":"00000000-0000-0700-0000-000000000000"}
+== env fallback ==
+0.3333

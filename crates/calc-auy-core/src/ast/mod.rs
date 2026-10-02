@@ -14,5 +14,5 @@ pub mod wire;
 mod proptests;
 
 pub use builder::AstBuilder;
-pub use flat::{FlatAst, NodeData, NodeKind};
+pub use flat::{AstParts, FlatAst, NodeData, NodeKind};
 pub use types::{Metadata, NodeId, OperationType, metadata_size_bytes};

@@ -1,0 +1,8 @@
+test code_lookup_builds_realizer ... ok
+test numbers_per_language ... ok
+test accessibility_no_semantic_loss ... ok
+test pow_snapshot ... ok
+test realization_is_deterministic ... ok
+test realizers_snapshot ... ok
+test every_literal_is_rendered ... ok
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

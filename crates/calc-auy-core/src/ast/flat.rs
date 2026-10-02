@@ -71,6 +71,9 @@ impl NodeKind {
     }
 }
 
+/// Partes desmontadas de uma [`FlatAst`]: nós, metadata, profundidades e raiz.
+pub type AstParts = (Vec<NodeData>, Vec<Arc<Metadata>>, Vec<usize>, NodeId);
+
 /// Árvore de arrays cache-friendly.
 ///
 /// Os nós vivem contíguos em um [`Vec`]; as relações pai/filho usam índices
@@ -192,6 +195,12 @@ impl FlatAst {
     #[must_use]
     pub fn is_leaf(&self, id: NodeId) -> bool {
         matches!(self.node(id), Some(NodeData::Literal { .. }))
+    }
+
+    /// Decompõe a árvore em suas partes, permitindo reconstrução incremental.
+    #[must_use]
+    pub fn into_parts(self) -> AstParts {
+        (self.nodes, self.metadata, self.depths, self.root)
     }
 }
 

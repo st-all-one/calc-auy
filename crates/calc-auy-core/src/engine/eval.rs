@@ -329,22 +329,14 @@ pub(crate) fn apply_operation(
     Ok(result)
 }
 
-/// Soma todos os operandos (vazio = `0`).
+/// Soma todos os operandos (vazio = `0`) via redução em árvore exata.
 fn fold_add(operands: &[Rational]) -> Rational {
-    let mut accumulator = Rational::ZERO;
-    for operand in operands {
-        accumulator = accumulator.add(operand);
-    }
-    accumulator
+    crate::numeric::reduce::sum_tree(operands)
 }
 
-/// Multiplica todos os operandos (vazio = `1`).
+/// Multiplica todos os operandos (vazio = `1`) via redução em árvore exata.
 fn fold_mul(operands: &[Rational]) -> Rational {
-    let mut accumulator = Rational::ONE;
-    for operand in operands {
-        accumulator = accumulator.mul(operand);
-    }
-    accumulator
+    crate::numeric::reduce::prod_tree(operands)
 }
 
 /// Subtrai da esquerda para a direita (vazio = `0`).

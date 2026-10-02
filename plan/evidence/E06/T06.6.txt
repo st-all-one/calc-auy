@@ -1,0 +1,12 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running tests/e2e.rs (target/debug/deps/e2e-dee92cbaf4c65262)
+
+running 5 tests
+test cross_context_add_rejects_bad_link ... ok
+test cross_context_add_requires_verifiable_links ... ok
+test build_commit_verify_and_hydrate ... ok
+test metadata_round_trips_through_hibernate ... ok
+test tampering_is_rejected ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

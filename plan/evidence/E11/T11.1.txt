@@ -1,0 +1,7 @@
+schema: em sincronia (idempotente)
+schema: em sincronia (idempotente)
+--- arquivos ---
+total 12
+-rw-rw-r-- 1 one one 1112 Oct  2 15:15 calc_auy.cddl
+-rw-rw-r-- 1 one one 2370 Oct  2 15:13 calc_auy.proto
+-rw-rw-r-- 1 one one 3268 Oct  2 15:15 calc_auy.schema.json

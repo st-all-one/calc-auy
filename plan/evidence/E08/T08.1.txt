@@ -1,0 +1,14 @@
+   Compiling calc-auy-core v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.19s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8c7ce44791e96544)
+
+running 6 tests
+test batch::proptests::small_batch_round_trips ... ok
+test batch::proptests::eval_batch_matches_scalar ... ok
+test batch::proptests::flat_ast_round_trip ... ok
+test batch::proptests::tree_reduction_is_order_independent ... ok
+test batch::proptests::batch_sum_matches_ast_eval ... ok
+test batch::proptests::tiled_sum_equals_plain ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 148 filtered out; finished in 0.13s
+

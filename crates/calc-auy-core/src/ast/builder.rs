@@ -59,6 +59,29 @@ impl<'limits> AstBuilder<'limits> {
         }
     }
 
+    /// Reconstrói um construtor a partir de uma árvore existente.
+    ///
+    /// Retorna o construtor e a raiz atual, permitindo continuar a construção
+    /// (usado na hidratação).
+    #[must_use]
+    pub fn from_ast(ast: FlatAst, limits: &'limits Limits) -> (Self, NodeId) {
+        let (nodes, metadata, depths, root) = ast.into_parts();
+        let metadata_bytes = metadata
+            .iter()
+            .map(|entry| metadata_size_bytes(entry.as_ref()))
+            .sum();
+        (
+            Self {
+                limits,
+                nodes,
+                metadata,
+                depths,
+                metadata_bytes,
+            },
+            root,
+        )
+    }
+
     /// Retorna a profundidade de um nó existente.
     ///
     /// # Errors

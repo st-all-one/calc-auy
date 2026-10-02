@@ -1,0 +1,12 @@
+=== cargo test corpus ===
+test corpus_div_int_and_custody ... ok
+test corpus_canonical ... ok
+test corpus_limits ... ok
+test corpus_pow ... ok
+test corpus_rounding ... ok
+test corpus_arithmetic ... ok
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+=== xtask corpus ===
+
+corpus: OK

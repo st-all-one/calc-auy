@@ -12,7 +12,12 @@ calc-auy-core = { path = "../calc-auy-core" }
 calc-auy-parser = { path = "../calc-auy-parser" }
 calc-auy-builder = { path = "../calc-auy-builder" }
 calc-auy-output = { path = "../calc-auy-output" }
+calc-auy-nlg = { path = "../calc-auy-nlg" }
+calc-auy-i18n = { path = "../calc-auy-i18n" }
 thiserror.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
 
 [lints]
 workspace = true

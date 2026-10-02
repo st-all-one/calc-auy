@@ -1,0 +1,42 @@
+   Compiling calc-auy-builder v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-builder)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.31s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_builder-6ddd49f7370f464b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/compile_fail.rs (target/debug/deps/compile_fail-1eed82f8931ff6af)
+
+running 1 test
+    Checking calc-auy-builder-tests v0.0.0 (/home/one/projects/one/calc-auy/target/tests/trybuild/calc-auy-builder)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.09s
+
+
+test [0m[1mtests/ui/draft_has_no_result.rs[0m ... [0m[32mok
+[0mtest [0m[1mtests/ui/f64_rejected.rs[0m ... [0m[32mok
+[0m
+
+test ui ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s
+
+     Running tests/e2e.rs (target/debug/deps/e2e-dee92cbaf4c65262)
+
+running 5 tests
+test cross_context_add_rejects_bad_link ... ok
+test cross_context_add_requires_verifiable_links ... ok
+test tampering_is_rejected ... ok
+test metadata_round_trips_through_hibernate ... ok
+test build_commit_verify_and_hydrate ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_builder
+
+running 1 test
+test crates/calc-auy-builder/src/calculation.rs - calculation::Calculation (line 26) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.25s; merged doctests compilation took 0.24s

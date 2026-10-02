@@ -1,0 +1,4 @@
+=== pt-BR ===
+dez mil multiplicado por abre parênteses um mais quatorze vírgula setenta e cinco multiplicado por um sobre cem fecha parênteses é igual a quinze mil cento e nove vírgula setenta e oito. Arredondamento: nbr5891 para 2 casas decimais.
+=== pt-BR (potência) ===
+dois elevado a dez é igual a mil e vinte e quatro. Arredondamento: half_even para 0 casas decimais.

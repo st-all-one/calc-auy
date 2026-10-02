@@ -1,0 +1,2 @@
+BOLT indisponível: `llvm-bolt` não encontrado no PATH.
+Etapas: llvm-bolt target/release/calc-auy -o target/release/calc-auy.bolt -data=perf.fdata -reorder-blocks=ext-tsp -reorder-functions=hfsort

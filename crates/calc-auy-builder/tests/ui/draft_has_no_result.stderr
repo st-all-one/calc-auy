@@ -1,0 +1,9 @@
+error[E0599]: no method named `result` found for struct `Calculation<'_, Draft>` in the current scope
+ --> tests/ui/draft_has_no_result.rs:7:25
+  |
+7 |     let _ = calculation.result();
+  |                         ^^^^^^ method not found in `Calculation<'_, Draft>`
+  |
+  = note: the method was found for
+          - `Calculation<'_, Verified>`
+          - `Calculation<'limits, calc_auy_builder::Committed>`

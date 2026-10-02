@@ -1,0 +1,3 @@
+build_add_100           time:   [17.953 µs 18.358 µs 18.802 µs]
+build_add_1000          time:   [175.25 µs 177.78 µs 180.47 µs]
+commit_add_100          time:   [41.994 µs 42.725 µs 43.458 µs]
