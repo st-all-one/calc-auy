@@ -15,6 +15,7 @@ instrument = []
 deterministic = []
 
 [dependencies]
+calc-auy-macros = { path = "../calc-auy-macros" }
 thiserror.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -25,15 +26,24 @@ blake3.workspace = true
 hex.workspace = true
 base64.workspace = true
 bs58.workspace = true
+data-encoding.workspace = true
+secrecy.workspace = true
+zeroize.workspace = true
 tracing = "0.1"
+smallvec.workspace = true
 uuid = { version = "1", features = ["v7", "serde"] }
 
 [dev-dependencies]
 proptest.workspace = true
 criterion.workspace = true
+trybuild.workspace = true
 
 [[bench]]
 name = "rational"
+harness = false
+
+[[bench]]
+name = "ast"
 harness = false
 
 [lints]

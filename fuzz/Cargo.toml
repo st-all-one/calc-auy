@@ -1,0 +1,29 @@
+[package]
+name = "calc-auy-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+serde_json = "1"
+calc-auy-core = { path = "../crates/calc-auy-core" }
+
+[[bin]]
+name = "deserialize"
+path = "fuzz_targets/deserialize.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "canonicalize"
+path = "fuzz_targets/canonicalize.rs"
+test = false
+doc = false
+bench = false
+
+[workspace]

@@ -1,0 +1,16 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-e4b652cfbe53c582)
+
+running 9 tests
+test ast::builder::tests::builds_and_tracks_depth ... ok
+test ast::builder::tests::rejects_depth_limit ... ok
+test ast::builder::tests::flattening_preserves_operand_order ... ok
+test ast::builder::tests::rejects_invalid_operand ... ok
+test ast::builder::tests::rejects_metadata_bytes_limit ... ok
+test ast::builder::tests::rejects_node_limit ... ok
+test ast::builder::tests::rejects_off_by_one_operand_limit ... ok
+test ast::builder::tests::rejects_too_many_operands ... ok
+test ast::builder::tests::flattening_keeps_logarithmic_depth ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 88 filtered out; finished in 0.04s
+

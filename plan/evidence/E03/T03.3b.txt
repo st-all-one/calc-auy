@@ -1,0 +1,9 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8c7ce44791e96544)
+
+running 2 tests
+test integrity::salt::tests::expose_returns_value ... ok
+test integrity::salt::tests::debug_never_leaks_secret ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 127 filtered out; finished in 0.00s
+

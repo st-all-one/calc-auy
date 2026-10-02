@@ -10,3 +10,4 @@ pub mod rounding;
 
 pub use backend::Numeric;
 pub use rational::Rational;
+pub use rounding::RoundingStrategy;

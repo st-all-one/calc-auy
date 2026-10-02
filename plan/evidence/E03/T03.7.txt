@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8c7ce44791e96544)
+
+running 4 tests
+test integrity::merkle::tests::chain_detects_removal ... ok
+test integrity::merkle::tests::chain_detects_reordering ... ok
+test integrity::merkle::tests::chain_detects_valid_sequence ... ok
+test integrity::merkle::tests::chain_detects_tampering ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 125 filtered out; finished in 0.00s
+

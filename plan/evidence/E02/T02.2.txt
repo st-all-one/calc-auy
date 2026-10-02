@@ -1,0 +1,10 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-e4b652cfbe53c582)
+
+running 3 tests
+test ast::flat::tests::max_depth_is_tracked ... ok
+test ast::flat::tests::invalid_id_returns_none ... ok
+test ast::flat::tests::accessors_traverse_arena ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 94 filtered out; finished in 0.00s
+

@@ -1,0 +1,10 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8c7ce44791e96544)
+
+running 3 tests
+test integrity::proptests::canonical_output_is_valid_json ... ok
+test integrity::proptests::meta_deserializer_never_panics ... ok
+test integrity::proptests::ast_deserializer_never_panics ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 126 filtered out; finished in 0.33s
+

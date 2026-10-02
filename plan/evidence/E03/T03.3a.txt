@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8c7ce44791e96544)
+
+running 4 tests
+test integrity::digest::tests::debug_redacts_to_hex ... ok
+test integrity::digest::tests::rejects_bad_hex ... ok
+test integrity::digest::tests::encoders_are_deterministic ... ok
+test integrity::digest::tests::hex_round_trip ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 125 filtered out; finished in 0.00s
+

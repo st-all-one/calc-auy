@@ -1,0 +1,13 @@
+   Compiling calc-auy-core v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.85s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-e4b652cfbe53c582)
+
+running 5 tests
+test ast::types::tests::node_id_has_niche ... ok
+test ast::types::tests::node_id_index_round_trip ... ok
+test ast::types::tests::operation_associativity ... ok
+test ast::types::tests::node_id_rejects_overflow ... ok
+test ast::types::tests::operation_serde_snake_case ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 92 filtered out; finished in 0.00s
+

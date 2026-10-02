@@ -3,11 +3,14 @@
 //! Implementa as estratégias: `Nbr5891`, `HalfUp`, `HalfEven`, `Truncate`, `Ceil`, `None`.
 
 use num_bigint::BigInt;
+use serde::{Deserialize, Serialize};
 
 use super::rational::Rational;
 
 /// Estratégias de arredondamento.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
 pub enum RoundingStrategy {
     /// Arredondamento conforme NBR 5891 (metade para cima).
     Nbr5891,
@@ -24,6 +27,19 @@ pub enum RoundingStrategy {
 }
 
 impl RoundingStrategy {
+    /// Retorna o nome estável em `snake_case`.
+    #[must_use]
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::Nbr5891 => "nbr5891",
+            Self::HalfUp => "half_up",
+            Self::HalfEven => "half_even",
+            Self::Truncate => "truncate",
+            Self::Ceil => "ceil",
+            Self::None => "none",
+        }
+    }
+
     /// Aplica a estratégia de arredondamento a um racional.
     #[must_use]
     pub fn apply(self, value: &Rational, decimals: u32) -> Rational {

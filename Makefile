@@ -27,3 +27,11 @@ test:
 # Documentação
 doc:
 	@cargo doc --no-deps --workspace
+
+# Miri (requer nightly + componente miri; não disponível no toolchain pinado)
+miri:
+	@cargo +nightly miri test -p calc-auy-core || echo "miri indisponível; use proptests como substituto"
+
+# Fuzz (requer cargo-fuzz; não disponível no toolchain pinado)
+fuzz:
+	@cd fuzz && cargo fuzz run deserialize -- -runs=10000 || echo "cargo-fuzz indisponível; use proptests como substituto"

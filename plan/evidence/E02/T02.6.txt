@@ -1,0 +1,14 @@
+   Compiling calc-auy-core v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.56s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-e4b652cfbe53c582)
+
+running 6 tests
+test ast::wire::tests::rejects_bad_kind_first ... ok
+test ast::wire::tests::rejects_float_literal ... ok
+test ast::wire::tests::rejects_hostile_depth ... ok
+test ast::wire::tests::rejects_unknown_field ... ok
+test ast::wire::tests::control_round_trip ... ok
+test ast::wire::tests::round_trip_is_byte_stable ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 92 filtered out; finished in 0.00s
+

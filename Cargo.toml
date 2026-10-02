@@ -34,15 +34,24 @@ num-bigint = "0.4"
 num-traits = "0.2"
 num-integer = "0.1"
 
+# Estruturas de dados
+smallvec = { version = "1.13", features = ["union"] }
+
 # Hash
 blake3 = "1.5"
 hex = "0.4"
 base64 = "0.22"
 bs58 = "0.5"
+data-encoding = "2"
+
+# Segredos
+secrecy = "0.10"
+zeroize = "1"
 
 # Dev
 proptest = "1"
 criterion = "0.5"
+trybuild = "1"
 
 # =============================================================================
 # Lints — rigor máximo (baseado no katu, D92) · Rust 1.98 / Edition 2024

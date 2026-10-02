@@ -268,6 +268,29 @@ impl Rational {
         }
     }
 
+    /// Constrói a partir de strings decimais `n`/`d`, validando os limites.
+    ///
+    /// # Errors
+    ///
+    /// Retorna [`CalcAuyError::InvalidInput`] se as strings não forem inteiros
+    /// decimais válidos, [`CalcAuyError::DivisionByZero`] se `d` for zero e
+    /// [`CalcAuyError::MathOverflow`] se o resultado exceder `max_bits`.
+    pub fn from_decimal_strings(
+        numerator: &str,
+        denominator: &str,
+        limits: &Limits,
+    ) -> Result<Self, CalcAuyError> {
+        let parse = |text: &str| {
+            text.parse::<BigInt>()
+                .map_err(|_| CalcAuyError::InvalidInput {
+                    message: format!("inteiro decimal inválido: {text}"),
+                })
+        };
+        let numer = parse(numerator)?;
+        let denom = parse(denominator)?;
+        Self::new_bigint_checked(numer, denom, limits)
+    }
+
     /// Retorna `true` se o valor é zero.
     #[must_use]
     pub fn is_zero(&self) -> bool {
@@ -592,6 +615,31 @@ impl fmt::Display for Rational {
             Repr::Large { n, d } if *d == BigInt::one() => write!(f, "{n}"),
             Repr::Large { n, d } => write!(f, "{n}/{d}"),
         }
+    }
+}
+
+impl serde::Serialize for Rational {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        use serde::ser::SerializeStruct;
+
+        let mut state = serializer.serialize_struct("Rational", 2)?;
+        state.serialize_field("n", &self.numerator())?;
+        state.serialize_field("d", &self.denominator())?;
+        state.end()
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for Rational {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        #[derive(serde::Deserialize)]
+        struct Wire {
+            n: String,
+            d: String,
+        }
+
+        let wire = Wire::deserialize(deserializer)?;
+        Self::from_decimal_strings(&wire.n, &wire.d, &Limits::default())
+            .map_err(serde::de::Error::custom)
     }
 }
 

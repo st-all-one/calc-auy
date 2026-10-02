@@ -1,0 +1,10 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8c7ce44791e96544)
+
+running 3 tests
+test integrity::custody::tests::valid_custody_passes ... ok
+test integrity::custody::tests::cross_context_requires_control_operands ... ok
+test integrity::custody::tests::invalid_link_rejected ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 126 filtered out; finished in 0.00s
+

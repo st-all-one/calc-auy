@@ -1,0 +1,16 @@
+   Compiling calc-auy-core v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.63s
+     Running tests/compile_fail.rs (target/debug/deps/compile_fail-81408eb26efe7d28)
+
+running 1 test
+    Checking calc-auy-core-tests v0.0.0 (/home/one/projects/one/calc-auy/target/tests/trybuild/calc-auy-core)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.08s
+
+
+test [0m[1mtests/ui/canonical_rejects_f64.rs[0m ... [0m[32mok
+[0m
+
+test canonical_rejects_f64 ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s
+

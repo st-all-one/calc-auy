@@ -1,0 +1,12 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8c7ce44791e96544)
+
+running 5 tests
+test integrity::payload::tests::trace_version_is_non_zero ... ok
+test integrity::payload::tests::tampering_breaks_signature ... ok
+test integrity::payload::tests::commit_and_verify ... ok
+test integrity::payload::tests::v1_to_v2_migration_sets_version_and_link ... ok
+test integrity::payload::tests::payload_round_trip_requires_version ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 124 filtered out; finished in 0.00s
+

@@ -1,0 +1,9 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-e4b652cfbe53c582)
+
+running 2 tests
+test ast::proptests::arena_invariants_hold ... ok
+test ast::proptests::round_trip_preserves_arena ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 95 filtered out; finished in 0.04s
+
