@@ -1,0 +1,77 @@
+   Compiling calc-auy-core v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.19s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8a83c2f85ed4d468)
+
+running 69 tests
+test clock::tests::mock_clock_advances ... ok
+test clock::tests::mock_clock_generates_unique_uuids ... ok
+test clock::tests::mock_clock_is_deterministic ... ok
+test diag::events::tests::all_ids_are_lowercase ... ok
+test diag::fingerprint::tests::different_input_has_different_print ... ok
+test diag::fingerprint::tests::boundary_is_not_ambiguous ... ok
+test diag::fingerprint::tests::fingerprint_hex_is_deterministic ... ok
+test diag::events::tests::catalog_has_stable_ids ... ok
+test diag::fingerprint::tests::same_input_has_the_same_print ... ok
+test diag::redact::tests::sensitive_key_is_redacted ... ok
+test diag::redact::tests::normal_value_passes ... ok
+test diag::tests::level_ordering ... ok
+test diag::redact::tests::sensitive_value_is_redacted ... ok
+test diag::tests::value_conversions ... ok
+test error::tests::division_by_zero_maps_to_problem ... ok
+test error::tests::instance_is_deterministic_with_mock_clock ... ok
+test limits::tests::check_bits_within_limit ... ok
+test error::tests::limit_exceeded_maps_to_problem ... ok
+test limits::tests::check_depth_within_limit ... ok
+test limits::tests::custom_limits_validation ... ok
+test limits::tests::default_limits_are_valid ... ok
+test meta_value::tests::meta_value_depth ... ok
+test meta_value::tests::meta_value_accepts_valid_types ... ok
+test meta_value::tests::meta_value_is_eq_and_hash ... ok
+test meta_value::tests::meta_value_rejects_f64 ... ok
+test meta_value::tests::meta_value_size_bytes ... ok
+test numeric::gcd::tests::gcd_bigint_basic ... ok
+test numeric::gcd::tests::gcd_bigint_large ... ok
+test numeric::gcd::tests::gcd_i64_basic ... ok
+test numeric::gcd::tests::gcd_u128_basic ... ok
+test numeric::gcd::tests::gcd_u64_basic ... ok
+test numeric::gcd::tests::gcd_u64_large ... ok
+test numeric::parse::tests::parse_fraction ... ok
+test numeric::parse::tests::parse_decimal ... ok
+test numeric::parse::tests::parse_integer ... ok
+test numeric::parse::tests::parse_invalid ... ok
+test numeric::parse::tests::parse_percent ... ok
+test numeric::parse::tests::parse_scientific ... ok
+test numeric::parse::tests::parse_thousands_separator ... ok
+test numeric::rational::tests::pow_int_basic ... ok
+test numeric::rational::tests::pow_negative_exponent ... ok
+test numeric::rational::tests::pow_rational_exact_root ... ok
+test numeric::rational::tests::pow_rational_irrational ... ok
+test numeric::rational::tests::pow_zero_base_negative_exponent ... ok
+test numeric::rational::tests::pow_zero_exponent_is_one ... ok
+test numeric::rational::tests::rational_add ... ok
+test numeric::rational::tests::rational_comparison ... ok
+test numeric::rational::tests::rational_div ... ok
+test numeric::rational::tests::rational_div_by_zero ... ok
+test numeric::rational::tests::rational_eq ... ok
+test numeric::rational::tests::rational_floor_negative ... ok
+test numeric::rational::tests::rational_from_i64 ... ok
+test numeric::rational::tests::rational_mul ... ok
+test numeric::rational::tests::rational_neg ... ok
+test numeric::rational::tests::rational_zero_and_one ... ok
+test numeric::rounding::tests::rounding_ceil ... ok
+test numeric::rounding::tests::rounding_half_even ... ok
+test numeric::rounding::tests::rounding_half_even_rounds_to_even ... ok
+test numeric::rounding::tests::rounding_half_up ... ok
+test numeric::rounding::tests::rounding_none ... ok
+test numeric::rounding::tests::rounding_truncate ... ok
+test numeric::rational::proptests::multiplicative_identity ... ok
+test numeric::rational::proptests::additive_inverse ... ok
+test numeric::rational::proptests::mul_is_commutative ... ok
+test numeric::rational::proptests::add_is_commutative ... ok
+test numeric::rational::proptests::add_is_associative ... ok
+test numeric::rational::proptests::mul_is_associative ... ok
+test numeric::rational::proptests::small_and_large_agree ... ok
+test numeric::rational::proptests::multiplication_distributes_over_addition ... ok
+
+test result: ok. 69 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+

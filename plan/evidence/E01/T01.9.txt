@@ -1,0 +1,123 @@
+   Compiling calc-auy-core v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-core)
+    Finished `bench` profile [optimized] target(s) in 1.04s
+     Running unittests src/lib.rs (target/release/deps/calc_auy_core-4f9380f7e8990666)
+
+running 69 tests
+test clock::tests::mock_clock_advances ... ignored
+test clock::tests::mock_clock_generates_unique_uuids ... ignored
+test clock::tests::mock_clock_is_deterministic ... ignored
+test diag::events::tests::all_ids_are_lowercase ... ignored
+test diag::events::tests::catalog_has_stable_ids ... ignored
+test diag::fingerprint::tests::boundary_is_not_ambiguous ... ignored
+test diag::fingerprint::tests::different_input_has_different_print ... ignored
+test diag::fingerprint::tests::fingerprint_hex_is_deterministic ... ignored
+test diag::fingerprint::tests::same_input_has_the_same_print ... ignored
+test diag::redact::tests::normal_value_passes ... ignored
+test diag::redact::tests::sensitive_key_is_redacted ... ignored
+test diag::redact::tests::sensitive_value_is_redacted ... ignored
+test diag::tests::level_ordering ... ignored
+test diag::tests::value_conversions ... ignored
+test error::tests::division_by_zero_maps_to_problem ... ignored
+test error::tests::instance_is_deterministic_with_mock_clock ... ignored
+test error::tests::limit_exceeded_maps_to_problem ... ignored
+test limits::tests::check_bits_within_limit ... ignored
+test limits::tests::check_depth_within_limit ... ignored
+test limits::tests::custom_limits_validation ... ignored
+test limits::tests::default_limits_are_valid ... ignored
+test meta_value::tests::meta_value_accepts_valid_types ... ignored
+test meta_value::tests::meta_value_depth ... ignored
+test meta_value::tests::meta_value_is_eq_and_hash ... ignored
+test meta_value::tests::meta_value_rejects_f64 ... ignored
+test meta_value::tests::meta_value_size_bytes ... ignored
+test numeric::gcd::tests::gcd_bigint_basic ... ignored
+test numeric::gcd::tests::gcd_bigint_large ... ignored
+test numeric::gcd::tests::gcd_i64_basic ... ignored
+test numeric::gcd::tests::gcd_u128_basic ... ignored
+test numeric::gcd::tests::gcd_u64_basic ... ignored
+test numeric::gcd::tests::gcd_u64_large ... ignored
+test numeric::parse::tests::parse_decimal ... ignored
+test numeric::parse::tests::parse_fraction ... ignored
+test numeric::parse::tests::parse_integer ... ignored
+test numeric::parse::tests::parse_invalid ... ignored
+test numeric::parse::tests::parse_percent ... ignored
+test numeric::parse::tests::parse_scientific ... ignored
+test numeric::parse::tests::parse_thousands_separator ... ignored
+test numeric::rational::proptests::add_is_associative ... ignored
+test numeric::rational::proptests::add_is_commutative ... ignored
+test numeric::rational::proptests::additive_inverse ... ignored
+test numeric::rational::proptests::mul_is_associative ... ignored
+test numeric::rational::proptests::mul_is_commutative ... ignored
+test numeric::rational::proptests::multiplication_distributes_over_addition ... ignored
+test numeric::rational::proptests::multiplicative_identity ... ignored
+test numeric::rational::proptests::small_and_large_agree ... ignored
+test numeric::rational::tests::pow_int_basic ... ignored
+test numeric::rational::tests::pow_negative_exponent ... ignored
+test numeric::rational::tests::pow_rational_exact_root ... ignored
+test numeric::rational::tests::pow_rational_irrational ... ignored
+test numeric::rational::tests::pow_zero_base_negative_exponent ... ignored
+test numeric::rational::tests::pow_zero_exponent_is_one ... ignored
+test numeric::rational::tests::rational_add ... ignored
+test numeric::rational::tests::rational_comparison ... ignored
+test numeric::rational::tests::rational_div ... ignored
+test numeric::rational::tests::rational_div_by_zero ... ignored
+test numeric::rational::tests::rational_eq ... ignored
+test numeric::rational::tests::rational_floor_negative ... ignored
+test numeric::rational::tests::rational_from_i64 ... ignored
+test numeric::rational::tests::rational_mul ... ignored
+test numeric::rational::tests::rational_neg ... ignored
+test numeric::rational::tests::rational_zero_and_one ... ignored
+test numeric::rounding::tests::rounding_ceil ... ignored
+test numeric::rounding::tests::rounding_half_even ... ignored
+test numeric::rounding::tests::rounding_half_even_rounds_to_even ... ignored
+test numeric::rounding::tests::rounding_half_up ... ignored
+test numeric::rounding::tests::rounding_none ... ignored
+test numeric::rounding::tests::rounding_truncate ... ignored
+
+test result: ok. 0 passed; 0 failed; 69 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/rational.rs (target/release/deps/rational-d30fca0fb1394d6c)
+Gnuplot not found, using plotters backend
+Benchmarking small_add
+Benchmarking small_add: Warming up for 3.0000 s
+Benchmarking small_add: Collecting 100 samples in estimated 5.0001 s (118M iterations)
+Benchmarking small_add: Analyzing
+small_add               time:   [42.234 ns 42.347 ns 42.480 ns]
+Found 12 outliers among 100 measurements (12.00%)
+  5 (5.00%) high mild
+  7 (7.00%) high severe
+
+Benchmarking small_mul
+Benchmarking small_mul: Warming up for 3.0000 s
+Benchmarking small_mul: Collecting 100 samples in estimated 5.0002 s (76M iterations)
+Benchmarking small_mul: Analyzing
+small_mul               time:   [65.347 ns 65.506 ns 65.699 ns]
+Found 13 outliers among 100 measurements (13.00%)
+  4 (4.00%) high mild
+  9 (9.00%) high severe
+
+Benchmarking small_div
+Benchmarking small_div: Warming up for 3.0000 s
+Benchmarking small_div: Collecting 100 samples in estimated 5.0002 s (108M iterations)
+Benchmarking small_div: Analyzing
+small_div               time:   [45.956 ns 46.082 ns 46.242 ns]
+Found 9 outliers among 100 measurements (9.00%)
+  4 (4.00%) high mild
+  5 (5.00%) high severe
+
+Benchmarking large_add
+Benchmarking large_add: Warming up for 3.0000 s
+Benchmarking large_add: Collecting 100 samples in estimated 5.0039 s (3.3M iterations)
+Benchmarking large_add: Analyzing
+large_add               time:   [1.5294 µs 1.5317 µs 1.5346 µs]
+Found 11 outliers among 100 measurements (11.00%)
+  11 (11.00%) high severe
+
+Benchmarking large_mul
+Benchmarking large_mul: Warming up for 3.0000 s
+Benchmarking large_mul: Collecting 100 samples in estimated 5.0043 s (177k iterations)
+Benchmarking large_mul: Analyzing
+large_mul               time:   [28.087 µs 28.148 µs 28.225 µs]
+Found 15 outliers among 100 measurements (15.00%)
+  3 (3.00%) high mild
+  12 (12.00%) high severe
+

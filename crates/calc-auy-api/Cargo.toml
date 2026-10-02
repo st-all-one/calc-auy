@@ -1,0 +1,18 @@
+[package]
+name = "calc-auy-api"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Fachada pública única do CalcAUY"
+
+[dependencies]
+calc-auy-core = { path = "../calc-auy-core" }
+calc-auy-parser = { path = "../calc-auy-parser" }
+calc-auy-builder = { path = "../calc-auy-builder" }
+calc-auy-output = { path = "../calc-auy-output" }
+thiserror.workspace = true
+
+[lints]
+workspace = true

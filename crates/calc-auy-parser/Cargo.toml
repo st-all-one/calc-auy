@@ -1,0 +1,18 @@
+[package]
+name = "calc-auy-parser"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Lexer e parser de expressões matemáticas para AST"
+
+[dependencies]
+calc-auy-core = { path = "../calc-auy-core" }
+thiserror.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true
+
+[lints]
+workspace = true

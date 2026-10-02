@@ -1,0 +1,11 @@
+    Checking calc-auy-core v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-core)
+    Checking calc-auy-parser v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-parser)
+    Checking calc-auy-builder v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-builder)
+    Checking calc-auy-output v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-output)
+    Checking calc-auy-nlg v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-nlg)
+    Checking calc-auy-processors v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-processors)
+    Checking calc-auy-api v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-api)
+    Checking calc-auy-i18n v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-i18n)
+    Checking calc-auy v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy)
+    Checking calc-auy-wasm v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-wasm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.49s

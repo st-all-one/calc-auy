@@ -1,0 +1,15 @@
+[package]
+name = "calc-auy-builder"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "API fluente com typestate para construção de cálculos"
+
+[dependencies]
+calc-auy-core = { path = "../calc-auy-core" }
+thiserror.workspace = true
+
+[lints]
+workspace = true

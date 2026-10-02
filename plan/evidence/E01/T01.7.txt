@@ -1,0 +1,14 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8a83c2f85ed4d468)
+
+running 7 tests
+test numeric::parse::tests::parse_decimal ... ok
+test numeric::parse::tests::parse_fraction ... ok
+test numeric::parse::tests::parse_integer ... ok
+test numeric::parse::tests::parse_invalid ... ok
+test numeric::parse::tests::parse_thousands_separator ... ok
+test numeric::parse::tests::parse_percent ... ok
+test numeric::parse::tests::parse_scientific ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 66 filtered out; finished in 0.00s
+

@@ -1,0 +1,20 @@
+[package]
+name = "calc-auy"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Binário CLI do CalcAUY"
+
+[[bin]]
+name = "calc-auy"
+path = "src/main.rs"
+
+[dependencies]
+calc-auy-api = { path = "../calc-auy-api" }
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+
+[lints]
+workspace = true

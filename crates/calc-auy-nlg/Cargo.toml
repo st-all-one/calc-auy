@@ -1,0 +1,15 @@
+[package]
+name = "calc-auy-nlg"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "NLG: representação semântica e trait de realização linguística"
+
+[dependencies]
+calc-auy-core = { path = "../calc-auy-core" }
+thiserror.workspace = true
+
+[lints]
+workspace = true

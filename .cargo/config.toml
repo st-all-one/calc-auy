@@ -1,0 +1,10 @@
+[alias]
+c = "check"
+b = "build"
+t = "test"
+cl = "clippy"
+d = "doc --no-deps"
+f = "fmt --all -- --check"
+
+[net]
+git-fetch-with-cli = true

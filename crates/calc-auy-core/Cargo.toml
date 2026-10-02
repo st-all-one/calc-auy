@@ -1,0 +1,40 @@
+[package]
+name = "calc-auy-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Núcleo do CalcAUY: racionais híbridos, AST, engine, integridade"
+
+[features]
+default = []
+# Instrumentação transversal. OFF por defeito: custo literalmente zero.
+instrument = []
+# Determinismo em testes: instala MockClock
+deterministic = []
+
+[dependencies]
+thiserror.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+num-bigint.workspace = true
+num-traits.workspace = true
+num-integer.workspace = true
+blake3.workspace = true
+hex.workspace = true
+base64.workspace = true
+bs58.workspace = true
+tracing = "0.1"
+uuid = { version = "1", features = ["v7", "serde"] }
+
+[dev-dependencies]
+proptest.workspace = true
+criterion.workspace = true
+
+[[bench]]
+name = "rational"
+harness = false
+
+[lints]
+workspace = true

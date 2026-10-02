@@ -1,0 +1,23 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8a83c2f85ed4d468)
+
+running 16 tests
+test numeric::rational::tests::pow_int_basic ... ok
+test numeric::rational::tests::pow_negative_exponent ... ok
+test numeric::rational::tests::pow_rational_exact_root ... ok
+test numeric::rational::tests::pow_rational_irrational ... ok
+test numeric::rational::tests::pow_zero_base_negative_exponent ... ok
+test numeric::rational::tests::pow_zero_exponent_is_one ... ok
+test numeric::rational::tests::rational_add ... ok
+test numeric::rational::tests::rational_comparison ... ok
+test numeric::rational::tests::rational_div ... ok
+test numeric::rational::tests::rational_div_by_zero ... ok
+test numeric::rational::tests::rational_eq ... ok
+test numeric::rational::tests::rational_floor_negative ... ok
+test numeric::rational::tests::rational_mul ... ok
+test numeric::rational::tests::rational_from_i64 ... ok
+test numeric::rational::tests::rational_neg ... ok
+test numeric::rational::tests::rational_zero_and_one ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 57 filtered out; finished in 0.00s
+

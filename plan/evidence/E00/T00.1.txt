@@ -1,0 +1,161 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running unittests src/main.rs (target/debug/deps/calc_auy-d768a09c3e3d9dce)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_api-7b0ea8851272bbe0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_builder-f5823216780e691d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-d2d30fad31cffc08)
+
+running 26 tests
+test clock::tests::mock_clock_generates_unique_uuids ... ok
+test clock::tests::mock_clock_advances ... ok
+test diag::fingerprint::tests::boundary_is_not_ambiguous ... ok
+test clock::tests::mock_clock_is_deterministic ... ok
+test diag::events::tests::catalog_has_stable_ids ... ok
+test diag::fingerprint::tests::different_input_has_different_print ... ok
+test diag::events::tests::all_ids_are_lowercase ... ok
+test diag::fingerprint::tests::fingerprint_hex_is_deterministic ... ok
+test diag::fingerprint::tests::same_input_has_the_same_print ... ok
+test diag::redact::tests::normal_value_passes ... ok
+test diag::redact::tests::sensitive_key_is_redacted ... ok
+test diag::tests::value_conversions ... ok
+test diag::redact::tests::sensitive_value_is_redacted ... ok
+test diag::tests::level_ordering ... ok
+test error::tests::instance_is_deterministic_with_mock_clock ... ok
+test error::tests::limit_exceeded_maps_to_problem ... ok
+test error::tests::division_by_zero_maps_to_problem ... ok
+test limits::tests::check_depth_within_limit ... ok
+test limits::tests::default_limits_are_valid ... ok
+test limits::tests::custom_limits_validation ... ok
+test meta_value::tests::meta_value_depth ... ok
+test limits::tests::check_bits_within_limit ... ok
+test meta_value::tests::meta_value_is_eq_and_hash ... ok
+test meta_value::tests::meta_value_rejects_f64 ... ok
+test meta_value::tests::meta_value_size_bytes ... ok
+test meta_value::tests::meta_value_accepts_valid_types ... ok
+
+test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_i18n-71a45c5a03afbf0a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_macros-35be5eb03278bc20)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_nlg-28764f7c83fec2de)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_output-c95b67689c5dc2ca)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_parser-150b7eb7c2325c36)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_processors-94f950989a6b5d26)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_wasm-b08444673a56d47b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/xtask-383e90fb8daaae26)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_api
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_builder
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_core
+
+running 1 test
+test crates/calc-auy-core/src/diag/fingerprint.rs - diag::fingerprint::fingerprint (line 68) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.23s; merged doctests compilation took 0.22s
+   Doc-tests calc_auy_i18n
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_macros
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_nlg
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_output
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_parser
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_processors
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_wasm
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

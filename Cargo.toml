@@ -1,0 +1,102 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/calc-auy-core",
+    "crates/calc-auy-parser",
+    "crates/calc-auy-builder",
+    "crates/calc-auy-output",
+    "crates/calc-auy-i18n",
+    "crates/calc-auy-processors",
+    "crates/calc-auy-api",
+    "crates/calc-auy-wasm",
+    "crates/calc-auy",
+    "crates/calc-auy-macros",
+    "crates/calc-auy-nlg",
+    "xtask",
+]
+default-members = ["crates/calc-auy"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98"
+license = "MPL-2.0"
+publish = false
+
+[workspace.dependencies]
+# Tipos/erros comuns
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Aritmética
+num-bigint = "0.4"
+num-traits = "0.2"
+num-integer = "0.1"
+
+# Hash
+blake3 = "1.5"
+hex = "0.4"
+base64 = "0.22"
+bs58 = "0.5"
+
+# Dev
+proptest = "1"
+criterion = "0.5"
+
+# =============================================================================
+# Lints — rigor máximo (baseado no katu, D92) · Rust 1.98 / Edition 2024
+# =============================================================================
+[workspace.lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+unused_qualifications = "deny"
+unused_lifetimes = "deny"
+elided_lifetimes_in_paths = "deny"
+single_use_lifetimes = "deny"
+trivial_casts = "deny"
+trivial_numeric_casts = "deny"
+unreachable_pub = "warn"
+unsafe_op_in_unsafe_fn = "deny"
+let_underscore_drop = "deny"
+macro_use_extern_crate = "deny"
+meta_variable_misuse = "deny"
+non_ascii_idents = "deny"
+noop_method_call = "deny"
+unused_import_braces = "deny"
+variant_size_differences = "warn"
+
+[workspace.lints.rustdoc]
+broken_intra_doc_links = "deny"
+
+[workspace.lints.clippy]
+# Grupos (prioridade menor para permitir overrides pontuais)
+all = { level = "deny", priority = -1 }
+correctness = { level = "deny", priority = -1 }
+suspicious = { level = "deny", priority = -1 }
+style = { level = "deny", priority = -1 }
+complexity = { level = "deny", priority = -1 }
+perf = { level = "deny", priority = -1 }
+multiple_crate_versions = "allow"
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+cargo = { level = "warn", priority = -1 }
+
+# Restriction curada (D92)
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+unreachable = "deny"
+dbg_macro = "deny"
+print_stdout = "deny"
+print_stderr = "deny"
+exit = "deny"
+mem_forget = "deny"
+indexing_slicing = "deny"
+arithmetic_side_effects = "warn"
+as_conversions = "deny"
+cast_possible_truncation = "deny"
+cast_sign_loss = "deny"
+cast_possible_wrap = "deny"
