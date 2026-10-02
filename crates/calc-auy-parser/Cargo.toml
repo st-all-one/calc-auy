@@ -9,10 +9,16 @@ description = "Lexer e parser de expressões matemáticas para AST"
 
 [dependencies]
 calc-auy-core = { path = "../calc-auy-core" }
+smallvec.workspace = true
 thiserror.workspace = true
 
 [dev-dependencies]
 proptest.workspace = true
+criterion.workspace = true
+
+[[bench]]
+name = "parser"
+harness = false
 
 [lints]
 workspace = true

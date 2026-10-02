@@ -9,6 +9,7 @@ pub mod ast;
 pub mod canonical;
 pub mod clock;
 pub mod diag;
+pub mod engine;
 pub mod error;
 pub mod integrity;
 pub mod limits;
@@ -17,7 +18,13 @@ pub mod numeric;
 
 pub use ast::{AstBuilder, FlatAst, Metadata, NodeData, NodeId, NodeKind, OperationType};
 pub use clock::{Clock, MockClock, SystemClock};
+pub use engine::{Committed, EvalCache, commit, eval, eval_memoized};
 pub use error::{CalcAuyError, ProblemDetails};
+pub use integrity::{
+    AuditTrace, CustodyLink, CustodyVerifier, DIGEST_BYTES, Digest, Encoder, Salt,
+    SignaturePayload, SignaturePayloadV2, TraceVersion, VerifiedAst, chain_log, sign, trace_hash,
+    value_hash, verify, verify_log,
+};
 pub use limits::Limits;
 pub use meta_value::MetaValue;
-pub use numeric::Rational;
+pub use numeric::{Rational, RoundingStrategy};

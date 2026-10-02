@@ -1,0 +1,11 @@
+   Compiling calc-auy-parser v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-parser)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.36s
+     Running tests/proptests.rs (target/debug/deps/proptests-0c873dda62e8cd62)
+
+running 3 tests
+test integer_literal_matches_reference ... ok
+test decimal_literal_matches_reference ... ok
+test parser_never_panics ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

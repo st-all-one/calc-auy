@@ -291,6 +291,19 @@ impl Rational {
         Self::new_bigint_checked(numer, denom, limits)
     }
 
+    /// Retorna o número de bits do maior componente (`n` ou `d`).
+    #[must_use]
+    pub fn bits(&self) -> u64 {
+        match &self.repr {
+            Repr::Small { n, d } => {
+                let numerator = u64::from(64_u32.saturating_sub(n.leading_zeros()));
+                let denominator = u64::from(64_u32.saturating_sub(d.leading_zeros()));
+                numerator.max(denominator)
+            }
+            Repr::Large { n, d } => n.bits().max(d.bits()),
+        }
+    }
+
     /// Retorna `true` se o valor é zero.
     #[must_use]
     pub fn is_zero(&self) -> bool {

@@ -28,7 +28,7 @@ pub enum Encoder {
 /// Resumo criptográfico cru de 32 bytes.
 ///
 /// A codificação é derivada sob demanda; o tipo nunca guarda texto.
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Digest([u8; DIGEST_BYTES]);
 
 impl Digest {

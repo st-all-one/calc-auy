@@ -1,0 +1,15 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_parser-db9b21b2a44cb3b2)
+
+running 8 tests
+test parser::tests::division_is_left_associative ... ok
+test parser::tests::errors_have_positions ... ok
+test parser::tests::subtraction_is_left_associative ... ok
+test parser::tests::percent_is_postfix ... ok
+test parser::tests::parses_precedence ... ok
+test parser::tests::rejects_empty_input ... ok
+test parser::tests::unary_minus ... ok
+test parser::tests::power_is_right_associative ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+

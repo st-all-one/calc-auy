@@ -1,0 +1,9 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8c7ce44791e96544)
+
+running 2 tests
+test engine::cache::tests::evicts_when_full ... ok
+test engine::cache::tests::tracks_hits_and_misses ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 140 filtered out; finished in 0.00s
+

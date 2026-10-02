@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_parser-db9b21b2a44cb3b2)
+
+running 4 tests
+test error::tests::converts_to_calc_error ... ok
+test error::tests::span_display_and_len ... ok
+test error::tests::syntax_maps_to_problem_with_span ... ok
+test parser::tests::errors_have_positions ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+

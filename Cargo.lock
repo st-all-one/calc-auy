@@ -233,7 +233,9 @@ name = "calc-auy-parser"
 version = "0.1.0"
 dependencies = [
  "calc-auy-core",
+ "criterion",
  "proptest",
+ "smallvec",
  "thiserror",
 ]
 

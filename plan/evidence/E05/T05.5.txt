@@ -1,0 +1,3 @@
+lex_chain_100           time:   [2.0077 µs 2.0364 µs 2.0673 µs]
+parse_chain_100         time:   [26.063 µs 26.344 µs 26.655 µs]
+parse_chain_1000        time:   [240.93 µs 241.82 µs 242.84 µs]

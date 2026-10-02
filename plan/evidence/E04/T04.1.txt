@@ -1,0 +1,14 @@
+   Compiling calc-auy-core v0.1.0 (/home/one/projects/one/calc-auy/crates/calc-auy-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.78s
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_core-8c7ce44791e96544)
+
+running 6 tests
+test engine::eval::tests::bit_budget_is_enforced ... ok
+test engine::eval::tests::division_by_zero_is_error ... ok
+test engine::eval::tests::pow_requires_two_operands ... ok
+test engine::eval::tests::evaluates_group_passthrough ... ok
+test engine::eval::tests::to_operands_round_trips ... ok
+test engine::eval::tests::evaluates_nested_expression ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 136 filtered out; finished in 0.00s
+
