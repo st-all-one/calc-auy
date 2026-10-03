@@ -1,0 +1,60 @@
+     Running tests/snapshots.rs (target/debug/deps/snapshots-30c16439fc6acbbb)
+
+running 5 tests
+test monetary_snapshots ... ok
+test slice_snapshots ... ok
+test json_formats_snapshot ... ok
+test representation_snapshots ... ok
+test audit_snapshots ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_render-8387cdbbffe0e67f)
+
+running 12 tests
+test options::tests::rgb_converts_to_latex ... ok
+test options::tests::style_maps_to_display ... ok
+test html::tests::sanitizes_container_class ... ok
+test html::tests::omits_css_when_external ... ok
+test html::tests::inline_style_renders ... ok
+test html::tests::renders_self_contained_fragment ... ok
+test html::tests::escapes_aria_label ... ok
+test png::tests::rejects_invalid_dpi ... ok
+test png::tests::renders_png_bytes ... ok
+test png::tests::renders_with_opaque_background ... ok
+test svg::tests::renders_svg_document ... ok
+test svg::tests::rejects_unknown_command ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running tests/render.rs (target/debug/deps/render-5728abbe7ac4a02c)
+
+running 4 tests
+test html_renders_full_expression ... ok
+test svg_renders_full_expression ... ok
+test renders_are_deterministic ... ok
+test png_renders_full_expression ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+   Doc-tests calc_auy_output
+
+running 3 tests
+test crates/calc-auy-output/src/render.rs - render::Output<'_>::to_html (line 28) - compile ... ok
+test crates/calc-auy-output/src/monetary.rs - monetary::Output<'_>::to_monetary (line 32) ... ok
+test crates/calc-auy-output/src/json.rs - json::Output<'_>::to_json_formats (line 73) ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.50s; merged doctests compilation took 0.47s
+   Doc-tests calc_auy_render
+
+running 4 tests
+test crates/calc-auy-render/src/html.rs - html::to_html (line 131) ... ok
+test crates/calc-auy-render/src/lib.rs - (line 24) ... ok
+test crates/calc-auy-render/src/png.rs - png::to_png (line 99) ... ok
+test crates/calc-auy-render/src/svg.rs - svg::to_svg (line 81) ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+all doctests ran in 0.64s; merged doctests compilation took 0.45s

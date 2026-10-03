@@ -6,7 +6,7 @@
 //!
 //! O ciclo de vida espelha a fachada: `parse`/`from` produzem um **rascunho**
 //! (AST canônica em JSON), `commit` o sela e devolve um **traço de auditoria**
-//! assinado, `verify` confere a assinatura e `format`/`monetary`/`scaled`
+//! assinado, `verify` confere a assinatura e `format`/`monetary`/`scaled`/`json`
 //! renderizam a partir do rascunho.
 
 #![allow(
@@ -18,8 +18,8 @@
 use std::collections::BTreeMap;
 
 use calc_auy_api::{
-    AuditTrace, CalcAuy, CalcAuyError, Clock, CustodyVerifier, InstanceConfig, Locale,
-    OutputOptions, RoundingStrategy, Salt,
+    AuditTrace, CalcAuy, CalcAuyError, Clock, CustodyVerifier, DEFAULT_KEYS, InstanceConfig,
+    Locale, OutputOptions, RoundingStrategy, Salt, realizer_for_code,
 };
 use wasm_bindgen::prelude::{JsValue, wasm_bindgen};
 
@@ -210,6 +210,16 @@ impl WasmCalc {
             .map_err(|error| self.problem(&error))
     }
 
+    /// Devolve o resultado como JSON multi-formato no locale da instância.
+    ///
+    /// # Errors
+    ///
+    /// Retorna o problema (RFC 7807) como objeto JS em caso de falha.
+    pub fn json(&self, draft_json: &str) -> Result<String, JsValue> {
+        self.json_impl(draft_json)
+            .map_err(|error| self.problem(&error))
+    }
+
     /// Devolve a assinatura (hex) de um rascunho selado.
     ///
     /// # Errors
@@ -342,6 +352,24 @@ impl WasmCalc {
         })
     }
 
+    /// Implementação de `json`.
+    ///
+    /// # Errors
+    ///
+    /// Propaga o erro da fachada.
+    fn json_impl(&self, draft_json: &str) -> Result<String, CalcAuyError> {
+        let options = OutputOptions::new().with_locale(self.locale);
+        let app = self.app();
+        let verified = app
+            .hydrate(draft_json)?
+            .commit(&self.verifier)?
+            .verify(&self.verifier)?;
+        let realizer = realizer_for_code(self.locale.code());
+        verified
+            .output(options)
+            .to_json_formats(DEFAULT_KEYS, realizer.as_ref())
+    }
+
     /// Implementação de `signature`.
     ///
     /// # Errors
@@ -409,6 +437,15 @@ mod tests {
             "R$\u{00a0}15.109,78"
         );
         assert_eq!(calc.scaled_impl(&draft, 2).expect("scaled"), "1510978");
+    }
+
+    #[test]
+    fn json_output_lists_representations() {
+        let calc = calc();
+        let draft = calc.parse_impl("1 + 2").expect("parse");
+        let json = calc.json_impl(&draft).expect("json");
+        assert!(json.contains("\"decimal\":\"3.00\""), "json: {json}");
+        assert!(json.contains("\"signature\":"), "json: {json}");
     }
 
     #[test]

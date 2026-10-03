@@ -30,6 +30,7 @@ const draft = calc.parse("10000 * (1 + 14.75%) ^ 3");
 calc.format(draft, 2);        // => "15109.78"
 calc.monetary(draft);         // => "R$ 15.109,78"
 calc.scaled(draft, 2);        // => "1510978"  (inteiro grande em string)
+calc.json(draft);             // => JSON multi-formato + assinatura
 
 // 3) Selagem + auditoria
 const trace = calc.commit(draft);   // traço de auditoria assinado (JSON)

@@ -16,7 +16,13 @@ pub use calc_auy_builder::{
 };
 pub use calc_auy_i18n::{Language, PtBrRealizer, realizer, realizer_for_code};
 pub use calc_auy_nlg::{Srl, SrlNode, VerbalRealizer};
-pub use calc_auy_output::{Currency, CurrencyPosition, Locale, Output, OutputOptions};
+pub use calc_auy_output::{
+    Currency, CurrencyPosition, DEFAULT_KEYS, Locale, Output, OutputKey, OutputOptions,
+};
+#[cfg(feature = "render")]
+pub use calc_auy_output::{
+    HtmlOptions, KATEX_CSS, PngBackground, PngOptions, RenderError, Rgb, SvgOptions,
+};
 
 /// Instância configurada do CalcAUY.
 ///

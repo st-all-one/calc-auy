@@ -19,6 +19,10 @@ R$ 15.109,78
 
 $ echo "1/3" | calc-auy --params '{"rounding":"half_up","decimals":4}'
 0.3333
+
+$ calc-auy --params '{"mode":"json"}' "1 + 2"     # múltiplas representações
+$ calc-auy --params '{"mode":"html"}' "1/2 + 3"   # fragmento KaTeX
+$ calc-auy --params '{"mode":"svg"}' "1/2 + 3"    # documento SVG
 ```
 
 O único argumento posicional é o `BODY` (padrão: stdin); a configuração vai em
@@ -31,7 +35,8 @@ O único argumento posicional é o `BODY` (padrão: stdin); a configuração vai
 | `calc-auy-core` | racional, AST, integridade, engine, lotes |
 | `calc-auy-parser` | lexer + parser Pratt |
 | `calc-auy-builder` | typestate `Draft → Committed → Verified` |
-| `calc-auy-output` | decimal, monetário, LaTeX, Unicode, Mermaid |
+| `calc-auy-output` | decimal, monetário, LaTeX, Unicode, Mermaid, JSON multi-formato |
+| `calc-auy-render` | HTML (`KaTeX`), SVG e PNG (feature `render`) |
 | `calc-auy-nlg` / `calc-auy-i18n` | SRL + realizers (9 idiomas) |
 | `calc-auy-processors` | Protobuf, CBOR, MessagePack |
 | `calc-auy-api` | fachada única |

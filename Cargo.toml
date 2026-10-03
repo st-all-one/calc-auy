@@ -5,6 +5,7 @@ members = [
     "crates/calc-auy-parser",
     "crates/calc-auy-builder",
     "crates/calc-auy-output",
+    "crates/calc-auy-render",
     "crates/calc-auy-i18n",
     "crates/calc-auy-processors",
     "crates/calc-auy-api",

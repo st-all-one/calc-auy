@@ -76,22 +76,29 @@ pub struct Span {
     event: &'static str,
 }
 
+/// Emite um evento `tracing` com o id estável no campo `calc_auy_event`.
+///
+/// O nível precisa ser um literal para satisfazer o `static` gerado pelo
+/// `tracing`; por isso os chamadores usam `match` sobre [`Level`].
+#[cfg(feature = "instrument")]
+macro_rules! emit_event {
+    ($level:expr, $event:expr, $fields:expr) => {{
+        tracing::event!($level, calc_auy_event = $event);
+        let _ = $fields;
+    }};
+}
+
 impl Span {
     /// Cria um novo span (quando a feature está ativa).
     #[cfg(feature = "instrument")]
     pub fn start(level: Level, event: &'static str, fields: &[(&str, Value<'_>)]) -> Self {
-        tracing::event!(
-            target: event,
-            level: match level {
-                Level::Error => tracing::Level::ERROR,
-                Level::Warn => tracing::Level::WARN,
-                Level::Info => tracing::Level::INFO,
-                Level::Debug => tracing::Level::DEBUG,
-                Level::Trace => tracing::Level::TRACE,
-            },
-            "{event}",
-        );
-        let _ = fields; // campos seriam emitidos aqui
+        match level {
+            Level::Error => emit_event!(tracing::Level::ERROR, event, fields),
+            Level::Warn => emit_event!(tracing::Level::WARN, event, fields),
+            Level::Info => emit_event!(tracing::Level::INFO, event, fields),
+            Level::Debug => emit_event!(tracing::Level::DEBUG, event, fields),
+            Level::Trace => emit_event!(tracing::Level::TRACE, event, fields),
+        }
         Self { level, event }
     }
 
@@ -103,18 +110,13 @@ impl Span {
         function: &str,
         fields: &[(&str, Value<'_>)],
     ) -> Self {
-        tracing::event!(
-            target: event,
-            level: match level {
-                Level::Error => tracing::Level::ERROR,
-                Level::Warn => tracing::Level::WARN,
-                Level::Info => tracing::Level::INFO,
-                Level::Debug => tracing::Level::DEBUG,
-                Level::Trace => tracing::Level::TRACE,
-            },
-            "{function}",
-        );
-        let _ = fields;
+        match level {
+            Level::Error => emit_event!(tracing::Level::ERROR, function, fields),
+            Level::Warn => emit_event!(tracing::Level::WARN, function, fields),
+            Level::Info => emit_event!(tracing::Level::INFO, function, fields),
+            Level::Debug => emit_event!(tracing::Level::DEBUG, function, fields),
+            Level::Trace => emit_event!(tracing::Level::TRACE, function, fields),
+        }
         Self { level, event }
     }
 
@@ -137,18 +139,13 @@ impl Drop for Span {
 /// Emite um evento estruturado (quando a feature está ativa).
 #[cfg(feature = "instrument")]
 pub fn record(level: Level, event: &'static str, fields: &[(&str, Value<'_>)]) {
-    tracing::event!(
-        target: event,
-        level: match level {
-            Level::Error => tracing::Level::ERROR,
-            Level::Warn => tracing::Level::WARN,
-            Level::Info => tracing::Level::INFO,
-            Level::Debug => tracing::Level::DEBUG,
-            Level::Trace => tracing::Level::TRACE,
-        },
-        "{event}",
-    );
-    let _ = fields;
+    match level {
+        Level::Error => emit_event!(tracing::Level::ERROR, event, fields),
+        Level::Warn => emit_event!(tracing::Level::WARN, event, fields),
+        Level::Info => emit_event!(tracing::Level::INFO, event, fields),
+        Level::Debug => emit_event!(tracing::Level::DEBUG, event, fields),
+        Level::Trace => emit_event!(tracing::Level::TRACE, event, fields),
+    }
 }
 
 #[cfg(test)]

@@ -19,6 +19,11 @@ serde.workspace = true
 serde_json.workspace = true
 rayon.workspace = true
 
+[features]
+# Representações visuais (HTML/KaTeX, SVG) no binário.
+default = ["render"]
+render = ["calc-auy-api/render"]
+
 [dev-dependencies]
 tempfile.workspace = true
 

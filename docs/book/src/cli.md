@@ -12,6 +12,12 @@ R$ 15.109,78
 
 $ echo "1/3" | calc-auy --params '{"rounding":"half_up","decimals":4}'
 0.3333
+
+$ calc-auy --params '{"mode":"json"}' "1 + 2"
+{"decimal":"3.00",...}
+
+$ calc-auy --params '{"mode":"html"}' "1/2 + 3"   # fragmento KaTeX
+$ calc-auy --params '{"mode":"svg"}' "1/2 + 3"    # documento SVG
 ```
 
 ## Parâmetros
@@ -22,7 +28,7 @@ $ echo "1/3" | calc-auy --params '{"rounding":"half_up","decimals":4}'
 | `decimals` | inteiro | `2` |
 | `rounding` | `nbr5891`, `half_up`, `half_even`, `truncate`, `ceil`, `none` | `nbr5891` |
 | `locale` | `pt-BR`, `en-US`, `en-EU`, `fr-FR`, `de-DE`, `es-ES`, `ru-RU`, `zh-CN`, `ja-JP` | `pt-BR` |
-| `mode` | `decimal`, `monetary`, `latex`, `unicode`, `mermaid`, `scaled`, `verbal` | `decimal` |
+| `mode` | `decimal`, `monetary`, `latex`, `unicode`, `mermaid`, `scaled`, `verbal`, `json`, `html`, `svg` | `decimal` |
 | `error_format` | `human`, `json` | `human` |
 | `deterministic` | booleano | `false` |
 

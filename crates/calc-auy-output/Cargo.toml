@@ -10,9 +10,15 @@ description = "Formatadores de saída: monetary, latex, unicode, audit, mermaid"
 [dependencies]
 calc-auy-core = { path = "../calc-auy-core" }
 calc-auy-nlg = { path = "../calc-auy-nlg" }
+calc-auy-render = { path = "../calc-auy-render", optional = true }
 num-bigint.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
+
+[features]
+# Representações visuais (HTML/KaTeX, SVG e PNG). Desligada por padrão para
+# manter o caminho de formatação textual leve; ligue com `features = ["render"]`.
+render = ["dep:calc-auy-render"]
 
 [dev-dependencies]
 proptest.workspace = true

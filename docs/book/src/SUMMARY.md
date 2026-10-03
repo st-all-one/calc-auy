@@ -9,5 +9,6 @@ interfaces (CLI, WASM, processadores), i18n/NLG e decisões de arquitetura
 - [CLI `calc-auy`](cli.md)
 - [WASM](wasm.md)
 - [Processadores (serialização binária)](processadores.md)
+- [Representações visuais e JSON](renderizacao.md)
 - [i18n / NLG](i18n.md)
 - [ADRs](adr.md)

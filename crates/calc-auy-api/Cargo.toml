@@ -16,6 +16,10 @@ calc-auy-nlg = { path = "../calc-auy-nlg" }
 calc-auy-i18n = { path = "../calc-auy-i18n" }
 thiserror.workspace = true
 
+[features]
+# Representações visuais (HTML/KaTeX, SVG, PNG) via `calc-auy-output/render`.
+render = ["calc-auy-output/render"]
+
 [dev-dependencies]
 serde_json.workspace = true
 

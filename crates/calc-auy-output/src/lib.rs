@@ -5,14 +5,23 @@
 //! A descrição verbal usa o *seam* de NLG (`VerbalRealizer`).
 
 pub mod decimal;
+pub mod json;
 pub mod latex;
 pub mod mermaid;
 pub mod monetary;
 pub mod options;
 pub mod output;
+#[cfg(feature = "render")]
+pub mod render;
 pub mod slicer;
 pub mod unicode;
 
 pub use decimal::{MAX_DECIMALS, format_decimal};
+pub use json::{DEFAULT_KEYS, OutputKey};
 pub use options::{Currency, CurrencyPosition, Locale, LocaleData, OutputOptions};
 pub use output::Output;
+#[cfg(feature = "render")]
+pub use render::{
+    CssMode, ErrorPolicy, HtmlOptions, KATEX_CSS, MathStyle, PngBackground, PngOptions,
+    RenderError, Rgb, SvgOptions,
+};

@@ -45,6 +45,12 @@ pub(crate) enum FormatMode {
     Scaled,
     /// Descrição verbal (acessibilidade).
     Verbal,
+    /// Fragmento HTML auto-contido via `KaTeX`.
+    Html,
+    /// Documento SVG auto-contido.
+    Svg,
+    /// Objeto JSON com múltiplas representações.
+    Json,
 }
 
 /// Objeto de parâmetros (`--params`).

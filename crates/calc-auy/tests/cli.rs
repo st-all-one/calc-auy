@@ -86,6 +86,31 @@ fn params_select_verbal_mode() {
 }
 
 #[test]
+fn params_select_json_mode() {
+    let (code, stdout, _) = run(&["--params", "{\"mode\":\"json\"}", "1 + 2"]);
+    assert_eq!(code, 0);
+    assert!(stdout.contains("\"decimal\":\"3.00\""), "stdout: {stdout}");
+    assert!(stdout.contains("\"signature\":"), "stdout: {stdout}");
+}
+
+#[test]
+#[cfg(feature = "render")]
+fn params_select_html_mode() {
+    let (code, stdout, _) = run(&["--params", "{\"mode\":\"html\"}", "1/2 + 3"]);
+    assert_eq!(code, 0);
+    assert!(stdout.contains("calc-auy-result"), "stdout: {stdout}");
+    assert!(stdout.contains("aria-label="), "stdout: {stdout}");
+}
+
+#[test]
+#[cfg(feature = "render")]
+fn params_select_svg_mode() {
+    let (code, stdout, _) = run(&["--params", "{\"mode\":\"svg\"}", "1/2 + 3"]);
+    assert_eq!(code, 0);
+    assert!(stdout.contains("<svg"), "stdout: {stdout}");
+}
+
+#[test]
 fn params_op_commit_then_verify() {
     let (code, trace, _) = run(&["--params", "{\"op\":\"commit\"}", "1 + 2"]);
     assert_eq!(code, 0);

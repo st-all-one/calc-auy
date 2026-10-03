@@ -26,6 +26,9 @@ calc-auy --params '{"mode":"monetary"}' "10000 * (1 + 14.75%) ^ 3"
 calc-auy --params '{"op":"commit"}' "1 + 2"             # traço de auditoria
 calc-auy --params '{"op":"sign"}' "1 + 2"               # assinatura hex
 calc-auy --params '{"op":"format","mode":"latex","decimals":4}' "1/3"
+calc-auy --params '{"mode":"json"}' "1 + 2"                # múltiplas representações
+calc-auy --params '{"mode":"html"}' "1/2 + 3"            # fragmento KaTeX
+calc-auy --params '{"mode":"svg"}' "1/2 + 3"             # documento SVG
 
 # subcomandos tangenciais
 calc-auy verify "$(calc-auy --params '{"op":"commit"}' '1 + 2')"   # true
@@ -47,7 +50,7 @@ Todos os campos são opcionais:
 | `decimals` | inteiro | `2` |
 | `rounding` | `nbr5891`, `half_up`, `half_even`, `truncate`, `ceil`, `none` | `nbr5891` |
 | `locale` | `pt-BR`, `en-US`, `en-EU`, `fr-FR`, `de-DE`, `es-ES`, `ru-RU`, `zh-CN`, `ja-JP` | `pt-BR` |
-| `mode` | `decimal`, `monetary`, `latex`, `unicode`, `mermaid`, `scaled`, `verbal` | `decimal` |
+| `mode` | `decimal`, `monetary`, `latex`, `unicode`, `mermaid`, `scaled`, `verbal`, `json`, `html`, `svg` | `decimal` |
 | `error_format` | `human`, `json` | `human` |
 | `deterministic` | booleano | `false` |
 

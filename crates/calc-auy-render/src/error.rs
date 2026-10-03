@@ -6,7 +6,7 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum RenderError {
-    /// A expressão LaTeX não pôde ser analisada/renderizada pelo motor KaTeX (HTML).
+    /// A expressão LaTeX não pôde ser analisada/renderizada pelo motor `KaTeX` (HTML).
     #[error("katex: {0}")]
     Katex(#[from] katex::ParseError),
     /// A expressão LaTeX não pôde ser analisada/renderizada para SVG/PNG.

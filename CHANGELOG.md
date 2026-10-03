@@ -5,6 +5,20 @@ Todas as mudanças relevantes do CalcAUY são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o
 projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Não publicado]
+
+### Adicionado
+
+- **`calc-auy-render`**: motor puro sobre LaTeX com HTML (`KaTeX`, CSS
+  auto-contido), SVG e PNG (`latex-rust`), com fontes/contexto carregados uma
+  única vez (`OnceLock`) e instrumentação opcional (`diag`).
+- **`calc-auy-output`**: feature `render` com `Output::to_html`/`to_svg`/
+  `to_png`, e `Output::to_json_formats` (JSON multi-formato com `OutputKey`).
+- **CLI**: modos `json`, `html` e `svg` em `--params '{"mode":...}'`.
+- **Instrumentação**: corrigido o `diag` (`tracing::event!`) para compilar com
+  a feature `instrument`; níveis passam a ser literais e o id do evento vira o
+  campo `calc_auy_event`.
+
 ## [0.1.0] — 2024-01-01
 
 Primeira versão oficial. Especificação executável (corpus), hardening e

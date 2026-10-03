@@ -4,9 +4,11 @@ use std::io::{Read, Write};
 
 use anyhow::{Context, Result};
 use calc_auy_api::{
-    AuditTrace, CalcAuy, CalcAuyError, CustodyVerifier, InstanceConfig, OutputOptions,
-    RoundingStrategy, Salt,
+    AuditTrace, CalcAuy, CalcAuyError, CustodyVerifier, DEFAULT_KEYS, InstanceConfig, Output,
+    OutputOptions, RoundingStrategy, Salt,
 };
+#[cfg(feature = "render")]
+use calc_auy_api::{HtmlOptions, SvgOptions};
 
 use crate::batch;
 use crate::cli::{Cli, Command, Shell};
@@ -131,6 +133,54 @@ pub(crate) fn read_body(body: Option<&str>) -> Result<String> {
 /// # Errors
 ///
 /// Retorna erro de domínio se a expressão, a custódia ou a avaliação falharem.
+/// Renderiza o resultado selado no modo de formatação configurado.
+///
+/// # Errors
+///
+/// Retorna erro de serialização se a representação escolhida falhar, ou
+/// [`CalcAuyError::InvalidInput`] se o modo exigir uma feature desligada.
+fn render_format(settings: &Settings, output: &Output<'_>) -> Result<String, CalcAuyError> {
+    let rendered = match settings.mode {
+        FormatMode::Decimal => output.to_string_decimal(),
+        FormatMode::Monetary => output.to_monetary(),
+        FormatMode::Latex => output.to_latex(),
+        FormatMode::Unicode => output.to_unicode(),
+        FormatMode::Mermaid => output.to_mermaid_graph(),
+        FormatMode::Scaled => output.to_scaled_bigint(settings.decimals).to_string(),
+        FormatMode::Verbal => output.to_verbal_a11y(settings.language.realizer().as_ref()),
+        FormatMode::Json => {
+            output.to_json_formats(DEFAULT_KEYS, settings.language.realizer().as_ref())?
+        }
+        #[cfg(feature = "render")]
+        FormatMode::Html => output
+            .to_html(
+                settings.language.realizer().as_ref(),
+                &HtmlOptions::default(),
+            )
+            .map_err(|error| CalcAuyError::SerializationError {
+                message: error.to_string(),
+            })?,
+        #[cfg(feature = "render")]
+        FormatMode::Svg => output.to_svg(&SvgOptions::default()).map_err(|error| {
+            CalcAuyError::SerializationError {
+                message: error.to_string(),
+            }
+        })?,
+        #[cfg(not(feature = "render"))]
+        FormatMode::Html | FormatMode::Svg => {
+            return Err(CalcAuyError::InvalidInput {
+                message: "modo visual requer a feature `render`".to_string(),
+            });
+        }
+    };
+    Ok(rendered)
+}
+
+/// Executa a operação do fluxo principal.
+///
+/// # Errors
+///
+/// Retorna erro de domínio se a expressão, a custódia ou a avaliação falharem.
 pub(crate) fn dispatch(settings: &Settings, body: &str) -> Result<OpOutput, CalcAuyError> {
     let instance = app(settings);
     let expression = body.trim();
@@ -144,16 +194,7 @@ pub(crate) fn dispatch(settings: &Settings, body: &str) -> Result<OpOutput, Calc
                 .with_locale(settings.locale)
                 .with_decimals(settings.decimals);
             let output = verified.output(options);
-            let rendered = match settings.mode {
-                FormatMode::Decimal => output.to_string_decimal(),
-                FormatMode::Monetary => output.to_monetary(),
-                FormatMode::Latex => output.to_latex(),
-                FormatMode::Unicode => output.to_unicode(),
-                FormatMode::Mermaid => output.to_mermaid_graph(),
-                FormatMode::Scaled => output.to_scaled_bigint(settings.decimals).to_string(),
-                FormatMode::Verbal => output.to_verbal_a11y(settings.language.realizer().as_ref()),
-            };
-            Ok(OpOutput::Formatted(rendered))
+            Ok(OpOutput::Formatted(render_format(settings, &output)?))
         }
         Op::Commit => {
             let committed = instance.parse(expression)?.commit(&AcceptAll)?;

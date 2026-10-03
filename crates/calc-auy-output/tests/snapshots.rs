@@ -10,7 +10,7 @@ use std::path::PathBuf;
 
 use calc_auy_core::{Limits, Rational};
 use calc_auy_i18n::PtBrRealizer;
-use calc_auy_output::{Locale, Output, OutputOptions};
+use calc_auy_output::{DEFAULT_KEYS, Locale, Output, OutputOptions};
 
 use common::{commit_expression, commit_value};
 
@@ -58,6 +58,16 @@ fn audit_snapshots() {
     let output = Output::new(&committed, OutputOptions::new());
     assert_snapshot("audit_trace", &output.to_audit_trace().expect("audit"));
     assert_snapshot("payload_json", &output.to_json().expect("json"));
+}
+
+#[test]
+fn json_formats_snapshot() {
+    let committed = sample();
+    let output = Output::new(&committed, OutputOptions::new().with_locale(Locale::PtBr));
+    let json = output
+        .to_json_formats(DEFAULT_KEYS, &PtBrRealizer::new())
+        .expect("json");
+    assert_snapshot("json_formats", &json);
 }
 
 #[test]
