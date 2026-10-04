@@ -216,6 +216,7 @@ dependencies = [
  "calc-auy-nlg",
  "calc-auy-output",
  "calc-auy-parser",
+ "calc-auy-processors",
  "serde_json",
  "thiserror",
 ]
@@ -301,6 +302,8 @@ dependencies = [
  "calc-auy-parser",
  "calc-auy-render",
  "num-bigint",
+ "num-integer",
+ "num-traits",
  "proptest",
  "serde_json",
  "thiserror",
@@ -322,6 +325,8 @@ name = "calc-auy-processors"
 version = "0.1.0"
 dependencies = [
  "calc-auy-core",
+ "calc-auy-i18n",
+ "calc-auy-output",
  "calc-auy-parser",
  "ciborium",
  "proptest",

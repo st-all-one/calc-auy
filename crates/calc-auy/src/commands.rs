@@ -190,9 +190,12 @@ pub(crate) fn dispatch(settings: &Settings, body: &str) -> Result<OpOutput, Calc
                 .parse(expression)?
                 .commit(&AcceptAll)?
                 .verify(&AcceptAll)?;
-            let options = OutputOptions::new()
+            let mut options = OutputOptions::new()
                 .with_locale(settings.locale)
                 .with_decimals(settings.decimals);
+            if let Some(currency) = settings.currency {
+                options = options.with_currency(currency);
+            }
             let output = verified.output(options);
             Ok(OpOutput::Formatted(render_format(settings, &output)?))
         }

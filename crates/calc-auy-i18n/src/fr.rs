@@ -39,6 +39,9 @@ pub const GRAMMAR: Grammar = Grammar {
     },
     group_prefix: "ouvre parenthèse ",
     group_suffix: " ferme parenthèse",
+    root_square: "racine carrée de ",
+    root_cubic: "racine cubique de ",
+    root_n: "racine {den}-ème de ",
 };
 
 /// Escreve um texto numérico por extenso em francês.

@@ -1,0 +1,121 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@logtape/logtape@^2.0.5": "2.3.4",
+    "jsr:@std/bytes@^1.0.5": "1.0.6",
+    "jsr:@std/bytes@^1.0.6": "1.0.6",
+    "jsr:@std/crypto@^1.0.5": "1.1.0",
+    "jsr:@std/crypto@^1.1.0": "1.1.0",
+    "jsr:@std/encoding@^1.0.10": "1.0.11",
+    "jsr:@std/msgpack@^1.0.3": "1.0.3",
+    "jsr:@std/uuid@^1.1.1": "1.1.1",
+    "npm:katex@~0.16.45": "0.16.47",
+    "npm:protobufjs@^8.0.1": "8.8.0"
+  },
+  "jsr": {
+    "@logtape/logtape@2.3.4": {
+      "integrity": "efdcc475dd8475da85f8e8344c43b72b75e408d6c114dcab687498895199b652"
+    },
+    "@std/bytes@1.0.6": {
+      "integrity": "f6ac6adbd8ccd99314045f5703e23af0a68d7f7e58364b47d2c7f408aeb5820a"
+    },
+    "@std/crypto@1.1.0": {
+      "integrity": "b8d6d0a6377a32b213af2661ed7bf1062d94feac0c57def5526a8e74a95c3ec8"
+    },
+    "@std/encoding@1.0.11": {
+      "integrity": "e7cef2f0b3153bccc17431e7c864a1de03a4b6d9647389c43e08aaa775d37385"
+    },
+    "@std/msgpack@1.0.3": {
+      "integrity": "b384239867dfd08aba9069d433e415a8229c6f966716d6b7fd3972a6fe605848",
+      "dependencies": [
+        "jsr:@std/bytes@^1.0.5"
+      ]
+    },
+    "@std/uuid@1.1.1": {
+      "integrity": "7b49060282d90f72fec64952f8c7a2914cbe6fdba3eca665f8cedc90830154a7",
+      "dependencies": [
+        "jsr:@std/bytes@^1.0.6",
+        "jsr:@std/crypto@^1.1.0"
+      ]
+    }
+  },
+  "npm": {
+    "commander@8.3.0": {
+      "integrity": "sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww=="
+    },
+    "katex@0.16.47": {
+      "integrity": "sha512-Eeo8Ys1doU1z+x8AZsPpQu+p/QcZBI5PeOo7QGQdy2x2m0MU/hYagBbGOmXwr5KVbEfVuWv9LpnQWeehogurjg==",
+      "dependencies": [
+        "commander"
+      ],
+      "bin": true
+    },
+    "long@5.3.2": {
+      "integrity": "sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA=="
+    },
+    "protobufjs@8.8.0": {
+      "integrity": "sha512-N3xhQ5yyBx3vQq4gubBfASzYhJGNzeDbjqBpu61g7UVylsN/qyffU96TKWD3GbbLOKF82VGNRNvv1+BFgE31Eg==",
+      "dependencies": [
+        "long"
+      ]
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@logtape/logtape@^2.0.5",
+      "jsr:@std/assert@^1.0.19",
+      "jsr:@std/cbor@~0.1.9",
+      "jsr:@std/crypto@^1.0.5",
+      "jsr:@std/encoding@^1.0.10",
+      "jsr:@std/expect@^1.0.13",
+      "jsr:@std/msgpack@^1.0.3",
+      "jsr:@std/testing@^1.0.17",
+      "jsr:@std/uuid@^1.1.1",
+      "npm:katex@~0.16.45",
+      "npm:protobufjs@^8.0.1"
+    ],
+    "links": {
+      "jsr:@scope/demo@1.0.0": {
+        "dependencies": [
+          "jsr:@logtape/logtape@^2.0.4",
+          "jsr:@std/path@^1.1.4",
+          "npm:@codemirror/autocomplete@^6.16.2",
+          "npm:@codemirror/commands@^6.6.0",
+          "npm:@codemirror/lang-javascript@^6.2.2",
+          "npm:@codemirror/language@^6.12.3",
+          "npm:@codemirror/lint@^6.8.0",
+          "npm:@codemirror/state@^6.4.1",
+          "npm:@codemirror/view@^6.41.0",
+          "npm:codemirror@^6.0.1",
+          "npm:katex@~0.16.45"
+        ]
+      },
+      "jsr:@scope/tests@0.1.0": {
+        "dependencies": [
+          "jsr:@logtape/logtape@^2.0.5",
+          "jsr:@std/assert@^1.0.19",
+          "jsr:@std/cbor@~0.1.9",
+          "jsr:@std/expect@^1.0.13",
+          "jsr:@std/msgpack@^1.0.3",
+          "jsr:@std/testing@^1.0.17",
+          "npm:katex@~0.16.45",
+          "npm:protobufjs@^8.0.1"
+        ]
+      },
+      "jsr:@st-all-one/calc-auy-processor-html@1.0.0": {
+        "dependencies": [
+          "npm:katex@~0.16.45"
+        ]
+      },
+      "jsr:@st-all-one/calc-auy-processor-image@1.0.0": {},
+      "jsr:@st-all-one/calc-auy@0.5.0": {
+        "dependencies": [
+          "jsr:@logtape/logtape@^2.0.5",
+          "jsr:@std/crypto@^1.0.5",
+          "jsr:@std/encoding@^1.0.10",
+          "jsr:@std/uuid@^1.1.1"
+        ]
+      }
+    }
+  }
+}

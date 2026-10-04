@@ -50,6 +50,7 @@ Todos os campos são opcionais:
 | `decimals` | inteiro | `2` |
 | `rounding` | `nbr5891`, `half_up`, `half_even`, `truncate`, `ceil`, `none` | `nbr5891` |
 | `locale` | `pt-BR`, `en-US`, `en-EU`, `fr-FR`, `de-DE`, `es-ES`, `ru-RU`, `zh-CN`, `ja-JP` | `pt-BR` |
+| `currency` | `BRL`, `USD`, `EUR`, `RUB`, `CNY`, `JPY` | moeda do locale |
 | `mode` | `decimal`, `monetary`, `latex`, `unicode`, `mermaid`, `scaled`, `verbal`, `json`, `html`, `svg` | `decimal` |
 | `error_format` | `human`, `json` | `human` |
 | `deterministic` | booleano | `false` |

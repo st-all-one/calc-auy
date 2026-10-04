@@ -7,7 +7,7 @@ use std::collections::BTreeMap;
 use std::path::Path;
 
 use anyhow::{Context, Result};
-use calc_auy_api::{Language, Locale, RoundingStrategy};
+use calc_auy_api::{Currency, Language, Locale, RoundingStrategy};
 use serde::Deserialize;
 
 use crate::cli::Cli;
@@ -67,6 +67,8 @@ pub(crate) struct Params {
     pub(crate) rounding: Option<String>,
     /// Locale de saída.
     pub(crate) locale: Option<String>,
+    /// Moeda de saída (ISO 4217).
+    pub(crate) currency: Option<String>,
     /// Modo de formatação.
     pub(crate) mode: Option<FormatMode>,
     /// Formato de erro.
@@ -88,6 +90,8 @@ pub(crate) struct Settings {
     pub(crate) rounding: RoundingStrategy,
     /// Locale de saída.
     pub(crate) locale: Locale,
+    /// Moeda de saída (opcional; padrão da localidade).
+    pub(crate) currency: Option<Currency>,
     /// Idioma de realização verbal.
     pub(crate) language: Language,
     /// Modo de formatação.
@@ -133,12 +137,18 @@ impl Settings {
             .or_else(|| std::env::var("CALC_AUY_LOCALE").ok())
             .or_else(|| file.get("locale").cloned())
             .unwrap_or_else(|| "pt-BR".to_string());
+        let currency_name = params
+            .currency
+            .clone()
+            .or_else(|| std::env::var("CALC_AUY_CURRENCY").ok())
+            .or_else(|| file.get("currency").cloned());
         Ok(Self {
             op: params.op.unwrap_or_default(),
             salt,
             decimals,
             rounding: parse_rounding(&rounding_name),
             locale: Locale::from_code(&locale_name),
+            currency: currency_name.map(|name| Currency::from_code(&name)),
             language: Language::from_code(&locale_name),
             mode: params.mode.unwrap_or_default(),
             error_format: params.error_format.unwrap_or_default(),
@@ -165,6 +175,9 @@ impl Settings {
         }
         if let Some(decimals) = params.decimals {
             self.decimals = decimals;
+        }
+        if let Some(currency) = &params.currency {
+            self.currency = Some(Currency::from_code(currency));
         }
         if let Some(rounding) = &params.rounding {
             self.rounding = parse_rounding(rounding);

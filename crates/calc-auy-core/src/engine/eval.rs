@@ -44,6 +44,49 @@ enum Action {
     Finalize(OperationType),
 }
 
+/// Memoização intra-avaliação para nós compartilhados (DAG).
+struct DagMemo {
+    /// Número de referências por nó (`> 1` = compartilhado).
+    refs: Vec<u32>,
+    /// Valores já calculados por nó.
+    values: Vec<Option<Rational>>,
+}
+
+/// Visita os filhos diretos de um nó.
+fn node_children(node: &NodeData, mut visit: impl FnMut(NodeId)) {
+    match node {
+        NodeData::Literal { .. } => {}
+        NodeData::Operation { operands, .. } => operands.iter().for_each(|id| visit(*id)),
+        NodeData::Group { child } | NodeData::Control { child, .. } => visit(*child),
+    }
+}
+
+/// Incrementa a contagem de referências de um nó.
+fn count_ref(refs: &mut [u32], child: NodeId, shared: &mut bool) {
+    let Some(slot) = refs.get_mut(child.index()) else {
+        return;
+    };
+    *slot = slot.saturating_add(1);
+    *shared |= *slot > 1;
+}
+
+/// Constrói a memoização DAG se a arena tiver subárvores compartilhadas.
+fn build_dag(ast: &FlatAst) -> Option<DagMemo> {
+    let mut refs = vec![0_u32; ast.len()];
+    let mut shared = false;
+    for (_, node) in ast.iter_nodes() {
+        node_children(node, |child| count_ref(&mut refs, child, &mut shared));
+    }
+    if shared {
+        Some(DagMemo {
+            refs,
+            values: vec![None; ast.len()],
+        })
+    } else {
+        None
+    }
+}
+
 /// Motor iterativo de avaliação.
 struct Evaluator<'a> {
     /// Arena.
@@ -58,6 +101,8 @@ struct Evaluator<'a> {
     hashes: Vec<Digest>,
     /// Cache opcional.
     cache: Option<&'a mut EvalCache>,
+    /// Memoização DAG (opcional).
+    dag: Option<DagMemo>,
 }
 
 impl Evaluator<'_> {
@@ -85,7 +130,7 @@ impl Evaluator<'_> {
         let Some(&(id, state)) = self.stack.last() else {
             return Ok(());
         };
-        if state == 0 && self.try_cached(id) {
+        if state == 0 && (self.try_memo(id) || self.try_cached(id)) {
             return Ok(());
         }
 
@@ -137,6 +182,7 @@ impl Evaluator<'_> {
         let start = self.values.len().saturating_sub(operands.len());
         let result = apply_operation(op, self.values.get(start..).unwrap_or(&[]), self.limits)?;
         self.values.truncate(start);
+        self.store_memo(id, &result);
         self.store_cached(id, &result);
         self.values.push(result);
         self.stack.pop();
@@ -147,6 +193,37 @@ impl Evaluator<'_> {
     fn bump_state(&mut self) {
         if let Some(last) = self.stack.last_mut() {
             last.1 = last.1.saturating_add(1);
+        }
+    }
+
+    /// Tenta reutilizar um resultado memoizado (DAG), pulando a subárvore.
+    fn try_memo(&mut self, id: NodeId) -> bool {
+        let Some(dag) = self.dag.as_mut() else {
+            return false;
+        };
+        let index = id.index();
+        if dag.refs.get(index).copied().unwrap_or(0) <= 1 {
+            return false;
+        }
+        let Some(Some(value)) = dag.values.get(index) else {
+            return false;
+        };
+        let value = value.clone();
+        self.values.push(value);
+        self.stack.pop();
+        true
+    }
+
+    /// Armazena um resultado para nós compartilhados.
+    fn store_memo(&mut self, id: NodeId, result: &Rational) {
+        let Some(dag) = self.dag.as_mut() else {
+            return;
+        };
+        let index = id.index();
+        if dag.refs.get(index).copied().unwrap_or(0) > 1
+            && let Some(slot) = dag.values.get_mut(index)
+        {
+            *slot = Some(result.clone());
         }
     }
 
@@ -198,6 +275,7 @@ pub(crate) fn eval_ast(ast: &FlatAst, limits: &Limits) -> Result<Rational, CalcA
         values: Vec::new(),
         hashes: Vec::new(),
         cache: None,
+        dag: build_dag(ast),
     }
     .run()
 }
@@ -223,6 +301,7 @@ pub fn eval_memoized(
         values: Vec::new(),
         hashes,
         cache: Some(cache),
+        dag: build_dag(ast),
     }
     .run()
 }
@@ -238,12 +317,14 @@ pub fn eval_memoized(
 /// Retorna erro se a arena não estiver em ordem pós-ordem.
 pub(crate) fn compute_subtree_hashes(ast: &FlatAst) -> Result<Vec<Digest>, CalcAuyError> {
     let mut hashes: Vec<Digest> = Vec::with_capacity(ast.len());
+    // Buffer reutilizado entre literais: evita uma alocação por nó.
+    let mut buffer = Vec::new();
     for (_, node) in ast.iter_nodes() {
         let mut node_hasher = blake3::Hasher::new();
         match node {
             NodeData::Literal { value, .. } => {
                 node_hasher.update(b"literal");
-                let mut buffer = Vec::new();
+                buffer.clear();
                 value.write_canonical(&mut buffer);
                 node_hasher.update(&buffer);
             }
@@ -319,7 +400,10 @@ pub(crate) fn apply_operation(
     let result = match op {
         OperationType::Add | OperationType::CrossContextAdd => fold_add(operands),
         OperationType::Sub => fold_sub(operands),
-        OperationType::Mul => fold_mul(operands),
+        OperationType::Mul => {
+            check_mul_budget(operands, limits)?;
+            fold_mul(operands)
+        }
         OperationType::Div => fold_div(operands)?,
         OperationType::Mod => fold_rem(operands)?,
         OperationType::DivInt => fold_div_int(operands)?,
@@ -327,6 +411,30 @@ pub(crate) fn apply_operation(
     };
     limits.check_bits(result.bits())?;
     Ok(result)
+}
+
+/// Pré-checa o orçamento de bits de uma multiplicação.
+///
+/// O numerador e o denominador do produto são limitados pela soma dos bits dos
+/// operandos (a redução só diminui). Se essa soma já excede o orçamento, a
+/// operação é rejeitada **sem computar** o produto — defesa contra `DoS` análoga
+/// ao orçamento de [`pow_operands`].
+///
+/// # Errors
+///
+/// Retorna [`CalcAuyError::MathOverflow`] se a soma dos bits exceder o limite.
+fn check_mul_budget(operands: &[Rational], limits: &Limits) -> Result<(), CalcAuyError> {
+    let mut total: u64 = 0;
+    for operand in operands {
+        total = total.saturating_add(operand.bits());
+    }
+    if total > limits.max_bits {
+        return Err(CalcAuyError::MathOverflow {
+            max_bits: limits.max_bits,
+            actual: total,
+        });
+    }
+    Ok(())
 }
 
 /// Soma todos os operandos (vazio = `0`) via redução em árvore exata.
@@ -448,6 +556,27 @@ mod tests {
     }
 
     #[test]
+    fn evaluates_shared_subtree_once() {
+        let result = evaluate(|builder| {
+            let base = builder
+                .literal(Rational::from_i64(2), "2")
+                .expect("literal");
+            let exponent = builder
+                .literal(Rational::from_i64(100), "100")
+                .expect("literal");
+            let power = builder
+                .operation(OperationType::Pow, &[base, exponent])
+                .expect("pow");
+            // Mesmo nó duas vezes: a memoização DAG deve reaproveitar o valor.
+            builder
+                .operation(OperationType::Mul, &[power, power])
+                .expect("mul")
+        });
+        let expected = Rational::from_bigint(num_bigint::BigInt::from(2).pow(200));
+        assert_eq!(result.expect("avaliação"), expected);
+    }
+
+    #[test]
     fn evaluates_nested_expression() {
         // (1 + 2) * 3 - 4 = 5
         let result = evaluate(|builder| {
@@ -529,6 +658,37 @@ mod tests {
             .expect("produto");
         let ast = builder.finish(product).expect("árvore");
         assert!(eval_ast(&ast, &limits).is_err());
+    }
+
+    #[test]
+    fn mul_prechecks_bit_budget() {
+        let limits = Limits::new(50, 500, 1_000, 100, 16_384).expect("limites");
+        let mut builder = AstBuilder::new(&limits);
+        let big = builder
+            .literal(Rational::from_i64(1_000_000_000), "1000000000")
+            .expect("literal");
+        let one = builder.literal(Rational::ONE, "1").expect("literal");
+        let ok = builder
+            .operation(OperationType::Mul, &[big, one])
+            .expect("produto");
+        let ast_ok = builder.finish(ok).expect("árvore");
+        assert!(eval_ast(&ast_ok, &limits).is_ok());
+
+        let mut builder = AstBuilder::new(&limits);
+        let left = builder
+            .literal(Rational::from_i64(1_000_000_000), "1000000000")
+            .expect("literal");
+        let right = builder
+            .literal(Rational::from_i64(1_000_000_000), "1000000000")
+            .expect("literal");
+        let product = builder
+            .operation(OperationType::Mul, &[left, right])
+            .expect("produto");
+        let ast = builder.finish(product).expect("árvore");
+        assert!(matches!(
+            eval_ast(&ast, &limits),
+            Err(CalcAuyError::MathOverflow { .. })
+        ));
     }
 
     #[test]

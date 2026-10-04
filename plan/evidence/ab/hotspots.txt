@@ -1,0 +1,13 @@
+    Finished `release` profile [optimized] target(s) in 0.18s
+     Running `target/release/examples/hotspot_study`
+2^225000        pow=14.3µs  shift=0.9µs
+225kbit × 225kbit  mul=13.8µs
+avalanche pow+3mul=79µs  shift+3mul=52µs
+Rational 2^225000  =10.8µs
+soma 125k seq      =21285µs
+soma 50 seq        =5.8µs  (×2500 ≈ 14537µs)
+write_canonical  reuso=0.127µs  alocando=0.329µs
+2^900000 -> decimal      =56957µs
+2^900000 -> hex          =455µs
+2^900000 bits()          =0.0038µs
+2^225000 -> decimal      =7060.6µs

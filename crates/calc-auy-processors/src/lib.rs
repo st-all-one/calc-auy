@@ -10,6 +10,7 @@
 )]
 
 pub mod codec;
+pub mod persistence;
 pub mod schema;
 
 mod proto;

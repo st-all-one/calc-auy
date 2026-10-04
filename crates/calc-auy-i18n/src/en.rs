@@ -105,6 +105,9 @@ pub const GRAMMAR_US: Grammar = Grammar {
     connectors: CONNECTORS,
     group_prefix: "open parenthesis ",
     group_suffix: " close parenthesis",
+    root_square: "square root of ",
+    root_cubic: "cubic root of ",
+    root_n: "the {den}-th root of ",
 };
 
 /// Gramática europeia.
@@ -113,6 +116,9 @@ pub const GRAMMAR_EU: Grammar = Grammar {
     connectors: CONNECTORS,
     group_prefix: "open parenthesis ",
     group_suffix: " close parenthesis",
+    root_square: "square root of ",
+    root_cubic: "cubic root of ",
+    root_n: "the {den}-th root of ",
 };
 
 /// Escreve um texto numérico por extenso (americano).

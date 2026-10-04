@@ -64,6 +64,11 @@ impl Output<'_> {
     /// ```
     #[must_use]
     pub fn to_monetary(&self) -> String {
+        Self::cached(&self.monetary, || self.render_monetary())
+    }
+
+    /// Formata o resultado como moeda, sem cache.
+    fn render_monetary(&self) -> String {
         let options = self.options();
         let data = options.locale().data();
         let currency = options.currency();

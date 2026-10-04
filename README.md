@@ -38,7 +38,7 @@ O único argumento posicional é o `BODY` (padrão: stdin); a configuração vai
 | `calc-auy-output` | decimal, monetário, LaTeX, Unicode, Mermaid, JSON multi-formato |
 | `calc-auy-render` | HTML (`KaTeX`), SVG e PNG (feature `render`) |
 | `calc-auy-nlg` / `calc-auy-i18n` | SRL + realizers (9 idiomas) |
-| `calc-auy-processors` | Protobuf, CBOR, MessagePack |
+| `calc-auy-processors` | Protobuf, CBOR, MessagePack, persistência |
 | `calc-auy-api` | fachada única |
 | `calc-auy-wasm` | bindings WASM (`cdylib`) |
 | `calc-auy` | binário CLI |

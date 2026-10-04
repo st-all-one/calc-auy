@@ -40,6 +40,22 @@ impl RoundingStrategy {
         }
     }
 
+    /// Retorna o rótulo de exibição canônico (`NBR-5891`, `HALF-UP`, ...).
+    ///
+    /// É o rótulo usado nas representações LaTeX, Unicode e verbal, distinto
+    /// do identificador *wire* [`Self::as_str`].
+    #[must_use]
+    pub const fn as_display(self) -> &'static str {
+        match self {
+            Self::Nbr5891 => "NBR-5891",
+            Self::HalfUp => "HALF-UP",
+            Self::HalfEven => "HALF-EVEN",
+            Self::Truncate => "TRUNCATE",
+            Self::Ceil => "CEIL",
+            Self::None => "NONE",
+        }
+    }
+
     /// Aplica a estratégia de arredondamento a um racional.
     #[must_use]
     pub fn apply(self, value: &Rational, decimals: u32) -> Rational {

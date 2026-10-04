@@ -1,0 +1,573 @@
+{
+  "overall_speedup": 7.814091620188034,
+  "by_category": {
+    "audit": 8.945362630966208,
+    "builder": 4.136195151128003,
+    "codec": 4.424426462131628,
+    "core": 5.128685085967647,
+    "output": 10.06972920738008,
+    "perf": 9.455295243887598,
+    "security": 22.093602562684833,
+    "stress": 4.498245219467037
+  },
+  "rows": [
+    {
+      "name": "audit/forensic_hibernate_hydrate",
+      "category": "audit",
+      "iters": 2000,
+      "ts_us": 38.42033249999986,
+      "rust_us": 4.295,
+      "speedup": 8.945362630966207,
+      "winner": "rust"
+    },
+    {
+      "name": "builder/basic_ops_chain",
+      "category": "builder",
+      "iters": 20000,
+      "ts_us": 58.162771500000005,
+      "rust_us": 7.4575000000000005,
+      "speedup": 7.7992318471337585,
+      "winner": "rust"
+    },
+    {
+      "name": "builder/build_chain_10",
+      "category": "builder",
+      "iters": 20000,
+      "ts_us": 7.216277249999984,
+      "rust_us": 2.1024999999999996,
+      "speedup": 3.4322365041617053,
+      "winner": "rust"
+    },
+    {
+      "name": "builder/commit_chain_10",
+      "category": "builder",
+      "iters": 20000,
+      "ts_us": 55.82273024999999,
+      "rust_us": 7.391500000000001,
+      "speedup": 7.552287120340931,
+      "winner": "rust"
+    },
+    {
+      "name": "builder/commit_chain_100",
+      "category": "builder",
+      "iters": 2000,
+      "ts_us": 368.7268425000002,
+      "rust_us": 45.325,
+      "speedup": 8.135175785990075,
+      "winner": "rust"
+    },
+    {
+      "name": "builder/group_precedence",
+      "category": "builder",
+      "iters": 20000,
+      "ts_us": 31.797853800000034,
+      "rust_us": 3.0309999999999997,
+      "speedup": 10.490878851864084,
+      "winner": "rust"
+    },
+    {
+      "name": "builder/lex_chain_100",
+      "category": "builder",
+      "iters": 20000,
+      "ts_us": 8.273255899999999,
+      "rust_us": 2.1995,
+      "speedup": 3.7614257331211634,
+      "winner": "rust"
+    },
+    {
+      "name": "builder/parse_chain_100",
+      "category": "builder",
+      "iters": 20000,
+      "ts_us": 45.46743825,
+      "rust_us": 18.0055,
+      "speedup": 2.5251972036322234,
+      "winner": "rust"
+    },
+    {
+      "name": "builder/parse_chain_1000",
+      "category": "builder",
+      "iters": 2000,
+      "ts_us": 597.0635020000002,
+      "rust_us": 454.495,
+      "speedup": 1.3136855234931082,
+      "winner": "rust"
+    },
+    {
+      "name": "builder/parse_expression_pemdas",
+      "category": "builder",
+      "iters": 20000,
+      "ts_us": 5.622960949999992,
+      "rust_us": 3.4164999999999996,
+      "speedup": 1.6458249524367021,
+      "winner": "rust"
+    },
+    {
+      "name": "codec/json_audit_trace",
+      "category": "codec",
+      "iters": 2000,
+      "ts_us": 0.2375659999997879,
+      "rust_us": 0.075,
+      "speedup": 3.1675466666638386,
+      "winner": "rust"
+    },
+    {
+      "name": "codec/msgpack_roundtrip",
+      "category": "codec",
+      "iters": 2000,
+      "ts_us": 1022.8896640000003,
+      "rust_us": 56.42,
+      "speedup": 18.129912513293164,
+      "winner": "rust"
+    },
+    {
+      "name": "codec/protobuf_roundtrip",
+      "category": "codec",
+      "iters": 2000,
+      "ts_us": 86.29786799999965,
+      "rust_us": 57.22,
+      "speedup": 1.5081766515204413,
+      "winner": "rust"
+    },
+    {
+      "name": "core/canonical_json",
+      "category": "core",
+      "iters": 100000,
+      "ts_us": 2.1522904099999995,
+      "rust_us": 0.23800000000000002,
+      "speedup": 9.04323701680672,
+      "winner": "rust"
+    },
+    {
+      "name": "core/rational_add",
+      "category": "core",
+      "iters": 200000,
+      "ts_us": 0.46369204499999994,
+      "rust_us": 0.08199999999999999,
+      "speedup": 5.654781036585366,
+      "winner": "rust"
+    },
+    {
+      "name": "core/rational_div",
+      "category": "core",
+      "iters": 100000,
+      "ts_us": 0.4647040499999997,
+      "rust_us": 0.10609999999999999,
+      "speedup": 4.3798685202639,
+      "winner": "rust"
+    },
+    {
+      "name": "core/rational_from",
+      "category": "core",
+      "iters": 200000,
+      "ts_us": 0.24109374499999994,
+      "rust_us": 0.020499999999999997,
+      "speedup": 11.760670487804877,
+      "winner": "rust"
+    },
+    {
+      "name": "core/rational_mul",
+      "category": "core",
+      "iters": 100000,
+      "ts_us": 0.5024017199999997,
+      "rust_us": 0.08779999999999999,
+      "speedup": 5.7221152619589954,
+      "winner": "rust"
+    },
+    {
+      "name": "core/rational_pow_small",
+      "category": "core",
+      "iters": 20000,
+      "ts_us": 1.1454817999999989,
+      "rust_us": 0.05600000000000001,
+      "speedup": 20.45503214285712,
+      "winner": "rust"
+    },
+    {
+      "name": "core/round_half_up",
+      "category": "core",
+      "iters": 100000,
+      "ts_us": 0.4820317400000005,
+      "rust_us": 0.33479999999999993,
+      "speedup": 1.4397602747909217,
+      "winner": "rust"
+    },
+    {
+      "name": "core/round_nbr5891",
+      "category": "core",
+      "iters": 100000,
+      "ts_us": 0.4095655400000004,
+      "rust_us": 0.37979999999999997,
+      "speedup": 1.078371616640338,
+      "winner": "rust"
+    },
+    {
+      "name": "output/mermaid_5000_metadata",
+      "category": "output",
+      "iters": 3,
+      "ts_us": 5.284666667042377,
+      "rust_us": 3.3333333333333335,
+      "speedup": 1.585400000112713,
+      "winner": "rust"
+    },
+    {
+      "name": "output/mermaid_pii_redaction",
+      "category": "output",
+      "iters": 2000,
+      "ts_us": 26.95333649999884,
+      "rust_us": 3.79,
+      "speedup": 7.1116982849601165,
+      "winner": "rust"
+    },
+    {
+      "name": "output/render_nested_100",
+      "category": "output",
+      "iters": 500,
+      "ts_us": 1444.8398759999982,
+      "rust_us": 183.42,
+      "speedup": 7.877221000981345,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toCustomOutput_100k",
+      "category": "output",
+      "iters": 1,
+      "ts_us": 113773.06000000317,
+      "rust_us": 7320.0,
+      "speedup": 15.542767759563274,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toJSON_formats",
+      "category": "output",
+      "iters": 20000,
+      "ts_us": 2.8408902999999555,
+      "rust_us": 0.5445000000000001,
+      "speedup": 5.217429384756575,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toLaTeX",
+      "category": "output",
+      "iters": 50000,
+      "ts_us": 0.3480313799999567,
+      "rust_us": 0.008199999999999999,
+      "speedup": 42.44285121950692,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toLaTeX_cold",
+      "category": "output",
+      "iters": 2000,
+      "ts_us": 4.649523500000214,
+      "rust_us": 0.85,
+      "speedup": 5.470027647059076,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toMermaid_100",
+      "category": "output",
+      "iters": 2000,
+      "ts_us": 0.6437989999994898,
+      "rust_us": 0.015,
+      "speedup": 42.91993333329932,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toMermaid_cold",
+      "category": "output",
+      "iters": 2000,
+      "ts_us": 9.485907499998575,
+      "rust_us": 1.58,
+      "speedup": 6.003738924049731,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toMonetary",
+      "category": "output",
+      "iters": 50000,
+      "ts_us": 0.5673657999999705,
+      "rust_us": 0.0076,
+      "speedup": 74.65339473683822,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toMonetary_burst_5_locales",
+      "category": "output",
+      "iters": 1,
+      "ts_us": 50426.611000002595,
+      "rust_us": 510.0,
+      "speedup": 98.87570784314234,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toRawInternalNumber",
+      "category": "output",
+      "iters": 100000,
+      "ts_us": 0.18193570999999795,
+      "rust_us": 0.0248,
+      "speedup": 7.336117338709595,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toScaledBigInt",
+      "category": "output",
+      "iters": 100000,
+      "ts_us": 0.28424721999999747,
+      "rust_us": 0.0111,
+      "speedup": 25.60785765765743,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toSliceByRatio_4",
+      "category": "output",
+      "iters": 20000,
+      "ts_us": 2.938378550000016,
+      "rust_us": 5.0545,
+      "speedup": 0.5813391136610973,
+      "winner": "ts"
+    },
+    {
+      "name": "output/toSlice_100k",
+      "category": "output",
+      "iters": 3,
+      "ts_us": 67625.87100000019,
+      "rust_us": 5530.0,
+      "speedup": 12.22890976491866,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toSlice_3",
+      "category": "output",
+      "iters": 50000,
+      "ts_us": 1.9752684600000066,
+      "rust_us": 0.6609999999999999,
+      "speedup": 2.988303267776107,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toStringNumber",
+      "category": "output",
+      "iters": 100000,
+      "ts_us": 0.33669190000000526,
+      "rust_us": 0.0086,
+      "speedup": 39.15022093023317,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toUnicode",
+      "category": "output",
+      "iters": 50000,
+      "ts_us": 0.36961377999999967,
+      "rust_us": 0.0106,
+      "speedup": 34.86922452830186,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toUnicode_cold",
+      "category": "output",
+      "iters": 2000,
+      "ts_us": 2.3372810000000754,
+      "rust_us": 0.425,
+      "speedup": 5.499484705882531,
+      "winner": "rust"
+    },
+    {
+      "name": "output/toVerbalA11y_pt",
+      "category": "output",
+      "iters": 20000,
+      "ts_us": 0.9809552500000792,
+      "rust_us": 0.8135,
+      "speedup": 1.2058454210203802,
+      "winner": "rust"
+    },
+    {
+      "name": "perf/balanced_width_100",
+      "category": "perf",
+      "iters": 500,
+      "ts_us": 621.9802439999985,
+      "rust_us": 46.0,
+      "speedup": 13.52130965217388,
+      "winner": "rust"
+    },
+    {
+      "name": "perf/batch_1000_tax",
+      "category": "perf",
+      "iters": 3,
+      "ts_us": 25010.86566666648,
+      "rust_us": 2313.3333333333335,
+      "speedup": 10.811613400576286,
+      "winner": "rust"
+    },
+    {
+      "name": "perf/batch_5000_mult",
+      "category": "perf",
+      "iters": 3,
+      "ts_us": 121585.578333333,
+      "rust_us": 11866.666666666668,
+      "speedup": 10.245975702247161,
+      "winner": "rust"
+    },
+    {
+      "name": "perf/deep_tree_500",
+      "category": "perf",
+      "iters": 200,
+      "ts_us": 1800.0770050000028,
+      "rust_us": 222.65,
+      "speedup": 8.08478331461937,
+      "winner": "rust"
+    },
+    {
+      "name": "perf/depth_10000",
+      "category": "perf",
+      "iters": 10,
+      "ts_us": 49904.96809999995,
+      "rust_us": 7754.0,
+      "speedup": 6.4360289012122704,
+      "winner": "rust"
+    },
+    {
+      "name": "perf/pow_div_2_100",
+      "category": "perf",
+      "iters": 2000,
+      "ts_us": 43.32149350000054,
+      "rust_us": 4.725,
+      "speedup": 9.168570052910168,
+      "winner": "rust"
+    },
+    {
+      "name": "security/audit_trace_100",
+      "category": "security",
+      "iters": 2000,
+      "ts_us": 257.42824999999993,
+      "rust_us": 72.38,
+      "speedup": 3.5566213042276864,
+      "winner": "rust"
+    },
+    {
+      "name": "security/check_integrity",
+      "category": "security",
+      "iters": 2000,
+      "ts_us": 28.85847250000006,
+      "rust_us": 0.295,
+      "speedup": 97.82533050847479,
+      "winner": "rust"
+    },
+    {
+      "name": "security/hydrate_audit_trace",
+      "category": "security",
+      "iters": 2000,
+      "ts_us": 45.93929400000161,
+      "rust_us": 0.285,
+      "speedup": 161.19050526316354,
+      "winner": "rust"
+    },
+    {
+      "name": "security/metadata_100",
+      "category": "security",
+      "iters": 2000,
+      "ts_us": 310.9283475000002,
+      "rust_us": 40.075,
+      "speedup": 7.758661197754216,
+      "winner": "rust"
+    },
+    {
+      "name": "security/metadata_10000_emoji",
+      "category": "security",
+      "iters": 5,
+      "ts_us": 818569.9629999999,
+      "rust_us": 10687.999999999998,
+      "speedup": 76.58775851422156,
+      "winner": "rust"
+    },
+    {
+      "name": "security/metadata_5000",
+      "category": "security",
+      "iters": 20,
+      "ts_us": 137509.74594999995,
+      "rust_us": 2834.5,
+      "speedup": 48.51287562180277,
+      "winner": "rust"
+    },
+    {
+      "name": "security/sign_chain_100",
+      "category": "security",
+      "iters": 2000,
+      "ts_us": 287.1539679999996,
+      "rust_us": 45.795,
+      "speedup": 6.270421836445018,
+      "winner": "rust"
+    },
+    {
+      "name": "security/sign_chain_450",
+      "category": "security",
+      "iters": 300,
+      "ts_us": 1084.1997966666652,
+      "rust_us": 193.6,
+      "speedup": 5.600205561294758,
+      "winner": "rust"
+    },
+    {
+      "name": "stress/hydra_50x3",
+      "category": "stress",
+      "iters": 2,
+      "ts_us": 537216.031,
+      "rust_us": 66670.0,
+      "speedup": 8.057837573121343,
+      "winner": "rust"
+    },
+    {
+      "name": "stress/mult_avalanche_900k",
+      "category": "stress",
+      "iters": 2,
+      "ts_us": 40140.52900000024,
+      "rust_us": 36265.0,
+      "speedup": 1.106866924031442,
+      "winner": "rust"
+    },
+    {
+      "name": "stress/overflow_detect_1m",
+      "category": "stress",
+      "iters": 2,
+      "ts_us": 81.22550000007323,
+      "rust_us": 5.0,
+      "speedup": 16.245100000014645,
+      "winner": "rust"
+    },
+    {
+      "name": "stress/power_tower",
+      "category": "stress",
+      "iters": 20,
+      "ts_us": 31.06900000002497,
+      "rust_us": 3.0,
+      "speedup": 10.356333333341658,
+      "winner": "rust"
+    },
+    {
+      "name": "stress/primorial_sum_100",
+      "category": "stress",
+      "iters": 20,
+      "ts_us": 1554.6822499998598,
+      "rust_us": 439.49999999999994,
+      "speedup": 3.537388509669761,
+      "winner": "rust"
+    },
+    {
+      "name": "stress/roots_nested_huge",
+      "category": "stress",
+      "iters": 2,
+      "ts_us": 5747.710999999981,
+      "rust_us": 400.0,
+      "speedup": 14.369277499999953,
+      "winner": "rust"
+    },
+    {
+      "name": "stress/supernova_primorial",
+      "category": "stress",
+      "iters": 10,
+      "ts_us": 89.90000000012515,
+      "rust_us": 184.0,
+      "speedup": 0.4885869565224193,
+      "winner": "ts"
+    }
+  ]
+}

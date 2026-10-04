@@ -52,6 +52,9 @@ pub const GRAMMAR: Grammar = Grammar {
     },
     group_prefix: "（",
     group_suffix: "）",
+    root_square: "平方根 ",
+    root_cubic: "立方根 ",
+    root_n: "{den}乗根 ",
 };
 
 /// Escreve um texto numérico por extenso em japonês.

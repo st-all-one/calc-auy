@@ -156,7 +156,7 @@ impl Connectors {
 }
 
 /// Gramática de realização: função de escrita numérica + conectivos +
-/// delimitadores de grupo.
+/// delimitadores de grupo + frases de raiz.
 #[derive(Debug, Clone, Copy)]
 pub struct Grammar {
     /// Escreve um texto numérico (literal ou resultado) por extenso.
@@ -167,6 +167,55 @@ pub struct Grammar {
     pub group_prefix: &'static str,
     /// Sufixo de agrupamento (`" fecha parênteses"`, `"）"`).
     pub group_suffix: &'static str,
+    /// Prefixo da raiz quadrada (`"raiz quadrada de "`).
+    pub root_square: &'static str,
+    /// Prefixo da raiz cúbica (`"raiz cúbica de "`).
+    pub root_cubic: &'static str,
+    /// Template da raiz enésima, contendo `{den}` (`"raiz {den}-ésima de "`).
+    pub root_n: &'static str,
+}
+
+/// Extrai `(potência, índice)` de um expoente fracionário na SRL.
+///
+/// Reconhece tanto um literal `"1/2"` quanto a operação `Div` de dois
+/// literais (forma produzida pelo parser para frações).
+fn root_info(node: &SrlNode) -> Option<(String, String)> {
+    match node {
+        SrlNode::Group(inner) | SrlNode::Control(inner) => root_info(inner),
+        SrlNode::Literal(text) => split_fraction(text),
+        SrlNode::Operation {
+            op: OperationType::Div,
+            operands,
+        } => {
+            if operands.len() != 2 {
+                return None;
+            }
+            let power = literal_text(operands.first()?)?;
+            let index = literal_text(operands.get(1)?)?;
+            Some((power, index))
+        }
+        SrlNode::Operation { .. } => None,
+    }
+}
+
+/// Divide um texto `"p/q"` em `(p, q)`.
+fn split_fraction(text: &str) -> Option<(String, String)> {
+    let mut parts = text.split('/');
+    let power = parts.next()?;
+    let index = parts.next()?;
+    if parts.next().is_some() || power.is_empty() || index.is_empty() {
+        return None;
+    }
+    Some((power.to_string(), index.to_string()))
+}
+
+/// Texto original de um literal (atravessando grupos/controles).
+fn literal_text(node: &SrlNode) -> Option<String> {
+    match node {
+        SrlNode::Literal(text) => Some(text.clone()),
+        SrlNode::Group(inner) | SrlNode::Control(inner) => literal_text(inner),
+        SrlNode::Operation { .. } => None,
+    }
 }
 
 impl Grammar {
@@ -192,15 +241,34 @@ impl Grammar {
         (self.number)(text, gender)
     }
 
-    /// Renderiza uma operação, tratando a potenciação (prefixo/sufixo).
+    /// Renderiza uma operação, tratando a potenciação (raiz ou prefixo/sufixo).
     fn render_operation(&self, op: OperationType, operands: &[SrlNode], gender: Gender) -> String {
         let rendered = self.render_operands(operands, gender);
-        if op == OperationType::Pow {
-            return self
-                .render_pow(&rendered)
-                .unwrap_or_else(|| self.join_operands(op, &rendered));
+        if op != OperationType::Pow {
+            return self.join_operands(op, &rendered);
         }
-        self.join_operands(op, &rendered)
+        if let Some(root) = self.render_root(operands, &rendered) {
+            return root;
+        }
+        self.render_pow(&rendered)
+            .unwrap_or_else(|| self.join_operands(op, &rendered))
+    }
+
+    /// Renderiza uma potenciação fracionária como raiz, se aplicável.
+    fn render_root(&self, operands: &[SrlNode], rendered: &[String]) -> Option<String> {
+        let (power, index) = root_info(operands.get(1)?)?;
+        let base = rendered.first()?;
+        let base_verbal = if power == "1" {
+            base.clone()
+        } else {
+            format!("{base}{}{power}", self.connectors.pow_prefix)
+        };
+        let phrase = match index.as_str() {
+            "2" => self.root_square.to_string(),
+            "3" => self.root_cubic.to_string(),
+            _ => self.root_n.replace("{den}", &index),
+        };
+        Some(format!("{phrase}{base_verbal}"))
     }
 
     /// Renderiza os operandos de uma operação.

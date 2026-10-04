@@ -17,3 +17,16 @@ schema: em sincronia (idempotente)
 
 `Format::encode`/`decode` compartilham um modelo *wire* único, e os limites são
 reaplicados na reconstrução da arena.
+
+## Persistência e `to_custom_output`
+
+Além dos codecs, o seam `OutputProcessor` permite estender a saída sem alterar o
+núcleo. O processador de persistência achata o rastro em colunas de banco
+(`signature`, `context_label`, `round_strategy`, `result_numerator`,
+`result_denominator`, `ast`):
+
+```rust
+use calc_auy_processors::persistence::PersistenceProcessor;
+
+let record = output.to_custom_output(&PersistenceProcessor, (), &realizer)?;
+```

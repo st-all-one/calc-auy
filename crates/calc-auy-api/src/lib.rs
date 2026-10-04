@@ -17,7 +17,8 @@ pub use calc_auy_builder::{
 pub use calc_auy_i18n::{Language, PtBrRealizer, realizer, realizer_for_code};
 pub use calc_auy_nlg::{Srl, SrlNode, VerbalRealizer};
 pub use calc_auy_output::{
-    Currency, CurrencyPosition, DEFAULT_KEYS, Locale, Output, OutputKey, OutputOptions,
+    Currency, CurrencyPosition, DEFAULT_KEYS, Locale, LocaleData, MermaidTerms, Output,
+    OutputContext, OutputKey, OutputOptions, OutputProcessor, Sensitivity,
 };
 #[cfg(feature = "render")]
 pub use calc_auy_output::{

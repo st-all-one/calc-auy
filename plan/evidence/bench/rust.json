@@ -1,0 +1,255 @@
+{
+  "engine": "rust",
+  "results": {
+    "core/rational_from": {
+      "iters": 200000,
+      "total_ms": 4.1
+    },
+    "core/rational_add": {
+      "iters": 200000,
+      "total_ms": 16.4
+    },
+    "core/rational_mul": {
+      "iters": 100000,
+      "total_ms": 8.78
+    },
+    "core/rational_div": {
+      "iters": 100000,
+      "total_ms": 10.61
+    },
+    "core/rational_pow_small": {
+      "iters": 20000,
+      "total_ms": 1.12
+    },
+    "core/round_nbr5891": {
+      "iters": 100000,
+      "total_ms": 37.98
+    },
+    "core/round_half_up": {
+      "iters": 100000,
+      "total_ms": 33.48
+    },
+    "core/canonical_json": {
+      "iters": 100000,
+      "total_ms": 23.8
+    },
+    "builder/lex_chain_100": {
+      "iters": 20000,
+      "total_ms": 43.99
+    },
+    "builder/parse_chain_100": {
+      "iters": 20000,
+      "total_ms": 360.11
+    },
+    "builder/parse_chain_1000": {
+      "iters": 2000,
+      "total_ms": 908.99
+    },
+    "builder/parse_expression_pemdas": {
+      "iters": 20000,
+      "total_ms": 68.33
+    },
+    "builder/build_chain_10": {
+      "iters": 20000,
+      "total_ms": 42.05
+    },
+    "builder/commit_chain_10": {
+      "iters": 20000,
+      "total_ms": 147.83
+    },
+    "builder/commit_chain_100": {
+      "iters": 2000,
+      "total_ms": 90.65
+    },
+    "builder/basic_ops_chain": {
+      "iters": 20000,
+      "total_ms": 149.15
+    },
+    "builder/group_precedence": {
+      "iters": 20000,
+      "total_ms": 60.62
+    },
+    "perf/deep_tree_500": {
+      "iters": 200,
+      "total_ms": 44.53
+    },
+    "perf/depth_10000": {
+      "iters": 10,
+      "total_ms": 77.54
+    },
+    "perf/batch_5000_mult": {
+      "iters": 3,
+      "total_ms": 35.6
+    },
+    "perf/batch_1000_tax": {
+      "iters": 3,
+      "total_ms": 6.94
+    },
+    "perf/pow_div_2_100": {
+      "iters": 2000,
+      "total_ms": 9.45
+    },
+    "perf/balanced_width_100": {
+      "iters": 500,
+      "total_ms": 23.0
+    },
+    "security/sign_chain_100": {
+      "iters": 2000,
+      "total_ms": 91.59
+    },
+    "security/sign_chain_450": {
+      "iters": 300,
+      "total_ms": 58.08
+    },
+    "security/audit_trace_100": {
+      "iters": 2000,
+      "total_ms": 144.76
+    },
+    "security/metadata_100": {
+      "iters": 2000,
+      "total_ms": 80.15
+    },
+    "security/metadata_5000": {
+      "iters": 20,
+      "total_ms": 56.69
+    },
+    "security/metadata_10000_emoji": {
+      "iters": 5,
+      "total_ms": 53.44
+    },
+    "security/hydrate_audit_trace": {
+      "iters": 2000,
+      "total_ms": 0.57
+    },
+    "security/check_integrity": {
+      "iters": 2000,
+      "total_ms": 0.59
+    },
+    "audit/forensic_hibernate_hydrate": {
+      "iters": 2000,
+      "total_ms": 8.59
+    },
+    "output/toStringNumber": {
+      "iters": 100000,
+      "total_ms": 0.86
+    },
+    "output/toScaledBigInt": {
+      "iters": 100000,
+      "total_ms": 1.11
+    },
+    "output/toRawInternalNumber": {
+      "iters": 100000,
+      "total_ms": 2.48
+    },
+    "output/toUnicode": {
+      "iters": 50000,
+      "total_ms": 0.53
+    },
+    "output/toLaTeX": {
+      "iters": 50000,
+      "total_ms": 0.41
+    },
+    "output/toMonetary": {
+      "iters": 50000,
+      "total_ms": 0.38
+    },
+    "output/toMonetary_burst_5_locales": {
+      "iters": 1,
+      "total_ms": 0.51
+    },
+    "output/toSlice_3": {
+      "iters": 50000,
+      "total_ms": 33.05
+    },
+    "output/toSlice_100k": {
+      "iters": 3,
+      "total_ms": 16.59
+    },
+    "output/toSliceByRatio_4": {
+      "iters": 20000,
+      "total_ms": 101.09
+    },
+    "output/toVerbalA11y_pt": {
+      "iters": 20000,
+      "total_ms": 16.27
+    },
+    "output/toMermaid_100": {
+      "iters": 2000,
+      "total_ms": 0.03
+    },
+    "output/toJSON_formats": {
+      "iters": 20000,
+      "total_ms": 10.89
+    },
+    "output/toCustomOutput_100k": {
+      "iters": 1,
+      "total_ms": 7.32
+    },
+    "output/toLaTeX_cold": {
+      "iters": 2000,
+      "total_ms": 1.7
+    },
+    "output/toUnicode_cold": {
+      "iters": 2000,
+      "total_ms": 0.85
+    },
+    "output/toMermaid_cold": {
+      "iters": 2000,
+      "total_ms": 3.16
+    },
+    "output/render_nested_100": {
+      "iters": 500,
+      "total_ms": 91.71
+    },
+    "output/mermaid_5000_metadata": {
+      "iters": 3,
+      "total_ms": 0.01
+    },
+    "output/mermaid_pii_redaction": {
+      "iters": 2000,
+      "total_ms": 7.58
+    },
+    "stress/primorial_sum_100": {
+      "iters": 20,
+      "total_ms": 8.79
+    },
+    "stress/mult_avalanche_900k": {
+      "iters": 2,
+      "total_ms": 72.53
+    },
+    "stress/overflow_detect_1m": {
+      "iters": 2,
+      "total_ms": 0.01
+    },
+    "stress/power_tower": {
+      "iters": 20,
+      "total_ms": 0.06
+    },
+    "stress/roots_nested_huge": {
+      "iters": 2,
+      "total_ms": 0.8
+    },
+    "stress/hydra_50x3": {
+      "iters": 2,
+      "total_ms": 133.34
+    },
+    "stress/supernova_primorial": {
+      "iters": 10,
+      "total_ms": 1.84
+    },
+    "codec/msgpack_roundtrip": {
+      "iters": 2000,
+      "total_ms": 112.84
+    },
+    "codec/protobuf_roundtrip": {
+      "iters": 2000,
+      "total_ms": 114.44
+    },
+    "codec/json_audit_trace": {
+      "iters": 2000,
+      "total_ms": 0.15
+    }
+  },
+  "timestamp": "wave1",
+  "version": "0.1.0"
+}

@@ -28,6 +28,8 @@ pub struct AstBuilder<'limits> {
     nodes: Vec<NodeData>,
     /// Metadados por nó (paralelo a `nodes`).
     metadata: Vec<Arc<Metadata>>,
+    /// Bytes de metadados por nó (paralelo a `metadata`).
+    metadata_sizes: Vec<usize>,
     /// Profundidade por nó (paralelo a `nodes`).
     depths: Vec<usize>,
     /// Total de bytes de metadata já acumulados.
@@ -42,6 +44,7 @@ impl<'limits> AstBuilder<'limits> {
             limits,
             nodes: Vec::new(),
             metadata: Vec::new(),
+            metadata_sizes: Vec::new(),
             depths: Vec::new(),
             metadata_bytes: 0,
         }
@@ -54,6 +57,7 @@ impl<'limits> AstBuilder<'limits> {
             limits,
             nodes: Vec::with_capacity(capacity),
             metadata: Vec::with_capacity(capacity),
+            metadata_sizes: Vec::with_capacity(capacity),
             depths: Vec::with_capacity(capacity),
             metadata_bytes: 0,
         }
@@ -66,15 +70,17 @@ impl<'limits> AstBuilder<'limits> {
     #[must_use]
     pub fn from_ast(ast: FlatAst, limits: &'limits Limits) -> (Self, NodeId) {
         let (nodes, metadata, depths, root) = ast.into_parts();
-        let metadata_bytes = metadata
+        let metadata_sizes: Vec<usize> = metadata
             .iter()
             .map(|entry| metadata_size_bytes(entry.as_ref()))
-            .sum();
+            .collect();
+        let metadata_bytes = metadata_sizes.iter().copied().sum();
         (
             Self {
                 limits,
                 nodes,
                 metadata,
+                metadata_sizes,
                 depths,
                 metadata_bytes,
             },
@@ -171,6 +177,7 @@ impl<'limits> AstBuilder<'limits> {
         let index = self.nodes.len();
         self.nodes.push(data);
         self.metadata.push(Arc::new(metadata));
+        self.metadata_sizes.push(bytes);
         self.depths.push(depth);
         self.metadata_bytes = total;
         NodeId::from_index(index).ok_or_else(|| CalcAuyError::LimitExceeded {
@@ -301,14 +308,15 @@ impl<'limits> AstBuilder<'limits> {
     /// Retorna [`CalcAuyError::InvalidInput`] se o identificador for inválido
     /// ou [`CalcAuyError::LimitExceeded`] se o limite de bytes for excedido.
     pub fn set_metadata(&mut self, id: NodeId, metadata: Metadata) -> Result<(), CalcAuyError> {
-        let slot = self
-            .metadata
-            .get_mut(id.index())
-            .ok_or_else(|| CalcAuyError::InvalidInput {
-                message: format!("NodeId inválido: {}", id.get()),
-            })?;
+        let index = id.index();
+        let old_bytes =
+            self.metadata_sizes
+                .get(index)
+                .copied()
+                .ok_or_else(|| CalcAuyError::InvalidInput {
+                    message: format!("NodeId inválido: {}", id.get()),
+                })?;
 
-        let old_bytes = metadata_size_bytes(slot.as_ref());
         let new_bytes = metadata_size_bytes(&metadata);
         let total = self
             .metadata_bytes
@@ -322,8 +330,13 @@ impl<'limits> AstBuilder<'limits> {
             });
         }
         self.metadata_bytes = total;
+        if let Some(size) = self.metadata_sizes.get_mut(index) {
+            *size = new_bytes;
+        }
         // Copy-on-write: só clona o mapa se o `Arc` estiver compartilhado.
-        *Arc::make_mut(slot) = metadata;
+        if let Some(slot) = self.metadata.get_mut(index) {
+            *Arc::make_mut(slot) = metadata;
+        }
         Ok(())
     }
 
@@ -339,15 +352,49 @@ impl<'limits> AstBuilder<'limits> {
         key: impl Into<Box<str>>,
         value: MetaValue,
     ) -> Result<(), CalcAuyError> {
-        let mut map = self
+        let index = id.index();
+        let key: Box<str> = key.into();
+        let old_bytes =
+            self.metadata_sizes
+                .get(index)
+                .copied()
+                .ok_or_else(|| CalcAuyError::InvalidInput {
+                    message: format!("NodeId inválido: {}", id.get()),
+                })?;
+        let slot = self
             .metadata
-            .get(id.index())
-            .map(|arc| (**arc).clone())
+            .get_mut(index)
             .ok_or_else(|| CalcAuyError::InvalidInput {
                 message: format!("NodeId inválido: {}", id.get()),
             })?;
-        map.insert(key.into(), value);
-        self.set_metadata(id, map)
+
+        // Atualização incremental: O(log n + |valor|) em vez de recomputar o
+        // tamanho do mapa inteiro (que tornava N inserções O(N²)).
+        let map = Arc::make_mut(slot);
+        let entry_size = key.len().saturating_add(value.size_bytes());
+        let replaced = map
+            .get(key.as_ref())
+            .map_or(0, |old| key.len().saturating_add(old.size_bytes()));
+        let new_bytes = old_bytes
+            .saturating_sub(replaced)
+            .saturating_add(entry_size);
+        let total = self
+            .metadata_bytes
+            .saturating_sub(old_bytes)
+            .saturating_add(new_bytes);
+        if total > self.limits.max_metadata_bytes {
+            return Err(CalcAuyError::LimitExceeded {
+                kind: LimitKind::MaxMetadataBytes,
+                limit: as_u64(self.limits.max_metadata_bytes),
+                actual: as_u64(total),
+            });
+        }
+        map.insert(key, value);
+        if let Some(size) = self.metadata_sizes.get_mut(index) {
+            *size = new_bytes;
+        }
+        self.metadata_bytes = total;
+        Ok(())
     }
 
     /// Finaliza a construção, validando a raiz.
@@ -439,6 +486,30 @@ mod tests {
                 .insert_metadata(leaf, "k", MetaValue::Str(big))
                 .is_err()
         );
+    }
+
+    #[test]
+    fn metadata_bytes_track_replacements() {
+        let limits = Limits::new(1_000_000, 500, 100, 100, 20).expect("limites");
+        let mut builder = AstBuilder::new(&limits);
+        let leaf = builder.literal(Rational::ZERO, "0").expect("literal");
+        builder
+            .insert_metadata(leaf, "k", MetaValue::Str("12345".into()))
+            .expect("inserção");
+        // Substituição por valor maior: 1 + 10 = 11 <= 20.
+        builder
+            .insert_metadata(leaf, "k", MetaValue::Str("1234567890".into()))
+            .expect("substituição");
+        // Substituição que excede: 1 + 30 = 31 > 20.
+        assert!(
+            builder
+                .insert_metadata(leaf, "k", MetaValue::Str("x".repeat(30)))
+                .is_err()
+        );
+        // A falha não corrompe a contabilidade: ainda cabe uma chave pequena.
+        builder
+            .insert_metadata(leaf, "k2", MetaValue::Str("abc".into()))
+            .expect("inserção após falha");
     }
 
     #[test]

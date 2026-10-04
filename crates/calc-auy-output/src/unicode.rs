@@ -2,13 +2,13 @@
 
 use calc_auy_core::{FlatAst, NodeData, NodeId, OperationType};
 
-use crate::output::Output;
+use crate::output::{Output, root_info};
 
 /// Converte um texto em sobrescrito.
 fn to_superscript(input: &str) -> String {
     input
         .chars()
-        .map(|character| match character {
+        .map(|character| match character.to_ascii_lowercase() {
             '0' => '⁰',
             '1' => '¹',
             '2' => '²',
@@ -24,8 +24,10 @@ fn to_superscript(input: &str) -> String {
             '=' => '⁼',
             '(' => '⁽',
             ')' => '⁾',
+            '/' => 'ᐟ',
             'n' => 'ⁿ',
             'i' => 'ⁱ',
+            '^' => '^',
             other => other,
         })
         .collect()
@@ -35,7 +37,7 @@ fn to_superscript(input: &str) -> String {
 fn to_subscript(input: &str) -> String {
     input
         .chars()
-        .map(|character| match character {
+        .map(|character| match character.to_ascii_lowercase() {
             '0' => '₀',
             '1' => '₁',
             '2' => '₂',
@@ -46,7 +48,13 @@ fn to_subscript(input: &str) -> String {
             '7' => '₇',
             '8' => '₈',
             '9' => '₉',
+            '+' => '₊',
+            '-' => '₋',
+            '=' => '₌',
+            '(' => '₍',
+            ')' => '₎',
             'a' => 'ₐ',
+            'b' => 'ᵦ',
             'e' => 'ₑ',
             'h' => 'ₕ',
             'i' => 'ᵢ',
@@ -63,7 +71,6 @@ fn to_subscript(input: &str) -> String {
             'u' => 'ᵤ',
             'v' => 'ᵥ',
             'x' => 'ₓ',
-            'b' => 'ᵦ',
             other => other,
         })
         .collect()
@@ -80,25 +87,88 @@ fn normalize(input: &str) -> String {
     }
 }
 
+/// Notação de potência (evita ambiguidade de sobrescritos aninhados).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Notation {
+    /// Usa sobrescritos Unicode (`x²`).
+    Superscript,
+    /// Usa `^` explícito (`x^y`).
+    Caret,
+}
+
 /// Renderiza um nó em Unicode.
-fn render(ast: &FlatAst, id: NodeId) -> String {
+///
+/// `notation` evita ambiguidade de sobrescritos aninhados (`x^y^z`),
+/// exatamente como o `forceCaret` da referência.
+fn render(ast: &FlatAst, id: NodeId, notation: Notation) -> String {
     match ast.node(id) {
         Some(NodeData::Literal { original_input, .. }) => normalize(original_input),
-        Some(NodeData::Group { child }) => format!("({})", render(ast, *child)),
-        Some(NodeData::Control { child, .. }) => render(ast, *child),
-        Some(NodeData::Operation { op, operands }) => render_operation(ast, *op, operands),
+        Some(NodeData::Group { child }) => format!("({})", render(ast, *child, notation)),
+        Some(NodeData::Control { child, .. }) => render(ast, *child, notation),
+        Some(NodeData::Operation { op, operands }) => {
+            render_operation(ast, *op, operands, notation)
+        }
         None => String::new(),
     }
 }
 
+/// Renderiza uma potência como raiz quando o expoente é fracionário.
+fn render_root(
+    ast: &FlatAst,
+    operands: &[NodeId],
+    base: &str,
+    notation: Notation,
+) -> Option<String> {
+    let (power, index) = operands.get(1).and_then(|id| root_info(ast, *id))?;
+    let base_with_pow = if power == "1" {
+        base.to_string()
+    } else if notation == Notation::Caret {
+        format!("({base}^{power})")
+    } else {
+        format!("({base}{})", to_superscript(&power))
+    };
+    let rendered = match index.as_str() {
+        "2" => format!("√{base_with_pow}"),
+        "3" => format!("∛{base_with_pow}"),
+        "4" => format!("∜{base_with_pow}"),
+        _ => format!("{}√{base_with_pow}", to_superscript(&index)),
+    };
+    Some(rendered)
+}
+
 /// Renderiza uma operação em Unicode.
-fn render_operation(ast: &FlatAst, op: OperationType, operands: &[NodeId]) -> String {
-    let parts: Vec<String> = operands.iter().map(|child| render(ast, *child)).collect();
+fn render_operation(
+    ast: &FlatAst,
+    op: OperationType,
+    operands: &[NodeId],
+    notation: Notation,
+) -> String {
+    let parts: Vec<String> = operands
+        .iter()
+        .enumerate()
+        .map(|(index, child)| {
+            let is_exponent = op == OperationType::Pow && index == 1;
+            let child_notation = if is_exponent || notation == Notation::Caret {
+                Notation::Caret
+            } else {
+                Notation::Superscript
+            };
+            render(ast, *child, child_notation)
+        })
+        .collect();
+
     if op == OperationType::Pow
         && let [base, exponent] = parts.as_slice()
     {
+        if let Some(root) = render_root(ast, operands, base, notation) {
+            return root;
+        }
+        if notation == Notation::Caret {
+            return format!("({base}^{exponent})");
+        }
         return format!("{base}{}", to_superscript(exponent));
     }
+
     let symbol = match op {
         OperationType::Sub => "-",
         OperationType::Mul => "×",
@@ -114,9 +184,19 @@ impl Output<'_> {
     /// Renderiza o cálculo em Unicode (CLI-friendly).
     #[must_use]
     pub fn to_unicode(&self) -> String {
+        self.unicode_ref().to_string()
+    }
+
+    /// Retorna o Unicode memoizado por referência (sem cópia).
+    pub(crate) fn unicode_ref(&self) -> &str {
+        self.unicode.get_or_init(|| self.render_unicode())
+    }
+
+    /// Renderiza o cálculo em Unicode sem cache.
+    fn render_unicode(&self) -> String {
         let ast = &self.committed().payload().ast;
-        let body = render(ast, ast.root());
-        let strategy = to_subscript(self.strategy().as_str());
+        let body = render(ast, ast.root(), Notation::Superscript);
+        let strategy = to_subscript(self.strategy().as_display());
         let decimals = self.effective_decimals();
         let result = self.to_string_decimal();
         format!("round{strategy}({body}, {decimals}) = {result}")
@@ -130,7 +210,7 @@ mod tests {
     #[test]
     fn converts_super_and_subscripts() {
         assert_eq!(to_superscript("32"), "³²");
-        assert_eq!(to_subscript("nbr5891"), "ₙᵦᵣ₅₈₉₁");
+        assert_eq!(to_subscript("NBR-5891"), "ₙᵦᵣ₋₅₈₉₁");
     }
 
     #[test]

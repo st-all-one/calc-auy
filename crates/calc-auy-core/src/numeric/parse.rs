@@ -3,6 +3,9 @@
 //! Suporta: inteiro, decimal, `%`, fração `a/b`, notação científica e
 //! separador `_`. Nunca usa `parse::<f64>`.
 
+use std::collections::BTreeMap;
+use std::sync::{Mutex, OnceLock};
+
 use num_bigint::BigInt;
 use num_traits::One;
 
@@ -10,6 +13,47 @@ use crate::error::CalcAuyError;
 use crate::limits::Limits;
 
 use super::rational::Rational;
+
+/// Capacidade máxima do cache quente de parsing.
+const HOT_CACHE_CAPACITY: usize = 256;
+
+/// Tamanho máximo (em bytes) de uma entrada cacheável.
+const HOT_CACHE_MAX_INPUT: usize = 64;
+
+/// Mapa textual → racional do cache quente.
+type HotCache = BTreeMap<Box<str>, Rational>;
+
+/// Cache quente global de parsing (entrada textual → racional).
+///
+/// Espelha o `HOT_CACHE` do `RationalNumber` do rascunho. Bounded e
+/// determinístico: a mesma entrada devolve sempre o mesmo valor.
+static HOT_CACHE: OnceLock<Mutex<HotCache>> = OnceLock::new();
+
+/// Consulta o cache quente.
+fn hot_get(input: &str) -> Option<Rational> {
+    if input.len() > HOT_CACHE_MAX_INPUT {
+        return None;
+    }
+    let cache = HOT_CACHE.get()?.lock().ok()?;
+    cache.get(input).cloned()
+}
+
+/// Insere no cache quente, evictando a menor chave quando cheio.
+fn hot_put(input: &str, value: &Rational) {
+    if input.len() > HOT_CACHE_MAX_INPUT {
+        return;
+    }
+    let cache = HOT_CACHE.get_or_init(|| Mutex::new(BTreeMap::new()));
+    let Ok(mut guard) = cache.lock() else {
+        return;
+    };
+    if guard.len() >= HOT_CACHE_CAPACITY
+        && let Some(key) = guard.keys().next().cloned()
+    {
+        guard.remove(&key);
+    }
+    drop(guard.insert(Box::from(input), value.clone()));
+}
 
 /// Erro de entrada inválida.
 fn invalid(message: impl Into<String>) -> CalcAuyError {
@@ -101,7 +145,7 @@ fn parse_decimal(input: &str) -> Result<(BigInt, BigInt), CalcAuyError> {
     Ok((numerator, denominator))
 }
 
-/// Faz parse de uma string em um racional exato.
+/// Faz parse de uma string em um racional exato (com cache quente).
 ///
 /// Formatos suportados:
 /// - Inteiro: `"42"`, `"-7"`
@@ -115,6 +159,22 @@ fn parse_decimal(input: &str) -> Result<(BigInt, BigInt), CalcAuyError> {
 ///
 /// Retorna erro se o formato for inválido ou se os limites forem excedidos.
 pub fn parse_rational(input: &str, limits: &Limits) -> Result<Rational, CalcAuyError> {
+    if let Some(cached) = hot_get(input) {
+        // O valor pode ter sido cacheado com limites mais frouxos.
+        limits.check_bits(cached.bits())?;
+        return Ok(cached);
+    }
+    let value = parse_rational_uncached(input, limits)?;
+    hot_put(input, &value);
+    Ok(value)
+}
+
+/// Faz parse sem consultar o cache (usado no caminho frio).
+///
+/// # Errors
+///
+/// Retorna erro se o formato for inválido ou se os limites forem excedidos.
+fn parse_rational_uncached(input: &str, limits: &Limits) -> Result<Rational, CalcAuyError> {
     let cleaned = input.trim().replace('_', "");
     if cleaned.is_empty() {
         return Err(invalid("Entrada vazia"));
@@ -153,6 +213,27 @@ mod tests {
         assert_eq!(parse("42"), Rational::from_i64(42));
         assert_eq!(parse("-7"), Rational::from_i64(-7));
         assert_eq!(parse("+5"), Rational::from_i64(5));
+    }
+
+    #[test]
+    fn hot_cache_validates_limits_on_hit() {
+        // Aquece o cache com limites frouxos.
+        let generous = Limits::default();
+        assert_eq!(
+            parse_rational("123456789", &generous).expect("parse"),
+            Rational::from_i64(123_456_789)
+        );
+        // A segunda chamada bate no cache, mas o limite apertado deve rejeitar.
+        let tight = Limits::new(8, 500, 1_000, 100, 16_384).expect("limites");
+        assert!(parse_rational("123456789", &tight).is_err());
+    }
+
+    #[test]
+    fn hot_cache_returns_equivalent_values() {
+        let limits = Limits::default();
+        let first = parse_rational("1.23456789", &limits).expect("primeiro");
+        let second = parse_rational("1.23456789", &limits).expect("segundo");
+        assert_eq!(first, second);
     }
 
     #[test]

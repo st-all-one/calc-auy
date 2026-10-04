@@ -25,6 +25,10 @@ pub fn pow10(decimals: u32) -> BigInt {
 
 /// Formata um inteiro (possivelmente negativo) com ponto decimal fixo.
 #[must_use]
+#[allow(
+    clippy::arithmetic_side_effects,
+    reason = "aritmética de tamanhos de string; saturating onde importa"
+)]
 pub fn format_fixed(integer: &str, decimals: u32) -> String {
     let decimals = clamp_decimals(decimals);
     if decimals == 0 {
@@ -34,15 +38,21 @@ pub fn format_fixed(integer: &str, decimals: u32) -> String {
         .strip_prefix('-')
         .map_or(("", integer), |rest| ("-", rest));
     let width = usize::try_from(decimals).unwrap_or(usize::MAX);
-    let padding = width.saturating_sub(digits.len());
-    let mut padded = String::with_capacity(width.saturating_add(sign.len()).saturating_add(1));
-    padded.push_str(&"0".repeat(padding));
-    padded.push_str(digits);
-
-    let split = padded.len().saturating_sub(width);
-    let (int_part, frac_part) = padded.split_at(split);
-    let int_part = if int_part.is_empty() { "0" } else { int_part };
-    format!("{sign}{int_part}.{frac_part}")
+    let int_len = digits.len().saturating_sub(width);
+    let frac_len = digits.len().saturating_sub(int_len);
+    let mut out = String::with_capacity(sign.len().saturating_add(width).saturating_add(2));
+    out.push_str(sign);
+    if int_len == 0 {
+        out.push('0');
+    } else {
+        out.push_str(digits.get(..int_len).unwrap_or(""));
+    }
+    out.push('.');
+    for _ in frac_len..width {
+        out.push('0');
+    }
+    out.push_str(digits.get(int_len..).unwrap_or(""));
+    out
 }
 
 /// Formata um racional aplicando a estratégia de arredondamento.

@@ -4,6 +4,8 @@
 //! mesmo resultado (associatividade/comutatividade). A redução em árvore
 //! reduz a profundidade e permite paralelismo determinístico (ADR-010).
 
+use num_bigint::BigInt;
+
 use super::Rational;
 
 /// Limiar a partir do qual a redução usa paralelismo (feature `parallel`).
@@ -60,28 +62,64 @@ fn prod_parallel(operands: &[Rational]) -> Rational {
     a.mul(&b)
 }
 
+/// Soma em que todos os operandos são iguais: `k·x` (evita `k-1` adições).
+fn all_equal_sum(operands: &[Rational]) -> Option<Rational> {
+    let first = operands.first()?;
+    if operands.len() > 1 && operands.iter().all(|operand| operand == first) {
+        Some(first.mul(&Rational::from_bigint(BigInt::from(operands.len()))))
+    } else {
+        None
+    }
+}
+
+/// Produto em que todos os operandos são iguais: `x^k` por quadrados.
+fn all_equal_product(operands: &[Rational]) -> Option<Rational> {
+    let first = operands.first()?;
+    if operands.len() > 1 && operands.iter().all(|operand| operand == first) {
+        Some(pow_by_squaring(first, operands.len()))
+    } else {
+        None
+    }
+}
+
+/// `base^exponent` por quadrados, usando apenas `mul` (infalível).
+fn pow_by_squaring(base: &Rational, mut exponent: usize) -> Rational {
+    let mut result = Rational::ONE;
+    let mut factor = base.clone();
+    while exponent > 0 {
+        if exponent & 1 == 1 {
+            result = result.mul(&factor);
+        }
+        exponent = exponent.wrapping_shr(1);
+        if exponent > 0 {
+            factor = factor.mul(&factor);
+        }
+    }
+    result
+}
+
 /// Soma exata de uma sequência (vazio = `0`).
 pub(crate) fn sum_tree(operands: &[Rational]) -> Rational {
+    if let Some(total) = all_equal_sum(operands) {
+        return total;
+    }
     #[cfg(feature = "parallel")]
-    {
-        sum_parallel(operands)
-    }
+    let result = sum_parallel(operands);
     #[cfg(not(feature = "parallel"))]
-    {
-        sum_sequential(operands)
-    }
+    let result = sum_sequential(operands);
+    result
 }
 
 /// Produto exato de uma sequência (vazio = `1`).
 pub(crate) fn prod_tree(operands: &[Rational]) -> Rational {
+    if let Some(total) = all_equal_product(operands) {
+        return total;
+    }
     #[cfg(feature = "parallel")]
-    {
-        prod_parallel(operands)
-    }
+    let result = prod_parallel(operands);
     #[cfg(not(feature = "parallel"))]
-    {
-        prod_sequential(operands)
-    }
+    let result = prod_sequential(operands);
+    result
 }
 
 #[cfg(test)]
@@ -120,5 +158,12 @@ mod tests {
     fn empty_identities() {
         assert_eq!(sum_tree(&[]), Rational::ZERO);
         assert_eq!(prod_tree(&[]), Rational::ONE);
+    }
+
+    #[test]
+    fn equal_operands_collapse() {
+        let values: Vec<Rational> = (0..5).map(|_| rational(3, 7)).collect();
+        assert_eq!(sum_tree(&values), rational(15, 7));
+        assert_eq!(prod_tree(&values), rational(243, 16807));
     }
 }

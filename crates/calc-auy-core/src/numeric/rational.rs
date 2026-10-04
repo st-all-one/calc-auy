@@ -53,6 +53,25 @@ const fn repr_large(num: BigInt, den: BigInt) -> Repr {
     Repr::Large { n: num, d: den }
 }
 
+/// `base^exponent` quando `base` é `±2^k` (via shift); `None` caso contrário.
+///
+/// Potências de dois aparecem em cadeias de estresse (`2^500000`,
+/// `2^225000·…`); o shift é O(n) e evita a exponenciação por quadrados.
+fn pow_power_of_two(base: &BigInt, exponent: u32) -> Option<BigInt> {
+    let magnitude = base.magnitude();
+    let trailing = magnitude.trailing_zeros()?;
+    if magnitude.bits() != trailing.saturating_add(1) {
+        return None;
+    }
+    let shift = trailing.checked_mul(u64::from(exponent))?;
+    let value = BigInt::one() << shift;
+    Some(if base.is_negative() && exponent & 1 == 1 {
+        -value
+    } else {
+        value
+    })
+}
+
 /// Reduz o par `u128` pelo seu GCD. O denominador é sempre positivo.
 fn reduce_u128(num: u128, den: u128) -> Repr {
     let divisor = gcd_u128(num, den);
@@ -287,6 +306,42 @@ impl Rational {
         }
     }
 
+    /// Cria um racional a partir de um par **já irredutível**.
+    ///
+    /// Evita o GCD, que é o custo dominante em operandos grandes. O chamador
+    /// garante `gcd(numerator, denominator) == 1`; caso contrário o invariante
+    /// da struct é violado.
+    ///
+    /// # Errors
+    ///
+    /// Retorna [`CalcAuyError::LimitExceeded`] se os limites forem excedidos.
+    fn from_coprime(
+        mut numerator: BigInt,
+        mut denominator: BigInt,
+        limits: &Limits,
+    ) -> Result<Self, CalcAuyError> {
+        if denominator.is_negative() {
+            numerator = -numerator;
+            denominator = -denominator;
+        }
+        if numerator.is_zero() {
+            return Ok(Self::ZERO);
+        }
+        let bits = numerator.bits().max(denominator.bits());
+        limits.check_bits(bits)?;
+        Ok(match (numerator.to_u64(), denominator.to_u64()) {
+            (Some(n), Some(d)) => Self {
+                repr: Repr::Small { n, d },
+            },
+            _ => Self {
+                repr: Repr::Large {
+                    n: numerator,
+                    d: denominator,
+                },
+            },
+        })
+    }
+
     /// Retorna o numerador como string decimal.
     #[must_use]
     pub fn numerator(&self) -> String {
@@ -392,9 +447,21 @@ impl Rational {
         let a_d = self.denominator_bigint();
         let b_n = other.numerator_bigint();
         let b_d = other.denominator_bigint();
-        let num = &a_n * &b_d + &b_n * &a_d;
-        let den = &a_d * &b_d;
-        let divisor = gcd_bigint(&num, &den);
+        // Soma "gcd-least" (Knuth 4.5.1): reduz pelo gcd dos denominadores,
+        // que costuma ser pequeno, em vez de por `gcd(num, b*d)` (grande).
+        let common = gcd_bigint(&a_d, &b_d);
+        if common.is_one() {
+            let num = &a_n * &b_d + &b_n * &a_d;
+            return Self {
+                repr: repr_large(num, &a_d * &b_d),
+            };
+        }
+        let a_dg = &a_d / &common;
+        let b_dg = &b_d / &common;
+        let num = &a_n * &b_dg + &b_n * &a_dg;
+        let den = &a_dg * &b_d;
+        // `gcd(num, den) == gcd(num, common)` e `common` é pequeno.
+        let divisor = gcd_bigint(&num, &common);
         Self {
             repr: repr_large(&num / &divisor, &den / &divisor),
         }
@@ -421,11 +488,14 @@ impl Rational {
         let a_d = self.denominator_bigint();
         let b_n = other.numerator_bigint();
         let b_d = other.denominator_bigint();
-        let num = &a_n * &b_n;
-        let den = &a_d * &b_d;
-        let divisor = gcd_bigint(&num, &den);
+        // Redução cruzada: `gcd(a,d)` e `gcd(c,b)` em vez de `gcd(ac, bd)`.
+        // O produto já sai irredutível e os GCDs são de operandos menores.
+        let g1 = gcd_bigint(&a_n, &b_d);
+        let g2 = gcd_bigint(&b_n, &a_d);
+        let num = (&a_n / &g1) * (&b_n / &g2);
+        let den = (&a_d / &g2) * (&b_d / &g1);
         Self {
-            repr: repr_large(&num / &divisor, &den / &divisor),
+            repr: repr_large(num, den),
         }
     }
 
@@ -502,7 +572,7 @@ impl Rational {
 
         match (root_num, root_den) {
             (Some(num), Some(den)) => {
-                let base = Self::new_bigint_checked(num, den, limits)?;
+                let base = Self::from_coprime(num, den, limits)?;
                 base.pow_int(&numerator, limits)
             }
             _ => Err(CalcAuyError::IrrationalResult {
@@ -548,13 +618,19 @@ impl Rational {
             });
         }
 
-        let numerator = self.numerator_bigint().pow(exp_u32);
-        let denominator = self.denominator_bigint().pow(exp_u32);
+        let numerator_base = self.numerator_bigint();
+        let denominator_base = self.denominator_bigint();
+        let numerator = pow_power_of_two(&numerator_base, exp_u32)
+            .unwrap_or_else(|| numerator_base.pow(exp_u32));
+        let denominator = pow_power_of_two(&denominator_base, exp_u32)
+            .unwrap_or_else(|| denominator_base.pow(exp_u32));
 
+        // `self` é irredutível por invariante, logo `num^e` e `den^e` também
+        // são: o GCD de redução é desnecessário (e caro).
         if exponent.is_negative() {
-            Self::new_bigint_checked(denominator, numerator, limits)
+            Self::from_coprime(denominator, numerator, limits)
         } else {
-            Self::new_bigint_checked(numerator, denominator, limits)
+            Self::from_coprime(numerator, denominator, limits)
         }
     }
 
@@ -624,7 +700,8 @@ impl Rational {
     }
 
     /// Converte o numerador para `BigInt`.
-    fn numerator_bigint(&self) -> BigInt {
+    #[must_use]
+    pub fn numerator_bigint(&self) -> BigInt {
         match &self.repr {
             Repr::Small { n, .. } => BigInt::from(*n),
             Repr::Large { n, .. } => n.clone(),
@@ -632,7 +709,8 @@ impl Rational {
     }
 
     /// Converte o denominador para `BigInt`.
-    fn denominator_bigint(&self) -> BigInt {
+    #[must_use]
+    pub fn denominator_bigint(&self) -> BigInt {
         match &self.repr {
             Repr::Small { d, .. } => BigInt::from(*d),
             Repr::Large { d, .. } => d.clone(),
@@ -877,6 +955,21 @@ mod tests {
             result,
             Rational::new_checked(8, 27, &limits).expect("válido")
         );
+    }
+
+    #[test]
+    fn pow_of_power_of_two_uses_shift() {
+        let limits = Limits::new(1_000_000, 1_000_000, 1_000_000, 1_000_000, 1_000_000_000)
+            .expect("limites");
+        let value = Rational::from_i64(2)
+            .pow(&Rational::from_i64(200), &limits)
+            .expect("potência");
+        assert_eq!(value, Rational::from_bigint(BigInt::one() << 200_u64));
+        // Base negativa com expoente ímpar preserva o sinal.
+        let negative = Rational::from_i64(-2)
+            .pow(&Rational::from_i64(3), &limits)
+            .expect("potência");
+        assert_eq!(negative, Rational::from_i64(-8));
     }
 
     #[test]

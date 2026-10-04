@@ -10,6 +10,7 @@ build = "build.rs"
 
 [dependencies]
 calc-auy-core = { path = "../calc-auy-core" }
+calc-auy-output = { path = "../calc-auy-output" }
 thiserror.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -24,6 +25,7 @@ protoc-bin-vendored = "3"
 
 [dev-dependencies]
 calc-auy-parser = { path = "../calc-auy-parser" }
+calc-auy-i18n = { path = "../calc-auy-i18n" }
 proptest.workspace = true
 
 [lints]

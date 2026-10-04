@@ -85,4 +85,9 @@ fn slice_snapshots() {
     ];
     let weighted = output.to_slice_by_ratio(&ratios).expect("rateio");
     assert_snapshot("slice_ratio", &weighted.join("\n"));
+
+    let text = output
+        .to_slice_by_ratio_text(&["25%", "75%"])
+        .expect("rateio textual");
+    assert_eq!(text, vec!["25.00", "75.00"]);
 }

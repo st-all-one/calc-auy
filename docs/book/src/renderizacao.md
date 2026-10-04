@@ -44,7 +44,27 @@ let json = output.to_json_formats(DEFAULT_KEYS, &realizer)?;
 ```
 
 As chaves disponíveis são `decimal`, `scaled`, `monetary`, `latex`, `unicode`,
-`mermaid` e `verbal`.
+`mermaid`, `verbal` e `auditTrace`.
+
+## Raízes e Mermaid
+
+Potências fracionárias são renderizadas como raízes em todos os formatos:
+`9^(1/2)` vira `\sqrt{9}` (LaTeX), `√9` (Unicode) e “raiz quadrada de nove”
+(verbal).
+
+O diagrama Mermaid é **localizado** (9 locales), agrupa ingestões consecutivas,
+trata transferências de contexto (`Control`), formata timestamps e redige PII
+(`Sensitivity`, padrão `Redact`; use `Sensitivity::Expose` para exibir).
+
+## Processadores
+
+O seam `OutputProcessor`/`to_custom_output` estende a saída com novos formatos:
+
+```rust
+use calc_auy_processors::persistence::PersistenceProcessor;
+
+let record = output.to_custom_output(&PersistenceProcessor, (), &realizer)?;
+```
 
 ## Features
 

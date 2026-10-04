@@ -105,6 +105,9 @@ pub const GRAMMAR: Grammar = Grammar {
     },
     group_prefix: "abre paréntesis ",
     group_suffix: " cierra paréntesis",
+    root_square: "raíz cuadrada de ",
+    root_cubic: "raíz cúbica de ",
+    root_n: "raíz {den}-ésima de ",
 };
 
 /// Escreve um texto numérico por extenso em espanhol.

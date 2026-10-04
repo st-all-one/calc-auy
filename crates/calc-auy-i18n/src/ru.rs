@@ -103,6 +103,9 @@ pub const GRAMMAR: Grammar = Grammar {
     },
     group_prefix: "открывающая скобка ",
     group_suffix: " закрывающая скобка",
+    root_square: "квадратный корень из ",
+    root_cubic: "кубический корень из ",
+    root_n: "корень {den}-й степени из ",
 };
 
 /// Escreve um texto numérico por extenso em russo.

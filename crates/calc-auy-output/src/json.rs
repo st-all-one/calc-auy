@@ -29,6 +29,8 @@ pub enum OutputKey {
     Mermaid,
     /// Descrição verbal (acessibilidade).
     Verbal,
+    /// Traço de auditoria assinado (JSON).
+    AuditTrace,
 }
 
 impl OutputKey {
@@ -43,18 +45,21 @@ impl OutputKey {
             Self::Unicode => "unicode",
             Self::Mermaid => "mermaid",
             Self::Verbal => "verbal",
+            Self::AuditTrace => "auditTrace",
         }
     }
 }
 
-/// Conjunto padrão de representações (todas as textuais).
+/// Conjunto padrão de representações (superset das chaves da referência).
 pub const DEFAULT_KEYS: &[OutputKey] = &[
     OutputKey::Decimal,
+    OutputKey::Scaled,
     OutputKey::Monetary,
     OutputKey::Latex,
     OutputKey::Unicode,
     OutputKey::Mermaid,
     OutputKey::Verbal,
+    OutputKey::AuditTrace,
 ];
 
 impl Output<'_> {
@@ -119,6 +124,7 @@ impl Output<'_> {
                 OutputKey::Unicode => self.to_unicode(),
                 OutputKey::Mermaid => self.to_mermaid_graph(),
                 OutputKey::Verbal => self.to_verbal_a11y(realizer),
+                OutputKey::AuditTrace => self.to_audit_trace()?,
             };
             map.insert(key.as_str().to_string(), value);
         }
@@ -140,6 +146,7 @@ mod tests {
     fn keys_have_stable_names() {
         assert_eq!(OutputKey::Decimal.as_str(), "decimal");
         assert_eq!(OutputKey::Verbal.as_str(), "verbal");
-        assert_eq!(DEFAULT_KEYS.len(), 6);
+        assert_eq!(OutputKey::AuditTrace.as_str(), "auditTrace");
+        assert_eq!(DEFAULT_KEYS.len(), 8);
     }
 }

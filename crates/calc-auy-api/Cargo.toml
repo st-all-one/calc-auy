@@ -22,6 +22,7 @@ render = ["calc-auy-output/render"]
 
 [dev-dependencies]
 serde_json.workspace = true
+calc-auy-processors = { path = "../calc-auy-processors" }
 
 [lints]
 workspace = true

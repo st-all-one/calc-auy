@@ -86,6 +86,17 @@ fn params_select_verbal_mode() {
 }
 
 #[test]
+fn params_select_currency() {
+    let (code, stdout, _) = run(&[
+        "--params",
+        "{\"mode\":\"monetary\",\"currency\":\"USD\",\"locale\":\"en-US\"}",
+        "100",
+    ]);
+    assert_eq!(code, 0);
+    assert_eq!(stdout.trim(), "$100.00");
+}
+
+#[test]
 fn params_select_json_mode() {
     let (code, stdout, _) = run(&["--params", "{\"mode\":\"json\"}", "1 + 2"]);
     assert_eq!(code, 0);

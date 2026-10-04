@@ -1,15 +1,13 @@
 sequenceDiagram
     autonumber
     participant Ctx_default as Contexto: default
+
     activate Ctx_default
-    Note over Ctx_default: Ingestão: 10000
-    Note over Ctx_default: Ingestão: 1
-    Note over Ctx_default: Ingestão: 14.75
-    Note over Ctx_default: Ingestão: 1/100
+    Note over Ctx_default: Ingestão de Operandos:<br/>• [REDACTED]<br/>• [REDACTED]<br/>• [REDACTED]<br/>• [REDACTED]
     Ctx_default->>Ctx_default: Operação: mul
     Ctx_default->>Ctx_default: Operação: add
-    Note over Ctx_default: Ingestão: 3
+    Note over Ctx_default: Ingestão: [REDACTED]
     Ctx_default->>Ctx_default: Operação: pow
     Ctx_default->>Ctx_default: Operação: mul
-    Note over Ctx_default: Fechamento e Assinatura Final
+    Note over Ctx_default: <br/>Fechamento e Assinatura Final<br/>Signature: (Sig: c6a40dac...)
     deactivate Ctx_default

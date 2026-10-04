@@ -1,0 +1,70 @@
+test square_root_in_all_formats ... ok
+test cubic_root_in_all_formats ... ok
+test nth_root_with_power_in_all_formats ... ok
+test fifth_root_uses_generic_index ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/snapshots.rs (target/debug/deps/snapshots-954d6704b0aadc75)
+
+running 5 tests
+test audit_snapshots ... ok
+test monetary_snapshots ... ok
+test slice_snapshots ... ok
+test representation_snapshots ... ok
+test json_formats_snapshot ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/calc_auy_processors-f7ba622ac00fa968)
+
+running 1 test
+test persistence::tests::record_round_trips_through_json ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/codecs.rs (target/debug/deps/codecs-4f38aefcdfdbebd7)
+
+running 8 tests
+test format_codes_roundtrip ... ok
+test protobuf_rejects_missing_required_fields ... ok
+test limits_are_enforced_on_decode ... ok
+test unsigned_normalizes_to_signed_across_codecs ... ok
+test golden_bytes_are_stable ... ok
+test encoding_is_deterministic ... ok
+test cross_format_conformance ... ok
+test roundtrip_all_formats ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/persistence.rs (target/debug/deps/persistence-75d0569219fb106d)
+
+running 1 test
+test persistence_processor_projects_committed_value ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/schema.rs (target/debug/deps/schema-1b258fd2671d8c9d)
+
+running 2 tests
+test schema_files_match_source ... ok
+test json_schema_is_valid ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests calc_auy_output
+
+running 3 tests
+test crates/calc-auy-output/src/render.rs - render::Output<'_>::to_html (line 28) - compile ... ok
+test crates/calc-auy-output/src/json.rs - json::Output<'_>::to_json_formats (line 78) ... ok
+test crates/calc-auy-output/src/monetary.rs - monetary::Output<'_>::to_monetary (line 32) ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.43s; merged doctests compilation took 0.42s
+   Doc-tests calc_auy_processors
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

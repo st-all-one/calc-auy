@@ -73,6 +73,9 @@ pub const GRAMMAR: Grammar = Grammar {
     },
     group_prefix: "Klammer auf ",
     group_suffix: " Klammer zu",
+    root_square: "Quadratwurzel aus ",
+    root_cubic: "Kubikwurzel aus ",
+    root_n: "{den}-te Wurzel aus ",
 };
 
 /// Escreve um texto numérico por extenso em alemão.
